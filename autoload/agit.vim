@@ -29,23 +29,30 @@ function! s:define_mappings()
   silent nmap <buffer> <CR> <Plug>(agit-show-commit-stat)
 endfunction
 
+function! s:set_view_options()
+  setlocal buftype=nofile
+  setlocal nonumber norelativenumber
+  setlocal nowrap
+endfunction
+
+function! s:set_diff_view_options()
+  setlocal foldmethod=syntax
+  setlocal foldenable
+  setlocal foldlevelstart=1
+endfunction
+
 function! s:show_commit_stat()
   only
   let hash = s:extract_hash(getline('.'))
   call agit#bufwin#move_or_create_window('agit_win_type', 'stat', 'botright vnew')
-  let result = system('git show --oneline --stat --date=iso '. hash)
   setlocal modifiable
+  let result = system('git show --oneline --stat --date=iso '. hash)
   silent! %delete
   silent! 0put =result
-  %s/^\n//e
+  %s/\n^$//e
   1delete
-  setlocal buftype=nofile
-  setlocal nonumber norelativenumber
+  call s:set_view_options()
   setlocal nomodifiable
-  setlocal foldmethod=syntax
-  setlocal foldenable
-  setlocal foldlevelstart=1
-  setlocal nowrap
   setfiletype git
   call s:show_diff(hash)
   call agit#bufwin#move_or_create_window('agit_win_type', 'log', 'vnew')
@@ -58,13 +65,9 @@ function! s:show_diff(hash)
   setlocal modifiable
   silent! %delete
   silent! 0put =result
-  setlocal buftype=nofile
-  setlocal nonumber norelativenumber
+  call s:set_view_options()
+  call s:set_diff_view_options()
   setlocal nomodifiable
-  setlocal foldmethod=syntax
-  setlocal foldenable
-  setlocal foldlevelstart=1
-  setlocal nowrap
   setfiletype git
   call agit#bufwin#move_or_create_window('agit_win_type', 'log', 'vnew')
 endfunction
@@ -72,3 +75,4 @@ endfunction
 function! s:extract_hash(str)
   return matchstr(a:str, '\x\{40\}$')
 endfunction
+
