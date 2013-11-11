@@ -16,7 +16,7 @@ describe 'agit'
         1wincmd w
       end
 
-      it 'has agit_win_type with value of "log"'
+      it 'has agit_win_type as "log"'
         Expect w:agit_win_type ==# 'log'
       end
 
@@ -34,7 +34,7 @@ describe 'agit'
         2wincmd w
       end
 
-      it 'has agit_win_type with value of "stat"'
+      it 'has agit_win_type as "stat"'
         Expect w:agit_win_type ==# 'stat'
       end
 
@@ -57,7 +57,7 @@ describe 'agit'
         3wincmd w
       end
 
-      it 'has agit_win_type with value of "diff"'
+      it 'has agit_win_type as "diff"'
         Expect w:agit_win_type ==# 'diff'
       end
 
