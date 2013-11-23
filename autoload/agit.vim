@@ -23,10 +23,7 @@ endfunction
 
 function! s:show_log()
   call s:set_view_options()
-  let result = system('git log --graph --decorate=full --no-color --date=iso --format=format:"%d %s %ad %an %H"')
-  silent! 0put =result
-  silent! $delete
-  1
+  call s:fill_from_system('git log --graph --decorate=full --no-color --date=iso --format=format:"%d %s %ad %an %H"')
   let w:agit_win_type = 'log'
   setlocal nomodifiable
   setfiletype agit
@@ -44,9 +41,7 @@ endfunction
 function! s:show_commit_stat(hash)
   call agit#bufwin#move_or_create_window('agit_win_type', 'stat', 'botright vnew')
   setlocal modifiable
-  let result = system('git show --oneline --stat --date=iso '. a:hash)
-  silent! %delete
-  silent! 0put =result
+  call s:fill_from_system('git show --oneline --stat --date=iso '. a:hash)
   %s/\n^$//e
   1delete
   call s:set_view_options()
@@ -57,17 +52,21 @@ endfunction
 function! s:show_commit_diff(hash)
   let winheight = winheight('.')
   call agit#bufwin#move_or_create_window('agit_win_type', 'diff', 'belowright '. winheight*3/4 . 'new')
-  let result = system('git show -p ' . a:hash)
   setlocal modifiable
-  silent! %delete
-  silent! 0put =result
-  1
+  call s:fill_from_system('git show -p ' . a:hash)
   call s:set_view_options()
   setlocal foldmethod=syntax
   setlocal foldenable
   setlocal foldlevelstart=1
   setlocal nomodifiable
   setfiletype git
+endfunction
+
+function! s:fill_from_system(cmd)
+  silent! %delete
+  silent! 0put= system(a:cmd)
+  silent! $delete
+  1
 endfunction
 
 function! s:extract_hash(str)
