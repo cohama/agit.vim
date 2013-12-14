@@ -64,6 +64,6 @@ function! s:fill_buffer(str)
 endfunction
 
 function! s:extract_hash(str)
-  return matchstr(a:str, '\x\{7\}$')
+  return matchstr(a:str, '\[\zs\x\{7\}\ze\]$')
 endfunction
 

@@ -9,6 +9,8 @@ endif
 
 if !g:agit_no_default_mappings
   silent nmap <silent><buffer> <CR> <Plug>(agit-show-commit)
+  silent nmap <silent><buffer> j j<Plug>(agit-show-commit)
+  silent nmap <silent><buffer> k k<Plug>(agit-show-commit)
 endif
 
 setl conceallevel=2
