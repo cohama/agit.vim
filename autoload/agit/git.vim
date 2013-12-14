@@ -8,6 +8,9 @@ let s:spacer = ' '
 function! agit#git#log()
   let gitlog = system('git log --all --graph --decorate=full --no-color --date=relative --format=format:"%d %s' . s:sep . '|%ad|' . s:sep . '{%an}' . s:sep . '[%h]"')
   let max_width = &columns / 2 + 13
+  let gitlog = substitute(gitlog, '\<refs/heads/', '', 'g')
+  let gitlog = substitute(gitlog, '\<refs/remotes/', 'r:', 'g')
+  let gitlog = substitute(gitlog, '\<refs/tags/', 't:', 'g')
   let log_lines = map(split(gitlog, "\n"), 'split(v:val, s:sep)')
   return join(agit#git#align_log(log_lines, max_width), "\n")
 endfunction
