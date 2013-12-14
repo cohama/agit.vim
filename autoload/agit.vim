@@ -10,10 +10,6 @@ function! s:launch()
   call s:show_commit()
 endfunction
 
-function! s:define_mappings()
-  silent nmap <silent><buffer> <CR> <Plug>(agit-show-commit)
-endfunction
-
 function! s:set_view_options()
   setlocal buftype=nofile
   setlocal nonumber norelativenumber
@@ -27,7 +23,6 @@ function! s:show_log()
   let w:agit_win_type = 'log'
   setlocal nomodifiable
   setfiletype agit
-  call s:define_mappings()
 endfunction
 
 function! s:show_commit()
@@ -69,6 +64,6 @@ function! s:fill_buffer(str)
 endfunction
 
 function! s:extract_hash(str)
-  return matchstr(a:str, '\x\{40\}$')
+  return matchstr(a:str, '\x\{7\}$')
 endfunction
 
