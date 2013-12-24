@@ -1,6 +1,6 @@
 let s:V = vital#of('agit.vim')
-function agit#init()
-  command! Agit call <SID>launch()
+function! agit#init()
+  command! Agit call s:launch()
   nnoremap <silent> <Plug>(agit-show-commit) :<C-u>call <SID>show_commit()<CR>
 endfunction
 
