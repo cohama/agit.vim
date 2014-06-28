@@ -11,7 +11,7 @@ function! s:launch()
 endfunction
 
 function! s:set_view_options()
-  setlocal buftype=nofile
+  setlocal buftype=nofile nobuflisted bufhidden=delete
   setlocal nonumber norelativenumber
   setlocal nowrap
   setlocal foldcolumn=0
