@@ -38,7 +38,7 @@ function! s:show_commit_stat(hash)
   setlocal modifiable
   call s:fill_buffer(system('git show --oneline --stat --date=iso '. a:hash))
   %s/\n^$//e
-  1delete
+  1 delete _
   call s:set_view_options()
   setlocal nomodifiable
   setfiletype git
