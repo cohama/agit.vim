@@ -24,7 +24,7 @@ function! agit#string#fill_left(text, max_length)
   if text_width >= a:max_length
     return a:text
   else
-    return a:text . repeat(' ', a:max_length - text_width)
+    return repeat(' ', a:max_length - text_width) . a:text
   endif
 endfunction
 
@@ -33,7 +33,7 @@ function! agit#string#fill_right(text, max_length)
   if text_width >= a:max_length
     return a:text
   else
-    return repeat(' ', a:max_length - text_width) . a:text
+    return a:text . repeat(' ', a:max_length - text_width)
   endif
 endfunction
 
