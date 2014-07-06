@@ -6,7 +6,7 @@
 #
 notification :libnotify, transient: true, timeout: 1
 guard :shell do
-  watch(/^(test|autoload|plugin)\/.*\.vim$/) do |m|
+  watch(/^(test|autoload|plugin|ftplugin|after)\/.*\.vim$/) do |m|
     if system('themis --reporter spec')
       n 'success', 'themis', :success
     else
