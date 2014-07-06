@@ -8,9 +8,9 @@ function agit#bufwin#move_or_create_window(winvarname, winvarval, cmd)
     endif
   endfor
   if found
-    execute w . 'wincmd w'
+    noautocmd execute w . 'wincmd w'
   else
-    execute a:cmd
+    noautocmd execute a:cmd
     let w:{a:winvarname} = a:winvarval
   endif
 endfunction

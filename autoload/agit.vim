@@ -5,7 +5,7 @@ function! agit#init()
 endfunction
 
 function! s:launch()
-  tabnew
+  noautocmd tabnew
   call s:show_log()
   call s:show_commit()
 endfunction
@@ -26,7 +26,6 @@ function! s:show_log()
 endfunction
 
 function! s:show_commit()
-  silent! only
   let hash = s:extract_hash(getline('.'))
   call s:show_commit_stat(hash)
   call s:show_commit_diff(hash)
@@ -37,11 +36,10 @@ function! s:show_commit_stat(hash)
   call agit#bufwin#move_or_create_window('agit_win_type', 'stat', 'botright vnew')
   setlocal modifiable
   call s:fill_buffer(system('git show --oneline --stat --date=iso '. a:hash))
-  %s/\n^$//e
-  1 delete _
+  noautocmd %s/\n^$//e
+  noautocmd 1 delete _
   call s:set_view_options()
   setlocal nomodifiable
-  setfiletype git
 endfunction
 
 function! s:show_commit_diff(hash)
@@ -54,13 +52,12 @@ function! s:show_commit_diff(hash)
   setlocal foldenable
   setlocal foldlevelstart=1
   setlocal nomodifiable
-  setfiletype git
 endfunction
 
 function! s:fill_buffer(str)
-  silent! %delete _
-  silent! 1put= a:str
-  silent! 1delete _
+  noautocmd silent! %delete _
+  noautocmd silent! 1put= a:str
+  noautocmd silent! 1delete _
 endfunction
 
 function! s:extract_hash(str)
