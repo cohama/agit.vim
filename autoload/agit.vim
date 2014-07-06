@@ -1,13 +1,19 @@
 let s:V = vital#of('agit.vim')
 function! agit#init()
   command! Agit call s:launch()
-  nnoremap <silent> <Plug>(agit-show-commit) :<C-u>call <SID>show_commit()<CR>
+endfunction
+
+function! agit#show_commit()
+  let hash = s:extract_hash(getline('.'))
+  call s:show_commit_stat(hash)
+  call s:show_commit_diff(hash)
+  call agit#bufwin#move_or_create_window('agit_win_type', 'log', 'vnew')
 endfunction
 
 function! s:launch()
   noautocmd tabnew
   call s:show_log()
-  call s:show_commit()
+  call agit#show_commit()
 endfunction
 
 function! s:set_view_options()
@@ -23,13 +29,6 @@ function! s:show_log()
   let w:agit_win_type = 'log'
   setlocal nomodifiable
   setfiletype agit
-endfunction
-
-function! s:show_commit()
-  let hash = s:extract_hash(getline('.'))
-  call s:show_commit_stat(hash)
-  call s:show_commit_diff(hash)
-  call agit#bufwin#move_or_create_window('agit_win_type', 'log', 'vnew')
 endfunction
 
 function! s:show_commit_stat(hash)

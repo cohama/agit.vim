@@ -8,10 +8,26 @@ if !exists('g:agit_no_default_mappings')
 endif
 
 if !g:agit_no_default_mappings
-  silent nmap <silent><buffer> <CR> <Plug>(agit-show-commit)
-  silent nmap <silent><buffer> j j<Plug>(agit-show-commit)
-  silent nmap <silent><buffer> k k<Plug>(agit-show-commit)
 endif
+
+autocmd CursorMoved <buffer> call s:wait_for_show_commit()
+autocmd CursorHold <buffer> call s:show_commit()
+autocmd BufLeave <buffer> call s:cleanup()
+
+let s:save_ut = &updatetime
+
+function! s:wait_for_show_commit()
+  set updatetime=100
+endfunction
+
+function! s:show_commit()
+  call agit#show_commit()
+  call s:cleanup()
+endfunction
+
+function! s:cleanup()
+  let &updatetime = s:save_ut
+endfunction
 
 setl conceallevel=2
 setl concealcursor=nvc
