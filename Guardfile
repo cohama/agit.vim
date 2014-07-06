@@ -4,14 +4,13 @@
 # Add files and commands to this file, like the example:
 #   watch(%r{file/path}) { `command(s)` }
 #
-ignore /\.vim-flavor/
 notification :libnotify, transient: true, timeout: 1
 guard :shell do
-  watch(/^(t|autoload|plugin)\/.*\.vim$/) do |m|
-    if system('vim-flavor test')
-      n 'success', 'vspec', :success
+  watch(/^(test|autoload|plugin)\/.*\.vim$/) do |m|
+    if system('themis --reporter spec')
+      n 'success', 'themis', :success
     else
-      n 'test failure', 'vspec', :failed
+      n 'test failure', 'themis', :failed
     end
   end
 end

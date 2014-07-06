@@ -16,7 +16,7 @@ function! agit#git#log()
 endfunction
 
 function! s:fillncate(text, width)
-  return agit#string#fill_left(agit#string#truncate(a:text, a:width, '...'), a:width)
+  return agit#string#fill_right(agit#string#truncate(a:text, a:width, '...'), a:width)
 endfunction
 
 function! s:sum(xs)
