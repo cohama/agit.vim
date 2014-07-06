@@ -38,6 +38,7 @@ function! s:show_commit_stat(hash)
   noautocmd %s/\n^$//e
   noautocmd 1 delete _
   call s:set_view_options()
+  setfiletype agit_stat
   setlocal nomodifiable
 endfunction
 
@@ -50,6 +51,7 @@ function! s:show_commit_diff(hash)
   setlocal foldmethod=syntax
   setlocal foldenable
   setlocal foldlevelstart=1
+  setfiletype agit_diff
   setlocal nomodifiable
 endfunction
 
