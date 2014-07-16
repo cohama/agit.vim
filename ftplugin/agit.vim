@@ -8,6 +8,8 @@ if !exists('g:agit_no_default_mappings')
 endif
 
 if !g:agit_no_default_mappings
+  nmap <buffer> u <PLug>(agit-reload)
+  nmap <buffer> U <PLug>(agit-refresh)
 endif
 
 autocmd CursorMoved <buffer> call s:wait_for_show_commit()

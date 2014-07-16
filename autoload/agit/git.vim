@@ -5,6 +5,9 @@ let s:List = s:V.import('Data.List')
 let s:sep = '__SEP__'
 let s:spacer = ' '
 
+let g:agit#git#staged_message = '+  Local changes checked in to index but not committed'
+let g:agit#git#unstaged_message = '=  Local uncommitted changes, not checked in to index'
+
 function! agit#git#log()
   let gitlog = system('git log --all --graph --decorate=full --no-color --date=relative --format=format:"%d %s' . s:sep . '|>%ad<|' . s:sep . '{>%an<}' . s:sep . '[%h]"')
   " 18 means concealed symbol (4*2 + 2) + margin (1) + hash (7)
@@ -13,7 +16,29 @@ function! agit#git#log()
   let gitlog = substitute(gitlog, '\<refs/remotes/', 'r:', 'g')
   let gitlog = substitute(gitlog, '\<refs/tags/', 't:', 'g')
   let log_lines = map(split(gitlog, "\n"), 'split(v:val, s:sep)')
-  return join(agit#git#align_log(log_lines, max_width), "\n")
+
+  let aligned_log = agit#git#align_log(log_lines, max_width)
+
+  let head_index = s:find_index(aligned_log, 'match(v:val, "HEAD") >= 0')
+  if !empty(agit#git#exec('diff --shortstat --cached', a:git_dir))
+    call insert(aligned_log, g:agit#git#staged_message, head_index)
+  endif
+  if !empty(agit#git#exec('diff --shortstat', a:git_dir)) || !empty(agit#git#exec('ls-files --others', a:git_dir))
+    call insert(aligned_log, g:agit#git#unstaged_message, head_index)
+  endif
+
+  return join(aligned_log, "\n")
+endfunction
+
+function! s:find_index(xs, expr)
+  for i in range(0, len(a:xs))
+    if eval(substitute(a:expr, 'v:val', string(a:xs[i]), 'g'))
+      return i
+    endif
+  endfor
+  for x in a:list
+  endfor
+  return -1
 endfunction
 
 function! s:fillncate(text, width)
