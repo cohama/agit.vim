@@ -81,6 +81,7 @@ function! s:show_commit_stat(hash)
   noautocmd silent! g/^\s*$/d
   1
   call s:set_view_options()
+  setlocal nocursorline nocursorcolumn
   setfiletype agit_stat
   setlocal nomodifiable
 endfunction
@@ -98,9 +99,7 @@ function! s:show_commit_diff(hash)
   endif
   call s:fill_buffer(diff)
   call s:set_view_options()
-  setlocal foldmethod=syntax
-  setlocal foldenable
-  setlocal foldlevelstart=1
+  setlocal nocursorline nocursorcolumn
   setfiletype agit_diff
   setlocal nomodifiable
 endfunction
