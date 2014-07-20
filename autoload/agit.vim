@@ -5,6 +5,7 @@ function! agit#init()
   nnoremap <silent> <Plug>(agit-refresh) :<C-u>call <SID>reload(1)<CR>
 endfunction
 
+let s:old_hash = ''
 function! agit#show_commit()
   let line = getline('.')
   if line ==# g:agit#git#staged_message
@@ -14,9 +15,22 @@ function! agit#show_commit()
   else
     let hash = s:extract_hash(line)
   endif
-  call s:show_commit_stat(hash)
-  call s:show_commit_diff(hash)
-  call agit#bufwin#move_or_create_window('agit_win_type', 'log', 'vnew')
+  if s:old_hash !=# hash
+    call s:show_commit_stat(hash)
+    call s:show_commit_diff(hash)
+    call agit#bufwin#move_or_create_window('agit_win_type', 'log', 'vnew')
+  endif
+  let s:old_hash = hash
+endfunction
+
+function! agit#remote_scroll(win_type, direction)
+  noautocmd call agit#bufwin#move_or_create_window('agit_win_type', a:win_type, 'botright vnew')
+  if a:direction ==# 'down'
+    execute "normal! \<C-d>"
+  elseif a:direction ==# 'up'
+    execute "normal! \<C-u>"
+  endif
+  noautocmd call agit#bufwin#move_or_create_window('agit_win_type', 'log', 'vnew')
 endfunction
 
 function! s:launch()

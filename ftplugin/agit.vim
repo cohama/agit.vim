@@ -10,6 +10,10 @@ endif
 if !g:agit_no_default_mappings
   nmap <buffer> u <PLug>(agit-reload)
   nmap <buffer> U <PLug>(agit-refresh)
+  nnoremap <silent><buffer> J :<C-u>call agit#remote_scroll('stat', 'down')<CR>
+  nnoremap <silent><buffer> K :<C-u>call agit#remote_scroll('stat', 'up')<CR>
+  nnoremap <silent><buffer> <C-j> :<C-u>call agit#remote_scroll('diff', 'down')<CR>
+  nnoremap <silent><buffer> <C-k> :<C-u>call agit#remote_scroll('diff', 'up')<CR>
 endif
 
 autocmd CursorMoved <buffer> call s:wait_for_show_commit()
