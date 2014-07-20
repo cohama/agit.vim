@@ -8,8 +8,13 @@ let s:spacer = ' '
 let g:agit#git#staged_message = '+  Local changes checked in to index but not committed'
 let g:agit#git#unstaged_message = '=  Local uncommitted changes, not checked in to index'
 
-function! agit#git#log()
-  let gitlog = system('git log --all --graph --decorate=full --no-color --date=relative --format=format:"%d %s' . s:sep . '|>%ad<|' . s:sep . '{>%an<}' . s:sep . '[%h]"')
+function! agit#git#exec(command, git_dir)
+  let worktree_dir = matchstr(a:git_dir, '^.\+\ze\.git')
+  return system('git --no-pager --git-dir=' . a:git_dir . ' --work-tree=' . worktree_dir . ' ' . a:command)
+endfunction
+
+function! agit#git#log(git_dir)
+  let gitlog = agit#git#exec('log --all --graph --decorate=full --no-color --date=relative --format=format:"%d %s' . s:sep . '|>%ad<|' . s:sep . '{>%an<}' . s:sep . '[%h]"', a:git_dir)
   " 18 means concealed symbol (4*2 + 2) + margin (1) + hash (7)
   let max_width = &columns / 2 + 18
   let gitlog = substitute(gitlog, '\<refs/heads/', '', 'g')

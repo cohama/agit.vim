@@ -27,7 +27,7 @@ function! s:wait_for_show_commit()
 endfunction
 
 function! s:show_commit()
-  call agit#show_commit()
+  call agit#show_commit(b:git_dir)
   call s:cleanup()
 endfunction
 
