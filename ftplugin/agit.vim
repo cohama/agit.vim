@@ -10,10 +10,10 @@ endif
 if !g:agit_no_default_mappings
   nmap <buffer> u <PLug>(agit-reload)
   nmap <buffer> U <PLug>(agit-refresh)
-  nnoremap <silent><buffer> J :<C-u>call agit#remote_scroll('stat', 'down')<CR>
-  nnoremap <silent><buffer> K :<C-u>call agit#remote_scroll('stat', 'up')<CR>
-  nnoremap <silent><buffer> <C-j> :<C-u>call agit#remote_scroll('diff', 'down')<CR>
-  nnoremap <silent><buffer> <C-k> :<C-u>call agit#remote_scroll('diff', 'up')<CR>
+  nmap <silent><buffer> J <Plug>(agit-scrolldown-stat)
+  nmap <silent><buffer> K <Plug>(agit-scrollup-stat)
+  nmap <silent><buffer> <C-j> <Plug>(agit-scrolldown-diff)
+  nmap <silent><buffer> <C-k> <Plug>(agit-scrollup-diff)
 endif
 
 autocmd CursorMoved <buffer> call s:wait_for_show_commit()
@@ -27,7 +27,7 @@ function! s:wait_for_show_commit()
 endfunction
 
 function! s:show_commit()
-  call agit#show_commit(b:git_dir)
+  call agit#show_commit()
   call s:cleanup()
 endfunction
 

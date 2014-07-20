@@ -9,7 +9,7 @@ function! s:suite.align_messages_date_commiter_hash()
   \ ["| * (piyo) hoge fuga", "10 days ago", "cohamacohamacohama", "123"],
   \ ["|/"],
   \ ]
-  let aligned = agit#git#align_log(logs, 0)
+  let aligned = agit#aligner#align(logs, 0)
   let expect = [
   \ "* (master, hoge) hoge fuga 10 days ago      cohama             123",
   \ "* hoge                     9 days ago       cohama             123",
@@ -28,7 +28,7 @@ function! s:suite.aligns_fields_within_limited_columns()
   \ ["| * (piyo) hoge fuga", "2013-10-20", "cohamacohamacohama", "123"],
   \ ["|/"],
   \ ]
-  let aligned = agit#git#align_log(logs, 56)
+  let aligned = agit#aligner#align(logs, 56)
   let expect = [
   \ "* (master, hoge) ほ... 2013-10-23 cohama             123",
   \ "* hoge                 2013-10-22 cohama             123",

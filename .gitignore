@@ -1,3 +1,4 @@
 mysession.vim
 Gemfile.lock
 vendor/bundle
+test/repos/

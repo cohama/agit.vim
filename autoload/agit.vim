@@ -1,14 +1,29 @@
 let s:V = vital#of('agit.vim')
 let s:String = s:V.import('Data.String')
+let s:List = s:V.import('Data.List')
+
+let s:agit_vital = {
+\ 'V' : s:V,
+\ 'String' : s:String,
+\ 'List' : s:List
+\ }
+
+function! agit#vital()
+  return s:agit_vital
+endfunction
 
 function! agit#init()
   command! Agit call s:launch()
-  nnoremap <silent> <Plug>(agit-reload) :<C-u>call <SID>reload(0)<CR>
+  nnoremap <silent> <Plug>(agit-reload)  :<C-u>call <SID>reload(0)<CR>
   nnoremap <silent> <Plug>(agit-refresh) :<C-u>call <SID>reload(1)<CR>
+  nnoremap <silent> <Plug>(agit-scrolldown-stat) :<C-u>call <SID>remote_scroll('stat', 'down')<CR>
+  nnoremap <silent> <Plug>(agit-scrollup-stat)   :<C-u>call <SID>remote_scroll('stat', 'up')<CR>
+  nnoremap <silent> <Plug>(agit-scrolldown-diff) :<C-u>call <SID>remote_scroll('diff', 'down')<CR>
+  nnoremap <silent> <Plug>(agit-scrollup-diff)   :<C-u>call <SID>remote_scroll('diff', 'up')<CR>
 endfunction
 
 let s:old_hash = ''
-function! agit#show_commit(git_dir)
+function! agit#show_commit()
   let line = getline('.')
   if line ==# g:agit#git#staged_message
     let hash = 'staged'
@@ -18,34 +33,48 @@ function! agit#show_commit(git_dir)
     let hash = s:extract_hash(line)
   endif
   if s:old_hash !=# hash
-    call s:show_commit_stat(hash, a:git_dir)
-    call s:show_commit_diff(hash, a:git_dir)
-    call agit#bufwin#move_or_create_window('agit_win_type', 'log', 'vnew')
+    call agit#bufwin#set_to_stat(t:git.stat(hash))
+    call agit#bufwin#set_to_diff(t:git.diff(hash))
   endif
   let s:old_hash = hash
 endfunction
 
-function! agit#remote_scroll(win_type, direction)
-  noautocmd call agit#bufwin#move_or_create_window('agit_win_type', a:win_type, 'botright vnew')
+function! s:remote_scroll(win_type, direction)
+  if a:win_type ==# 'stat'
+    call agit#bufwin#move_to_stat()
+  elseif a:win_type ==# 'diff'
+    call agit#bufwin#move_to_diff()
+  endif
   if a:direction ==# 'down'
     execute "normal! \<C-d>"
   elseif a:direction ==# 'up'
     execute "normal! \<C-u>"
   endif
-  noautocmd call agit#bufwin#move_or_create_window('agit_win_type', 'log', 'vnew')
+  call agit#bufwin#move_to_log()
 endfunction
 
 function! s:launch()
   let s:old_hash = ''
   try
     let git_dir = s:get_git_dir()
-    noautocmd tabnew
-    call s:show_log(git_dir)
-    call agit#show_commit(git_dir)
-    let b:git_dir = git_dir
+    call agit#bufwin#agit_tabnew()
+    let t:git = agit#git#new(git_dir)
+    call agit#bufwin#set_to_log(t:git.log())
+    call agit#show_commit()
   catch
     echomsg v:exception
   endtry
+endfunction
+
+function! s:reload(move_to_head)
+  call agit#bufwin#move_to_log()
+  let pos = getpos('.')
+  call agit#bufwin#set_to_log(t:git.log())
+  if a:move_to_head
+    1
+  else
+    call setpos('.', pos)
+  endif
 endfunction
 
 function! s:get_git_dir()
@@ -61,78 +90,6 @@ function! s:get_git_dir()
   return toplevel_path
 endfunction
 
-function! s:reload(move_to_head)
-  call agit#bufwin#move_or_create_window('agit_win_type', 'log', 'vnew')
-  let pos = getpos('.')
-  setlocal modifiable
-  call s:fill_buffer(agit#git#log(b:git_dir))
-  setlocal nomodifiable
-  if a:move_to_head
-    1
-  else
-    call setpos('.', pos)
-  endif
-endfunction
-
-function! s:set_view_options()
-  setlocal buftype=nofile nobuflisted bufhidden=delete
-  setlocal nonumber norelativenumber
-  setlocal nowrap
-  setlocal foldcolumn=0
-endfunction
-
-function! s:show_log(git_dir)
-  call s:set_view_options()
-  call s:fill_buffer(agit#git#log(a:git_dir))
-  let w:agit_win_type = 'log'
-  setlocal nomodifiable
-  setfiletype agit
-endfunction
-
-function! s:show_commit_stat(hash, git_dir)
-  call agit#bufwin#move_or_create_window('agit_win_type', 'stat', 'botright vnew')
-  setlocal modifiable
-  if a:hash ==# 'staged'
-    let stat = agit#git#exec('diff --cached --stat', a:git_dir)
-  elseif a:hash ==# 'unstaged'
-    let stat = agit#git#exec('diff --stat', a:git_dir)
-  else
-    let stat = agit#git#exec('show --oneline --stat --date=iso --pretty=format: '. a:hash, a:git_dir)
-  endif
-  call s:fill_buffer(stat)
-  noautocmd silent! g/^\s*$/d
-  1
-  call s:set_view_options()
-  setlocal nocursorline nocursorcolumn
-  setfiletype agit_stat
-  setlocal nomodifiable
-endfunction
-
-function! s:show_commit_diff(hash, git_dir)
-  let winheight = winheight('.')
-  call agit#bufwin#move_or_create_window('agit_win_type', 'diff', 'belowright '. winheight*3/4 . 'new')
-  setlocal modifiable
-  if a:hash ==# 'staged'
-    let diff = agit#git#exec('diff --cached', a:git_dir)
-  elseif a:hash ==# 'unstaged'
-    let diff = agit#git#exec('diff', a:git_dir)
-  else
-    let diff = agit#git#exec('show -p ' . a:hash, a:git_dir)
-  endif
-  call s:fill_buffer(diff)
-  call s:set_view_options()
-  setlocal nocursorline nocursorcolumn
-  setfiletype agit_diff
-  setlocal nomodifiable
-endfunction
-
-function! s:fill_buffer(str)
-  noautocmd silent! %delete _
-  noautocmd silent! 1put= a:str
-  noautocmd silent! 1delete _
-endfunction
-
 function! s:extract_hash(str)
   return matchstr(a:str, '\[\zs\x\{7\}\ze\]$')
 endfunction
-

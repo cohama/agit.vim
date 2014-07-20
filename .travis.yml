@@ -1,6 +1,9 @@
 language: viml
 install:
     - git clone https://github.com/thinca/vim-themis
+    - cd test
+    - ./init-repos.sh
+    - cd ..
 script:
     - vim --version
     - vim-themis/bin/themis
