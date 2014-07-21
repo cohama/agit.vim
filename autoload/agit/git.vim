@@ -29,6 +29,8 @@ function! s:git.log() dict
 
   let head_index = s:find_index(aligned_log, 'match(v:val, "HEAD") >= 0')
 
+  let self.staged = {'stat' : '', 'diff' : ''}
+  let self.unstaged = {'stat' : '', 'diff' : ''}
   " add staged line
   let staged = agit#git#exec('diff --stat -p --cached', self.git_dir)
   if !empty(staged)

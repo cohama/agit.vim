@@ -102,8 +102,12 @@ function! s:suite.__in_untracked_repo__()
 
   function! untracked.show_diff_stat_result_at_stat_window()
     call agit#bufwin#move_to_stat()
-    let stat_msg = s:String.trim(s:String.chomp(agit#git#exec('diff --shortstat', s:untracked_repo_path)))
-    call s:assert.equals(s:String.trim(getline('$')), stat_msg)
+    call s:assert.equals(s:String.trim(getline(1, '$')), '')
+  endfunction
+
+  function! untracked.show_empty_diff_result_at_diff_window()
+    call agit#bufwin#move_to_diff()
+    call s:assert.equals(s:String.trim(getline(1, '$')), '')
   endfunction
 
 endfunction
