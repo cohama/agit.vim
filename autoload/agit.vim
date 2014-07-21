@@ -85,6 +85,8 @@ function! s:reload(move_to_head)
   else
     call setpos('.', pos)
   endif
+  let s:old_hash = ''
+  call agit#show_commit()
 endfunction
 
 function! s:get_git_dir()
