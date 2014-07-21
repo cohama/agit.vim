@@ -74,6 +74,7 @@ endfunction
 
 function! s:reload(move_to_head)
   call agit#bufwin#move_to_log()
+  wincmd =
   let pos = getpos('.')
   call agit#bufwin#set_to_log(t:git.log())
   if a:move_to_head

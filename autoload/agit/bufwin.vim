@@ -62,9 +62,7 @@ function! s:create_log_bufwin()
   let w:agit_win_type = 'log'
   silent file `='[Agit log] ' . s:seq`
   call s:set_view_options()
-  if &filetype !=# 'agit'
-    setfiletype agit
-  endif
+  setfiletype agit
   setlocal nomodifiable
 endfunction
 
@@ -74,6 +72,7 @@ function! s:create_stat_bufwin()
   silent file `='[Agit stat] ' . s:seq`
   call s:set_view_options()
   setlocal nocursorline nocursorcolumn
+  setlocal winfixheight
   setfiletype agit_stat
   setlocal nomodifiable
 endfunction
@@ -85,6 +84,7 @@ function! s:create_diff_bufwin()
   silent file `='[Agit diff] ' . s:seq`
   call s:set_view_options()
   setlocal nocursorline nocursorcolumn
+  setlocal winfixheight
   setfiletype agit_diff
   setlocal nomodifiable
 endfunction
