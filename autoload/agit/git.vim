@@ -52,7 +52,7 @@ function! s:git.log() dict
     endif
     if !empty(untracked)
       if self.unstaged.stat !=# ''
-        let self.unstaged.stat .= "\n "
+        let self.unstaged.stat .= "\n"
       endif
       let untracked2 = join(map(split(untracked, "\n"), "' ' . v:val"), "\n")
       let self.unstaged.stat .= "\n -- untracked files --\n" . untracked2
@@ -69,6 +69,7 @@ function! s:git.stat(hash) dict
     let stat = self.unstaged.stat
   else
     let stat = agit#git#exec('show --oneline --stat --date=iso --pretty=format: '. a:hash, self.git_dir)
+    let stat = matchstr(stat, '^\n\zs.*')
   endif
   return stat
 endfunction

@@ -16,16 +16,18 @@ endfunction
 function! agit#bufwin#set_to_stat(str)
   call agit#bufwin#move_to_stat()
   call s:fill_buffer(a:str)
-  setlocal modifiable
-  noautocmd silent! g/^$/d _
   1
-  setlocal nomodifiable
   wincmd p
 endfunction
 
 function! agit#bufwin#set_to_diff(str)
   call agit#bufwin#move_to_diff()
   call s:fill_buffer(a:str)
+  setlocal modifiable
+  %s/^\s\+$//ge
+  %s/\r$//ge
+  setlocal nomodifiable
+  1
   wincmd p
 endfunction
 
