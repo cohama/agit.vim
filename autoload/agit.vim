@@ -34,7 +34,10 @@ function! agit#show_commit()
   else
     let hash = s:extract_hash(line)
   endif
-  if s:old_hash !=# hash
+  if hash == ''
+    call agit#bufwin#set_to_stat('')
+    call agit#bufwin#set_to_diff('')
+  elseif s:old_hash !=# hash
     call agit#bufwin#set_to_stat(t:git.stat(hash))
     call agit#bufwin#set_to_diff(t:git.diff(hash))
   endif
