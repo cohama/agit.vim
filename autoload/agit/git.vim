@@ -51,8 +51,11 @@ function! s:git.log() dict
       let self.unstaged.diff = diff
     endif
     if !empty(untracked)
-      " let self.unstaged.stat = ''
-      " let self.unstaged.diff = ''
+      if self.unstaged.stat !=# ''
+        let self.unstaged.stat .= "\n "
+      endif
+      let untracked2 = join(map(split(untracked, "\n"), "' ' . v:val"), "\n")
+      let self.unstaged.stat .= "\n -- untracked files --\n" . untracked2
     endif
   endif
 

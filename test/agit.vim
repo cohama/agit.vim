@@ -102,7 +102,8 @@ function! s:suite.__in_untracked_repo__()
 
   function! untracked.show_diff_stat_result_at_stat_window()
     call agit#bufwin#move_to_stat()
-    call s:assert.equals(s:String.trim(getline(1, '$')), '')
+    let untracked_files = s:String.chomp(agit#git#exec('ls-files --others --exclude-standard', s:untracked_repo_path))
+    call s:assert.equals(s:String.trim(getline('$')), untracked_files)
   endfunction
 
   function! untracked.show_empty_diff_result_at_diff_window()

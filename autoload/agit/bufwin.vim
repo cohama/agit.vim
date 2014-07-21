@@ -17,7 +17,7 @@ function! agit#bufwin#set_to_stat(str)
   call agit#bufwin#move_to_stat()
   call s:fill_buffer(a:str)
   setlocal modifiable
-  noautocmd silent! g/^\s*$/d _
+  noautocmd silent! g/^$/d _
   1
   setlocal nomodifiable
   wincmd p
