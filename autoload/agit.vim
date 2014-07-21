@@ -8,6 +8,8 @@ let s:agit_vital = {
 \ 'List' : s:List
 \ }
 
+let s:fugitive_enabled = get(g:, 'loaded_fugitive', 0)
+
 function! agit#vital()
   return s:agit_vital
 endfunction
@@ -61,6 +63,10 @@ function! s:launch()
     let t:git = agit#git#new(git_dir)
     call agit#bufwin#set_to_log(t:git.log())
     call agit#show_commit()
+    if s:fugitive_enabled
+      let b:git_dir = git_dir " for fugitive commands
+      silent doautocmd User Fugitive
+    endif
   catch
     echomsg v:exception
   endtry
