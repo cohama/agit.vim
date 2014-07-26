@@ -14,14 +14,21 @@ function! agit#vital()
   return s:agit_vital
 endfunction
 
-function! agit#init()
-  command! Agit call s:launch()
-  nnoremap <silent> <Plug>(agit-reload)  :<C-u>call <SID>reload(0)<CR>
-  nnoremap <silent> <Plug>(agit-refresh) :<C-u>call <SID>reload(1)<CR>
-  nnoremap <silent> <Plug>(agit-scrolldown-stat) :<C-u>call <SID>remote_scroll('stat', 'down')<CR>
-  nnoremap <silent> <Plug>(agit-scrollup-stat)   :<C-u>call <SID>remote_scroll('stat', 'up')<CR>
-  nnoremap <silent> <Plug>(agit-scrolldown-diff) :<C-u>call <SID>remote_scroll('diff', 'down')<CR>
-  nnoremap <silent> <Plug>(agit-scrollup-diff)   :<C-u>call <SID>remote_scroll('diff', 'up')<CR>
+function! agit#launch()
+  let s:old_hash = ''
+  try
+    let git_dir = s:get_git_dir()
+    call agit#bufwin#agit_tabnew()
+    let t:git = agit#git#new(git_dir)
+    call agit#bufwin#set_to_log(t:git.log())
+    call agit#show_commit()
+    if s:fugitive_enabled
+      let b:git_dir = git_dir " for fugitive commands
+      silent doautocmd User Fugitive
+    endif
+  catch
+    echomsg v:exception
+  endtry
 endfunction
 
 let s:old_hash = ''
@@ -44,7 +51,7 @@ function! agit#show_commit()
   let s:old_hash = hash
 endfunction
 
-function! s:remote_scroll(win_type, direction)
+function! agit#remote_scroll(win_type, direction)
   if a:win_type ==# 'stat'
     call agit#bufwin#move_to_stat()
   elseif a:win_type ==# 'diff'
@@ -58,24 +65,7 @@ function! s:remote_scroll(win_type, direction)
   call agit#bufwin#move_to_log()
 endfunction
 
-function! s:launch()
-  let s:old_hash = ''
-  try
-    let git_dir = s:get_git_dir()
-    call agit#bufwin#agit_tabnew()
-    let t:git = agit#git#new(git_dir)
-    call agit#bufwin#set_to_log(t:git.log())
-    call agit#show_commit()
-    if s:fugitive_enabled
-      let b:git_dir = git_dir " for fugitive commands
-      silent doautocmd User Fugitive
-    endif
-  catch
-    echomsg v:exception
-  endtry
-endfunction
-
-function! s:reload(move_to_head)
+function! agit#reload(move_to_head)
   call agit#bufwin#move_to_log()
   wincmd =
   let pos = getpos('.')

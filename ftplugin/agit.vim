@@ -3,10 +3,6 @@ if exists('b:did_ftplugin')
 endif
 let b:did_ftplugin = 1
 
-if !exists('g:agit_no_default_mappings')
-  let g:agit_no_default_mappings = 0
-endif
-
 if !g:agit_no_default_mappings
   nmap <buffer> u <PLug>(agit-reload)
   nmap <buffer> U <PLug>(agit-refresh)
