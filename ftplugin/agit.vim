@@ -5,7 +5,6 @@ let b:did_ftplugin = 1
 
 if !g:agit_no_default_mappings
   nmap <buffer> u <PLug>(agit-reload)
-  nmap <buffer> U <PLug>(agit-refresh)
   nmap <silent><buffer> J <Plug>(agit-scrolldown-stat)
   nmap <silent><buffer> K <Plug>(agit-scrollup-stat)
   nmap <silent><buffer> <C-j> <Plug>(agit-scrolldown-diff)

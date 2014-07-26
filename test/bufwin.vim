@@ -5,11 +5,6 @@ function! s:suite.before_each()
   call agit#bufwin#agit_tabnew()
 endfunction
 
-function! s:suite.after_each()
-  tabnew
-  tabonly!
-endfunction
-
 function! s:suite.create_3_windows()
   call s:assert.equals(winnr('$'), 3)
 endfunction

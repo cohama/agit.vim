@@ -1,11 +1,9 @@
-let s:seq = ''
-
 function! agit#bufwin#agit_tabnew()
   tabnew
-  call s:create_log_bufwin()
-  call s:create_stat_bufwin()
-  call s:create_diff_bufwin()
-  let s:seq += 1
+  let seq = s:create_log_bufwin()
+  call s:create_stat_bufwin(seq)
+  call s:create_diff_bufwin(seq)
+  call agit#bufwin#move_to_log()
 endfunction
 
 function! agit#bufwin#set_to_log(str)
@@ -17,7 +15,7 @@ function! agit#bufwin#set_to_stat(str)
   call agit#bufwin#move_to_stat()
   call s:fill_buffer(a:str)
   1
-  wincmd p
+  noautocmd wincmd p
 endfunction
 
 function! agit#bufwin#set_to_diff(str)
@@ -28,30 +26,42 @@ function! agit#bufwin#set_to_diff(str)
   %s/\r$//ge
   setlocal nomodifiable
   1
-  wincmd p
+  noautocmd wincmd p
 endfunction
 
 function! agit#bufwin#move_to_log()
-  noautocmd 1wincmd w
-  if !s:is_valid_window_allocation()
-    throw 'Agit: Cannot recreate a log window.'
-  endif
+  for w in range(1, winnr('$'))
+    let wintype = getwinvar(w, 'agit_win_type')
+    if wintype ==# 'log'
+      noautocmd execute w . 'wincmd w'
+      return
+    endif
+  endfor
+  throw 'Agit: Cannot recreate a log window.'
 endfunction
 
 function! agit#bufwin#move_to_stat()
-  noautocmd 2wincmd w
-  if !s:is_valid_window_allocation()
-    call s:reconstruct()
-    noautocmd 2wincmd w
-  endif
+  for w in range(1, winnr('$'))
+    let wintype = getwinvar(w, 'agit_win_type')
+    if wintype ==# 'stat'
+      noautocmd execute w . 'wincmd w'
+      return
+    endif
+  endfor
+  call s:reconstruct()
+  call agit#bufwin#move_to_stat()
 endfunction
 
 function! agit#bufwin#move_to_diff()
-  noautocmd 3wincmd w
-  if !s:is_valid_window_allocation()
-    call s:reconstruct()
-    noautocmd 3wincmd w
-  endif
+  for w in range(1, winnr('$'))
+    let wintype = getwinvar(w, 'agit_win_type')
+    if wintype ==# 'diff'
+      noautocmd execute w . 'wincmd w'
+      return
+    endif
+  endfor
+  call s:reconstruct()
+  call agit#bufwin#move_to_diff()
 endfunction
 
 function! s:is_valid_window_allocation()
@@ -60,6 +70,7 @@ function! s:is_valid_window_allocation()
   \                      && getwinvar(3, 'agit_win_type') ==# 'diff'
 endfunction
 
+let s:seq = ''
 function! s:create_log_bufwin()
   let w:agit_win_type = 'log'
   silent file `='[Agit log] ' . s:seq`
@@ -67,12 +78,15 @@ function! s:create_log_bufwin()
   setlocal iskeyword+=/,-,.
   setfiletype agit
   setlocal nomodifiable
+  let b:git_seq = s:seq
+  let s:seq += 1
+  return b:git_seq
 endfunction
 
-function! s:create_stat_bufwin()
+function! s:create_stat_bufwin(seq)
   botright vnew
   let w:agit_win_type = 'stat'
-  silent file `='[Agit stat] ' . s:seq`
+  silent file `='[Agit stat] ' . a:seq`
   call s:set_view_options()
   setlocal nocursorline nocursorcolumn
   setlocal winfixheight
@@ -80,11 +94,11 @@ function! s:create_stat_bufwin()
   setlocal nomodifiable
 endfunction
 
-function! s:create_diff_bufwin()
+function! s:create_diff_bufwin(seq)
   let winheight = winheight('.')
   execute 'belowright ' . winheight*3/4 . 'new'
   let w:agit_win_type = 'diff'
-  silent file `='[Agit diff] ' . s:seq`
+  silent file `='[Agit diff] ' . a:seq`
   call s:set_view_options()
   setlocal nocursorline nocursorcolumn
   setlocal winfixheight
@@ -100,8 +114,9 @@ function! s:reconstruct()
   endfor
   execute w . 'wincmd w'
   noautocmd only!
-  call s:create_stat_bufwin()
-  call s:create_diff_bufwin()
+  let seq = b:git_seq
+  call s:create_stat_bufwin(seq)
+  call s:create_diff_bufwin(seq)
   call agit#bufwin#move_to_log()
 endfunction
 

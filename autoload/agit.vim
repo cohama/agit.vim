@@ -65,18 +65,17 @@ function! agit#remote_scroll(win_type, direction)
   call agit#bufwin#move_to_log()
 endfunction
 
-function! agit#reload(move_to_head)
+function! agit#reload()
+  if !exists('t:git')
+    return
+  endif
   call agit#bufwin#move_to_log()
   wincmd =
   let pos = getpos('.')
   call agit#bufwin#set_to_log(t:git.log())
-  if a:move_to_head
-    1
-  else
-    call setpos('.', pos)
-  endif
-  let s:old_hash = ''
   call agit#show_commit()
+  call setpos('.', pos)
+  let s:old_hash = ''
 endfunction
 
 function! s:get_git_dir()

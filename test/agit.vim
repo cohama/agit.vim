@@ -7,6 +7,7 @@ let s:assert = themis#helper('assert')
 let s:repo_path = expand("<sfile>:p:h") . '/repos/'
 
 set noswapfile nobackup
+filetype plugin indent on
 
 function! s:suite.__in_clean_repo__()
 
@@ -194,6 +195,96 @@ function! s:suite.__in_mixed_repo__()
     call agit#bufwin#move_to_stat()
     let stat_msg = s:String.trim(s:String.chomp(agit#git#exec('diff --cached --shortstat', s:mixed_repo_path)))
     call s:assert.equals(s:String.trim(getline('$')), stat_msg)
+  endfunction
+
+endfunction
+
+function! s:suite.__reload_test()
+
+  let reload = themis#suite('reload test')
+
+  function! reload.before_each()
+    tabedit `=s:repo_path . 'clean/a'`
+    Agit
+    call system('!echo "reload test" > ' . s:repo_path . 'clean/x')
+    call agit#bufwin#move_to_log()
+  endfunction
+
+  function! reload.after_each()
+    call delete(s:repo_path . 'clean/x')
+    call agit#git#exec('reset', t:git.git_dir)
+  endfunction
+
+  function! reload.on_log_window()
+    call s:assert.match(getline(1), '(HEAD, master)')
+    call agit#reload()
+    call s:assert.match(getline(1), g:agit#git#unstaged_message)
+  endfunction
+
+  function! reload.on_stat_window()
+    call s:assert.match(getline(1), '(HEAD, master)')
+    call agit#bufwin#move_to_stat()
+    call agit#reload()
+    call s:assert.equals(w:agit_win_type, 'log')
+    call s:assert.match(getline(1), g:agit#git#unstaged_message)
+  endfunction
+
+  function! reload.on_diff_window()
+    call s:assert.match(getline(1), '(HEAD, master)')
+    call agit#bufwin#move_to_diff()
+    call agit#reload()
+    call s:assert.equals(w:agit_win_type, 'log')
+    call s:assert.match(getline(1), g:agit#git#unstaged_message)
+  endfunction
+
+  function! reload.when_extra_window_exists()
+    call s:assert.match(getline(1), '(HEAD, master)')
+    vnew
+    call agit#reload()
+    call agit#bufwin#move_to_log()
+    call s:assert.equals(w:agit_win_type, 'log')
+    call s:assert.match(getline(1), g:agit#git#unstaged_message)
+  endfunction
+
+  function! reload.and_recreate_stat_window()
+    call s:assert.match(getline(1), '(HEAD, master)')
+    call agit#bufwin#move_to_stat()
+    q
+    call agit#reload()
+    call s:assert.equals(winnr('$'), 3)
+    call s:assert.equals(w:agit_win_type, 'log')
+    call s:assert.match(getline(1), g:agit#git#unstaged_message)
+  endfunction
+
+  function! reload.and_recreate_diff_window()
+    call s:assert.equals(winnr('$'), 3)
+    call s:assert.match(getline(1), '(HEAD, master)')
+    call agit#bufwin#move_to_diff()
+    q
+    call agit#reload()
+    call s:assert.equals(winnr('$'), 3)
+    call s:assert.equals(w:agit_win_type, 'log')
+    call s:assert.match(getline(1), g:agit#git#unstaged_message)
+  endfunction
+
+  function! reload.and_recreate_stat_and_diff_window()
+    call s:assert.equals(winnr('$'), 3)
+    call s:assert.match(getline(1), '(HEAD, master)')
+    only
+    call agit#reload()
+    call s:assert.equals(winnr('$'), 3)
+    call s:assert.equals(w:agit_win_type, 'log')
+    call s:assert.match(getline(1), g:agit#git#unstaged_message)
+  endfunction
+
+  function! reload.when_bufenter()
+    call s:assert.equals(winnr('$'), 3)
+    call s:assert.match(getline(1), '(HEAD, master)')
+    new
+    wincmd p
+    doautocmd BufEnter
+    call s:assert.equals(w:agit_win_type, 'log')
+    call s:assert.match(getline(1), g:agit#git#unstaged_message)
   endfunction
 
 endfunction
