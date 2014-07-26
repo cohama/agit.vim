@@ -1,4 +1,5 @@
 #!/bin/bash
+cd $(dirname $0)
 
 COMMIT_MSG=(1st 2nd 3rd 4th)
 
@@ -9,12 +10,12 @@ cd $_
 mkdir clean
 cd $_
 echo "aaa" > a
-git init
-git add -A
-git commit -m"${COMMIT_MSG[0]}"
+git -c user.name=agit init
+git -c user.name=agit add -A
+git -c user.name=agit commit -m"${COMMIT_MSG[0]}"
 echo "bbbb" > b
-git add -A
-git commit -m"${COMMIT_MSG[1]}"
+git -c user.name=agit add -A
+git -c user.name=agit commit -m"${COMMIT_MSG[1]}"
 cd ..
 cp -a clean untracked
 cd $_
@@ -27,11 +28,9 @@ echo "bbb" >> b
 cd ..
 cp -a unstaged staged
 cd $_
-git add b
+git -c user.name=agit add b
 cd ..
 cp -a staged mixed
 cd $_
 echo "aa" >> a
 echo "bb" >> b
-cd ..
-cd ..
