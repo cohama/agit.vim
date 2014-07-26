@@ -64,6 +64,7 @@ function! s:create_log_bufwin()
   let w:agit_win_type = 'log'
   silent file `='[Agit log] ' . s:seq`
   call s:set_view_options()
+  setlocal iskeyword+=/,-,.
   setfiletype agit
   setlocal nomodifiable
 endfunction
