@@ -22,8 +22,8 @@ function! agit#bufwin#set_to_diff(str)
   call agit#bufwin#move_to_diff()
   call s:fill_buffer(a:str)
   setlocal modifiable
-  %s/^\s\+$//ge
-  %s/\r$//ge
+  silent %s/^\s\+$//ge
+  silent %s/\r$//ge
   setlocal nomodifiable
   1
   noautocmd wincmd p
