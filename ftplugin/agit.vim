@@ -14,6 +14,11 @@ endif
 autocmd CursorMoved <buffer> call s:wait_for_show_commit()
 autocmd CursorHold <buffer> call s:show_commit()
 autocmd BufLeave <buffer> call s:cleanup()
+autocmd ShellCmdPost <buffer> call agit#reload()
+
+if g:agit_enable_auto_refresh
+  autocmd BufEnter <buffer> call agit#reload()
+endif
 
 let s:save_ut = &updatetime
 

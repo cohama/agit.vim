@@ -9,6 +9,9 @@ set cpo&vim
 if !exists('g:agit_no_default_mappings')
   let g:agit_no_default_mappings = 0
 endif
+if !exists('g:agit_enable_auto_refresh')
+  let g:agit_enable_auto_refresh = 1
+endif
 
 command! Agit call agit#launch()
 nnoremap <silent> <Plug>(agit-reload)  :<C-u>call agit#reload()<CR>
