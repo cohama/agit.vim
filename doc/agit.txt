@@ -1,0 +1,211 @@
+*agit.txt*	yet another gitk clone for Vim
+
+
+Version : 1.0.0
+Author  : cohama / cohama@live.jp
+License : MIT license  {{{
+    Permission is hereby granted, free of charge, to any person obtaining
+    a copy of this software and associated documentation files (the
+    "Software"), to deal in the Software without restriction, including
+    without limitation the rights to use, copy, modify, merge, publish,
+    distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to
+    the following conditions:
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+    OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+    CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+}}}
+
+==============================================================================
+CONTENTS					*agit-contents*
+
+INTRODUCTION			|agit-introduction|
+USAGE				|agit-usage|
+INTERFACE			|agit-interface|
+  COMMANDS			  |agit-commands|
+  KEY-MAPPINGS			  |agit-key-mappings|
+  DEFAULT KEY-MAPPINGS		  |agit-default-key-mappings|
+  VARIABLES			  |agit-variables|
+TODO				|agit-todo|
+
+
+==============================================================================
+INTRODUCTION					*agit-introduction*
+
+*agit.vim* is yet another gitk clone plugin for Vim.
+You can show repository history and commit details at the same time.
+This plugin also provides the following features.
+
+* Executable various git command
+* No |fugitive| dependency, but well cooperation if that exists.
+* Supporting multibyte character
+
+Latest version:
+https://github.com/cohama/agit.vim
+
+
+==============================================================================
+USAGE						*agit-usage*
+
+When you edit a file which in any git repository, type the below
+>
+	:Agit
+
+and an Agit tab will be opened.
+The Agit tab is composed with three windows/buffers. Left windows is
+|agit-log|, right above is |agit-stat| and right bellow is |agit-diff|.
+
+						*agit-log*
+|agit-log| shows the 'git log' result including branches and tags. You can move
+the cursor arbitrarily and this updates |agit-stat| and |agit-diff| buffers
+automatically.
+Some useful commands such as |<Plug>(agit-git-checkout)|,
+|<Plug>(agit-git-reset)| are defined in this buffer.
+If you installed |fugitive|, some fugitive commands (e.g. |:Gcommit|,
+|:Gstatus|) are also available.
+
+						*agit-stat*
+|agit-stat| shows the 'git diff --stat' result. This means that it shows
+changed files between the commit under the cursor in |agit-log| buffer and
+the previous commit of it.
+
+						*agit-diff*
+|agit-diff| shows the 'git diff' result. This is similar to |agit-stat| but it
+shows patches.
+
+==============================================================================
+INTERFACE					*agit-interface*
+
+------------------------------------------------------------------------------
+COMMANDS					*agit-commands*
+
+						*:Agit*
+:Agit
+	Open a new Agit tab. Repository path is automatically searched from a
+	current buffer path.
+
+:AgitGit[!] {args}
+	Execute the specified git command. This is done in a current git
+	repository path.
+	Note: This command is available only in |agit-log| buffer.
+	Note: This command is similar to |fugitive|'s |:Git| command, but this
+	command uses |system()| internally so that the shell is not launched.
+
+------------------------------------------------------------------------------
+KEY-MAPPINGS					*agit-key-mappings*
+
+In |agit-log| buffer, the following key mappings can be used.
+(All of these mappings are buffer-local mappings)
+
+<Plug>(agit-scrolldown-stat)			*<Plug>(agit-scrolldown-stat)*
+	Scroll downwards the |agit-stat| window. The number of scroll lines is the
+	half a window.
+	TODO: Allow to customize the scroll size
+
+<Plug>(agit-scrollup-stat)			*<Plug>(agit-scrollup-stat)*
+	Scroll upwards the |agit-stat| window. The number of scroll lines is the
+	half a window.
+
+<Plug>(agit-scrolldown-diff)			*<Plug>(agit-scrolldown-diff)*
+	Scroll upwards the |agit-diff| window. The number of scroll lines is the
+	half a window.
+
+<Plug>(agit-scrollup-diff)			*<Plug>(agit-scrollup-diff)*
+	Scroll downwards the |agit-diff| window. The number of scroll lines is the
+	half a window.
+
+<Plug>(agit-reload)				*<Plug>(agit-reload)*
+	Manually update the |agit-log| buffer.
+
+<PLug>(agit-yank-hash)				*<Plug>(agit-yank-hash)*
+	Yank the hash of the commit under the cursor
+
+<Plug>(agit-git-checkout)			*<Plug>(agit-git-checkout)*
+	Execute 'git checkout' to change the current branch which under the
+	cursor.
+
+<Plug>(agit-git-checkout-b)			*<Plug>(agit-git-checkout-b)*
+	Execute 'git checkout -b' to create a new branch on the current
+	commit.
+
+<Plug>(agit-git-branch-d)			*<Plug>(agit-git-branch-d)*
+	Execute 'git branch -d' to delete the branch which under the cursor.
+
+<Plug>(agit-git-reset-soft)			*<Plug>(agit-git-reset-soft)*
+	Execute 'git reset --soft' to the cursor line commit.
+
+<Plug>(agit-git-reset)				*<Plug>(agit-git-reset)*
+	Execute 'git reset' to the cursor line commit.
+
+<Plug>(agit-git-reset-hard)			*<Plug>(agit-git-reset-hard)*
+	Execute 'git reset --hard' on the cursor line commit.
+
+<Plug>(agit-git-rebase)				*<Plug>(agit-git-rebase)*
+	Execute 'git rebase' to rebase HEAD to the cursor line commit.
+
+<Plug>(agit-git-rebase-i)			*<Plug>(agit-git-rebase-i)*
+	Execute 'git rebase -i' to rebase HEAD to the cursor line commit.
+
+<Plug>(agit-git-cherry-pick)			*<Plug>(agit-git-cherry-pick)*
+	Execute 'git cherry-pick' to apply the changes in the cursor line
+	commit.
+
+<Plug>(agit-git-revert)				*<Plug>(agit-git-revert)*
+	Execute 'git revert' to revert the cursor line commit.
+
+------------------------------------------------------------------------------
+DEFAULT KEY-MAPPINGS				*agit-default-key-mappings*
+
+J			<Plug>(agit-scrolldown-stat)
+K			<Plug>(agit-scrollup-stat)
+<C-j>			<Plug>(agit-scrolldown-diff)
+<C-k>			<Plug>(agit-scrollup-diff)
+u			<PLug>(agit-reload)
+yh			<Plug>(agit-yank-hash)
+C			<Plug>(agit-git-checkout)
+cb			<Plug>(agit-git-checkout-b)
+D			<Plug>(agit-git-branch-d)
+rs			<Plug>(agit-git-reset-soft)
+rm			<Plug>(agit-git-reset)
+rh			<Plug>(agit-git-reset-hard)
+rb			<Plug>(agit-git-rebase)
+ri			<Plug>(agit-git-rebase-i)
+
+------------------------------------------------------------------------------
+VARIABLES					*agit-variables*
+
+g:agit_no_default_mappings			*g:agit_no_default_mappings*
+	If it is non-zero, |agit-default-key-mappings| will be disabled.
+	You should define the key mappings.
+	default value: 0
+
+g:agit_enable_auto_refresh			*g:agit_enable_auto_refresh*
+	If it is non-zero, |agit-log| buffer is automatically updated when
+	switched to the Agit tab. (Internally, |BufEnter| autocmd is used.)
+	You can always show the latest repository state but this causes less
+	performance.
+	default value: 0
+	
+g:agit_max_log_lines				*g:agit_max_log_lines*
+	default value: 500
+	Determine the number of lines to display in |agit-log| buffer.
+	Large value is useful to explore the very old history but it causes
+	less performance.
+
+==============================================================================
+TODO						*agit-todo*
+
+* Arbitrary log format
+* More performance by using |if_lua|
+* Pagination
+* Commit filtering (including file log)
+
+==============================================================================
+vim:tw=78:ts=8:sts=8:sw=8:ft=help:norl:noet:fen:
