@@ -4,7 +4,7 @@ install:
     - test/init-repos.sh
 script:
     - vim --version
-    - vim-themis/bin/themis
+    - vim-themis/bin/themis --reporter dot
 branches:
     - master
     - dev

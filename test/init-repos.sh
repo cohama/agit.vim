@@ -16,7 +16,9 @@ git -c user.name=agit commit -m"${COMMIT_MSG[0]}"
 echo "bbbb" > b
 git -c user.name=agit add -A
 git -c user.name=agit commit -m"${COMMIT_MSG[1]}"
+git branch develop HEAD~
 cd ..
+cp -a clean execute
 cp -a clean untracked
 cd $_
 echo "ccccc" > c

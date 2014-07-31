@@ -3,12 +3,30 @@ if exists('b:did_ftplugin')
 endif
 let b:did_ftplugin = 1
 
+command! -bang -nargs=+ -buffer -complete=custom,agit#agit_git_compl AgitGit call agit#agitgit(<q-args>, 0, <bang>0)
+command! -bang -nargs=+ -buffer -complete=custom,agit#agit_git_compl AgitGitConfirm call agit#agitgit(<q-args>, 1, <bang>0)
+
 if !g:agit_no_default_mappings
   nmap <buffer> u <PLug>(agit-reload)
   nmap <silent><buffer> J <Plug>(agit-scrolldown-stat)
   nmap <silent><buffer> K <Plug>(agit-scrollup-stat)
   nmap <silent><buffer> <C-j> <Plug>(agit-scrolldown-diff)
   nmap <silent><buffer> <C-k> <Plug>(agit-scrollup-diff)
+
+  nmap <buffer> yh <Plug>(agit-yank-hash)
+
+  nmap <buffer> C <Plug>(agit-git-checkout)
+  nmap <buffer> cb <Plug>(agit-git-checkout-b)
+  nmap <buffer> D <Plug>(agit-git-branch-d)
+  nmap <buffer> rs <Plug>(agit-git-reset-soft)
+  nmap <buffer> rm <Plug>(agit-git-reset)
+  nmap <buffer> rh <Plug>(agit-git-reset-hard)
+  nmap <buffer> rb <Plug>(agit-git-rebase)
+  nmap <buffer> ri <Plug>(agit-git-rebase-i)
+  nmap <buffer> Bs <Plug>(agit-git-bisect-start)
+  nmap <buffer> Bg <Plug>(agit-git-bisect-good)
+  nmap <buffer> Bb <Plug>(agit-git-bisect-bad)
+  nmap <buffer> Br <Plug>(agit-git-bisect-reset)
 endif
 
 autocmd CursorMoved <buffer> call s:wait_for_show_commit()

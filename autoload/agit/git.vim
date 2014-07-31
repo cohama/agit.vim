@@ -90,9 +90,14 @@ function! agit#git#new(git_dir)
 endfunction
 
 " Utilities
-function! agit#git#exec(command, git_dir)
+function! agit#git#exec(command, git_dir, ...)
   let worktree_dir = matchstr(a:git_dir, '^.\+\ze\.git')
-  return system('git --no-pager --git-dir=' . a:git_dir . ' --work-tree=' . worktree_dir . ' ' . a:command)
+  let cmd = 'git --no-pager --git-dir=' . a:git_dir . ' --work-tree=' . worktree_dir . ' ' . a:command
+  if a:0 > 0 && a:1 == 1
+    execute '!' . cmd
+  else
+    return system(cmd)
+  endif
 endfunction
 
 function! s:find_index(xs, expr)

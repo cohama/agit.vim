@@ -8,6 +8,7 @@ let s:repo_path = expand("<sfile>:p:h") . '/repos/'
 
 set noswapfile nobackup
 filetype plugin indent on
+set columns=400
 
 function! s:suite.__in_clean_repo__()
 
@@ -291,6 +292,49 @@ function! s:suite.__reload_test()
     call s:assert.equals(w:agit_win_type, 'log')
     call s:assert.match(getline(1), g:agit#git#unstaged_message)
     let g:agit_enable_auto_refresh = 0
+  endfunction
+
+endfunction
+
+function! s:suite.__in_execute_repo__()
+
+  let execute = themis#suite('in execute repo')
+  let s:execute_repo_path = s:repo_path . 'execute/.git'
+
+  function! execute.before()
+    tabnew
+    tabonly!
+    edit `=s:repo_path . 'execute/a'`
+    Agit
+  endfunction
+
+  function! execute.git_checkout()
+    call agit#bufwin#move_to_log()
+    call search('develop', 'wc')
+    execute 'AgitGit checkout ' . expand('<cword>')
+    let current_branch = s:String.chomp(agit#git#exec('rev-parse --abbrev-ref HEAD', s:execute_repo_path))
+    call s:assert.equals(current_branch, 'develop')
+    call search('master', 'wc')
+    execute 'AgitGit checkout ' . expand('<cword>')
+    let current_branch = s:String.chomp(agit#git#exec('rev-parse --abbrev-ref HEAD', s:execute_repo_path))
+    call s:assert.equals(current_branch, 'master')
+  endfunction
+
+  function! execute.git_create_b()
+    " feedkeys() does not work.
+    execute 'AgitGit checkout -b new ' . agit#extract_hash(getline(2))
+    let current_branch = s:String.chomp(agit#git#exec('rev-parse --abbrev-ref HEAD', s:execute_repo_path))
+    call s:assert.equals(current_branch, 'new')
+    call s:assert.match(getline(2), '(HEAD, new')
+  endfunction
+
+  function! execute.git_branch_d()
+    call search('master', 'wc')
+    execute "normal \<Plug>(agit-git-checkout)"
+    call search('new', 'wc')
+    execute 'AgitGit branch -d ' . expand("<cword>")
+    let current_branches = s:String.chomp(agit#git#exec('branch', s:execute_repo_path))
+    call s:assert.equals(current_branches, "  develop\n* master")
   endfunction
 
 endfunction
