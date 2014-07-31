@@ -1,3 +1,12 @@
+let s:save_cpo = &cpo
+set cpo&vim
+
+nnoremap <silent> <Plug>(agit-reload)  :<C-u>call agit#reload()<CR>
+nnoremap <silent> <Plug>(agit-scrolldown-stat) :<C-u>call agit#remote_scroll('stat', 'down')<CR>
+nnoremap <silent> <Plug>(agit-scrollup-stat)   :<C-u>call agit#remote_scroll('stat', 'up')<CR>
+nnoremap <silent> <Plug>(agit-scrolldown-diff) :<C-u>call agit#remote_scroll('diff', 'down')<CR>
+nnoremap <silent> <Plug>(agit-scrollup-diff)   :<C-u>call agit#remote_scroll('diff', 'up')<CR>
+
 let s:V = vital#of('agit.vim')
 let s:String = s:V.import('Data.String')
 let s:List = s:V.import('Data.List')
@@ -94,3 +103,6 @@ endfunction
 function! s:extract_hash(str)
   return matchstr(a:str, '\[\zs\x\{7\}\ze\]$')
 endfunction
+
+let &cpo = s:save_cpo
+unlet s:save_cpo
