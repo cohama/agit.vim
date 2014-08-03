@@ -2,5 +2,5 @@
 
 task :test do
   sh 'test/init-repos.sh'
-  sh 'themis --reporter spec '
+  sh 'themis --reporter dot'
 end
