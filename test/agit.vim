@@ -1,4 +1,4 @@
-let s:V = vital#of('agit.vim')
+let s:V = vital#of('agit')
 let s:String = s:V.import('Data.String')
 
 let s:suite = themis#suite('agit integration test')

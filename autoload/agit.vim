@@ -24,12 +24,14 @@ nnoremap <Plug>(agit-git-bisect-reset) :<C-u>AgitGit bisect reset<CR>
 nnoremap <Plug>(agit-git-cherry-pick)  :<C-u>AgitGit cherry-pick <hash><CR>
 nnoremap <Plug>(agit-git-revert)       :<C-u>AgitGit revert <hash><CR>
 
-let s:V = vital#of('agit.vim')
+let s:V = vital#of('agit')
+let s:P = s:V.import('Prelude')
 let s:String = s:V.import('Data.String')
 let s:List = s:V.import('Data.List')
 
 let s:agit_vital = {
 \ 'V' : s:V,
+\ 'P' : s:P,
 \ 'String' : s:String,
 \ 'List' : s:List
 \ }

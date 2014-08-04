@@ -12,6 +12,10 @@ set cpo&vim
 " Because these variables are used when this script file is loaded.
 let s:is_windows = has('win16') || has('win32') || has('win64') || has('win95')
 let s:is_unix = has('unix')
+" As of 7.4.122, the system()'s 1st argument is converted internally by Vim.
+" Note that Patch 7.4.122 does not convert system()'s 2nd argument and
+" return-value. We must convert them manually.
+let s:need_trans = v:version < 704 || (v:version == 704 && !has('patch122'))
 
 
 " Execute program in the background from Vim.
@@ -29,6 +33,7 @@ let s:is_unix = has('unix')
 " Unix:
 " using :! , execute program in the background by shell.
 function! s:spawn(expr, ...)
+  let shellslash = 0
   if s:is_windows
     let shellslash = &l:shellslash
     setlocal noshellslash
@@ -40,6 +45,7 @@ function! s:spawn(expr, ...)
     elseif type(a:expr) is type("")
       let cmdline = a:expr
       if a:0 && a:1
+        " for :! command
         let cmdline = substitute(cmdline, '\([!%#]\|<[^<>]\+>\)', '\\\1', 'g')
       endif
     else
@@ -80,28 +86,73 @@ function! s:has_vimproc()
   return s:exists_vimproc
 endfunction
 
+" * {command} [, {input} [, {timeout}]]
+" * {command} [, {dict}]
+"   {dict} = {
+"     use_vimproc: bool,
+"     input: string,
+"     timeout: bool,
+"   }
 function! s:system(str, ...)
-  let command = a:str
-  let input = a:0 >= 1 ? a:1 : ''
-  let command = s:iconv(command, &encoding, 'char')
-  let input = s:iconv(input, &encoding, 'char')
-
-  if a:0 == 0
-    let output = s:has_vimproc() ?
-          \ vimproc#system(command) : system(command)
-  elseif a:0 == 1
-    let output = s:has_vimproc() ?
-          \ vimproc#system(command, input) : system(command, input)
+  if type(a:str) is type([])
+    let command = join(map(copy(a:str), 's:shellescape(v:val)'), ' ')
+  elseif type(a:str) is type("")
+    let command = a:str
   else
-    " ignores 3rd argument unless you have vimproc.
-    let output = s:has_vimproc() ?
-          \ vimproc#system(command, input, a:2) : system(command, input)
+    throw 'Process.system(): invalid argument (value type:'.type(a:str).')'
+  endif
+  if s:need_trans
+    let command = s:iconv(command, &encoding, 'char')
+  endif
+  let input = ''
+  let use_vimproc = s:has_vimproc()
+  let args = [command]
+  if a:0 ==# 1
+    if type(a:1) is type({})
+      if has_key(a:1, 'use_vimproc')
+        let use_vimproc = a:1.use_vimproc
+      endif
+      if has_key(a:1, 'input')
+        let args += [s:iconv(a:1.input, &encoding, 'char')]
+      endif
+      if use_vimproc && has_key(a:1, 'timeout')
+        " ignores timeout unless you have vimproc.
+        let args += [a:1.timeout]
+      endif
+    elseif type(a:1) is type("")
+      let args += [s:need_trans ? s:iconv(a:1, &encoding, 'char') : a:1]
+    else
+      throw 'Process.system(): invalid argument (value type:'.type(a:1).')'
+    endif
+  elseif a:0 >= 2
+    let [command, input; rest] = a:000
+    let command = s:need_trans ? s:iconv(command, &encoding, 'char') : command
+    let input   = s:iconv(input, &encoding, 'char')
+    let args += [command, input] + rest
   endif
 
+  let funcname = use_vimproc ? 'vimproc#system' : 'system'
+  let args     = use_vimproc ? map(args, 'escape(v:val, "#")') : args
+  let output = call(funcname, args)
   let output = s:iconv(output, 'char', &encoding)
 
   return output
 endfunction
+
+function! s:get_last_status()
+  return s:has_vimproc() ?
+        \ vimproc#get_last_status() : v:shell_error
+endfunction
+
+if s:is_windows
+  function! s:shellescape(command)
+    return substitute(a:command, '[&()[\]{}^=;!''+,`~]', '^\0', 'g')
+  endfunction
+else
+  function! s:shellescape(...)
+    return call('shellescape', a:000)
+  endfunction
+endif
 
 
 let &cpo = s:save_cpo
