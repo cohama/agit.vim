@@ -31,13 +31,23 @@ function! s:git.log() dict
 
   let self.staged = {'stat' : '', 'diff' : ''}
   let self.unstaged = {'stat' : '', 'diff' : ''}
+
+  " TODO: strange message will be shown when merge conflicted
   " add staged line
   let staged = agit#git#exec('diff --stat -p --cached', self.git_dir)
   if !empty(staged)
     call insert(aligned_log, g:agit#git#staged_message, head_index)
-    let [stat, diff] = s:String.nsplit(staged, 2, "\n\n")
-    let self.staged.stat = stat
-    let self.staged.diff = diff
+    let split = s:String.nsplit(staged, 2, '\n\n')
+    if len(split) == 2
+      let self.staged.stat = split[0]
+      let self.staged.diff = split[1]
+    elseif len(split) == 1
+      let self.staged.stat = ''
+      let self.staged.diff = split[0]
+    else
+      let self.staged.diff = ''
+      let self.staged.stat = ''
+    endif
   endif
 
   " add unstaged line
@@ -46,9 +56,17 @@ function! s:git.log() dict
   if !empty(unstaged) || !empty(untracked)
     call insert(aligned_log, g:agit#git#unstaged_message, head_index)
     if !empty(unstaged)
-      let [stat, diff] = s:String.nsplit(unstaged, 2, "\n\n")
-      let self.unstaged.stat = stat
-      let self.unstaged.diff = diff
+      let split = s:String.nsplit(unstaged, 2, '\n\n')
+      if len(split) == 2
+        let self.unstaged.stat = split[0]
+        let self.unstaged.diff = split[1]
+      elseif len(split) == 1
+        let self.unstaged.stat = ''
+        let self.unstaged.diff = split[0]
+      else
+        let self.unstaged.diff = ''
+        let self.unstaged.stat = ''
+      endif
     endif
     if !empty(untracked)
       if self.unstaged.stat !=# ''
