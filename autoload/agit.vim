@@ -28,12 +28,14 @@ let s:V = vital#of('agit')
 let s:P = s:V.import('Prelude')
 let s:String = s:V.import('Data.String')
 let s:List = s:V.import('Data.List')
+let s:Process = s:V.import('Process')
 
 let s:agit_vital = {
 \ 'V' : s:V,
 \ 'P' : s:P,
 \ 'String' : s:String,
-\ 'List' : s:List
+\ 'List' : s:List,
+\ 'Process' : s:Process
 \ }
 
 let s:fugitive_enabled = get(g:, 'loaded_fugitive', 0)

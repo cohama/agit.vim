@@ -1,4 +1,6 @@
+let s:P = agit#vital().P
 let s:String = agit#vital().String
+let s:Process = agit#vital().Process
 
 let s:sep = '__SEP__'
 
@@ -108,13 +110,18 @@ function! agit#git#new(git_dir)
 endfunction
 
 " Utilities
+let s:is_cp932 = &enc == 'cp932'
 function! agit#git#exec(command, git_dir, ...)
   let worktree_dir = matchstr(a:git_dir, '^.\+\ze\.git')
   let cmd = 'git --no-pager --git-dir=' . a:git_dir . ' --work-tree=' . worktree_dir . ' ' . a:command
   if a:0 > 0 && a:1 == 1
     execute '!' . cmd
   else
-    return system(cmd)
+    let ret = s:Process.has_vimproc() && s:P.is_windows() ? vimproc#system(cmd) : system(cmd)
+    if s:is_cp932
+      let ret = iconv(ret, 'utf-8', 'cp932')
+    endif
+    return ret
   endif
 endfunction
 
