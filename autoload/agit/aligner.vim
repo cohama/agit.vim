@@ -16,37 +16,38 @@ function! agit#aligner#align(table, max_col, ...)
     call add(maxs, max)
   endfor
 
-  return map(deepcopy(a:table), 'agit#aligner#_align_fields(v:val, maxs, s:spacer, a:max_col)')
+  let ret = []
+  let len_maxs = len(maxs)
+  let width_without_commit_msg = s:sum(maxs) - maxs[0]
+  let sep_width = strwidth(s:spacer)
+  let commit_msg_column = a:max_col == 0 ? maxs[0] : a:max_col - width_without_commit_msg - (sep_width * (len_maxs - 1))
+
+  for i in range(min([len(a:table), g:agit_max_log_lines]))
+    let log = a:table[i]
+    let col = []
+
+    call add(col, s:fillncate(log[0], commit_msg_column))
+
+    for c in range(1, len(log) - 1)
+      let spacer = repeat(' ', maxs[c] - strwidth(log[c]))
+      call add(col, log[c] . spacer)
+    endfor
+
+    for extra_c in range(c, len_maxs - 1)
+      let spacer = repeat(' ', maxs[extra_c])
+      call add(col, spacer)
+    endfor
+
+    call add(ret, s:String.trim(join(col, s:spacer)))
+  endfor
+  if len(a:table) > g:agit_max_log_lines
+    call add(ret, '')
+    call add(ret, '(too many logs)')
+  endif
+  return ret
 endfunction
 
-function! agit#aligner#_align_fields(log, maxs, sep, max_col)
-  if len(a:log) == len(a:maxs)
-    let [commit_msg, date, committer, hash] = a:log
-  else
-    let [commit_msg, date, committer, hash] = [a:log[0], '', '', '']
-  endif
-
-  let ret = []
-  for c in range(len(a:maxs))
-    if c < len(a:log)
-      let spacer = repeat(' ', a:maxs[c] - strwidth(a:log[c]))
-      " truncate commit message
-      if c == 0 && a:max_col != 0
-        let without_commit_msg = copy(a:maxs)
-        call s:List.shift(without_commit_msg)
-        let commit_msg_column = a:max_col - s:sum(without_commit_msg) - (strwidth(a:sep) * (len(a:maxs) - 1))
-        call add(ret, s:fillncate(a:log[c], commit_msg_column))
-      else
-        call add(ret, a:log[c] . spacer)
-      endif
-    else
-      let spacer = repeat(' ', a:maxs[c])
-      call add(ret, spacer)
-    endif
-  endfor
-  " printf is easy solution but not able to handle muti-byte string
-  " TODO printf based on display width
-  return s:String.trim(join(ret, a:sep))
+function! agit#aligner#_align_fields(log, maxs, max_col)
 endfunction
 
 function! s:sum(xs)

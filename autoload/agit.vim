@@ -114,8 +114,8 @@ function! agit#reload() abort
   wincmd =
   let pos = getpos('.')
   call agit#bufwin#set_to_log(t:git.log())
+  noautocmd call setpos('.', pos)
   call agit#show_commit()
-  call setpos('.', pos)
   let s:old_hash = ''
 endfunction
 
