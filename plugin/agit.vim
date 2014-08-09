@@ -12,6 +12,9 @@ endif
 if !exists('g:agit_enable_auto_refresh')
   let g:agit_enable_auto_refresh = 0
 endif
+if !exists('g:agit_max_log_lines')
+  let g:agit_max_log_lines = 500
+endif
 
 command! Agit call agit#launch()
 
