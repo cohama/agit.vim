@@ -10,7 +10,7 @@ if !exists('g:agit_no_default_mappings')
   let g:agit_no_default_mappings = 0
 endif
 if !exists('g:agit_enable_auto_refresh')
-  let g:agit_enable_auto_refresh = 1
+  let g:agit_enable_auto_refresh = 0
 endif
 
 command! Agit call agit#launch()

@@ -208,6 +208,11 @@ function! s:suite.__reload_test()
     Agit
     call system('!echo "reload test" > ' . s:repo_path . 'clean/x')
     call agit#bufwin#move_to_log()
+    let g:agit_enable_auto_refresh = 1
+  endfunction
+
+  function! reload.after()
+    let g:agit_enable_auto_refresh = 0
   endfunction
 
   function! reload.after_each()
@@ -278,13 +283,14 @@ function! s:suite.__reload_test()
   endfunction
 
   function! reload.when_bufenter()
+    let g:agit_enable_auto_refresh = 1
     call s:assert.equals(winnr('$'), 3)
     call s:assert.match(getline(1), '(HEAD, master)')
     new
     wincmd p
-    doautocmd BufEnter
     call s:assert.equals(w:agit_win_type, 'log')
     call s:assert.match(getline(1), g:agit#git#unstaged_message)
+    let g:agit_enable_auto_refresh = 0
   endfunction
 
 endfunction
