@@ -47,6 +47,7 @@ endfunction
 function! s:show_commit()
   call agit#show_commit()
   call s:cleanup()
+  redraw!
 endfunction
 
 function! s:cleanup()
