@@ -8,6 +8,7 @@ nnoremap <silent> <Plug>(agit-scrolldown-diff) :<C-u>call <SID>remote_scroll('di
 nnoremap <silent> <Plug>(agit-scrollup-diff)   :<C-u>call <SID>remote_scroll('diff', 'up')<CR>
 
 nnoremap <PLug>(agit-yank-hash) :<C-u>call <SID>yank_hash()<CR>
+nnoremap <Plug>(agit-show-commit) :<C-u>call agit#show_commit()<CR>
 
 nnoremap <Plug>(agit-git-checkout)     :<C-u>AgitGit checkout <branch><CR>
 nnoremap <Plug>(agit-git-checkout-b)   :<C-u>AgitGit checkout -b \%# <hash><CR>

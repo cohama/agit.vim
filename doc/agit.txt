@@ -192,6 +192,11 @@ g:agit_no_default_mappings			*g:agit_no_default_mappings*
 	You should define the key mappings.
 	default value: 0
 
+g:agit_enable_auto_show_commit			*g:agit_enable_auto_show_commit*
+	If it is non-zero, |agit-stat| and |agit-diff|| buffers are
+	automatically updated when the cursor moved in |agit-log| buffer.
+	default value: 1
+
 g:agit_enable_auto_refresh			*g:agit_enable_auto_refresh*
 	If it is non-zero, |agit-log| buffer is automatically updated when
 	switched to the Agit tab. (Internally, |BufEnter| autocmd is used.)

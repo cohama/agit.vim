@@ -15,6 +15,7 @@ if !g:agit_no_default_mappings
 
   nmap <buffer> yh <Plug>(agit-yank-hash)
   nmap <buffer> q <Plug>(agit-exit)
+  nmap <buffer> <CR> <Plug>(agit-show-commit)
 
   nmap <buffer> C <Plug>(agit-git-checkout)
   nmap <buffer> cb <Plug>(agit-git-checkout-b)
@@ -30,17 +31,19 @@ if !g:agit_no_default_mappings
   nmap <buffer> Br <Plug>(agit-git-bisect-reset)
 endif
 
-autocmd CursorMoved <buffer> call s:wait_for_show_commit()
-autocmd CursorHold <buffer> call s:show_commit()
-autocmd BufLeave <buffer> call s:cleanup()
-autocmd ShellCmdPost <buffer> call agit#reload()
-autocmd QuitPre <buffer> call s:exit()
+if g:agit_enable_auto_show_commit
+  let s:save_ut = &updatetime
+  autocmd CursorMoved <buffer> call s:wait_for_show_commit()
+  autocmd CursorHold <buffer> call s:show_commit()
+  autocmd BufLeave <buffer> call s:cleanup()
+endif
 
 if g:agit_enable_auto_refresh
   autocmd BufEnter <buffer> call agit#reload()
 endif
 
-let s:save_ut = &updatetime
+autocmd ShellCmdPost <buffer> call agit#reload()
+autocmd QuitPre <buffer> call s:exit()
 
 function! s:wait_for_show_commit()
   set updatetime=100
