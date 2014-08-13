@@ -80,6 +80,8 @@ the previous commit of it.
 |agit-diff| shows the 'git diff' result. This is similar to |agit-stat| but it
 shows patches.
 
+If you want to exit from agit.vim, press |q| or |:q|.
+
 ==============================================================================
 INTERFACE					*agit-interface*
 
@@ -127,6 +129,9 @@ In |agit-log| buffer, the following key mappings can be used.
 <PLug>(agit-yank-hash)				*<Plug>(agit-yank-hash)*
 	Yank the hash of the commit under the cursor
 
+<PLug>(agit-exit)				*<Plug>(agit-exit)*
+	Exit from agit.
+
 <Plug>(agit-git-checkout)			*<Plug>(agit-git-checkout)*
 	Execute 'git checkout' to change the current branch which under the
 	cursor.
@@ -169,6 +174,7 @@ K			<Plug>(agit-scrollup-stat)
 <C-k>			<Plug>(agit-scrollup-diff)
 u			<PLug>(agit-reload)
 yh			<Plug>(agit-yank-hash)
+q			<Plug>(agit-exit)
 C			<Plug>(agit-git-checkout)
 cb			<Plug>(agit-git-checkout-b)
 D			<Plug>(agit-git-branch-d)
