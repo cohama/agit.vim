@@ -14,6 +14,7 @@ if !g:agit_no_default_mappings
   nmap <silent><buffer> <C-k> <Plug>(agit-scrollup-diff)
 
   nmap <buffer> yh <Plug>(agit-yank-hash)
+  nmap <buffer> q <Plug>(agit-exit)
 
   nmap <buffer> C <Plug>(agit-git-checkout)
   nmap <buffer> cb <Plug>(agit-git-checkout-b)
@@ -33,6 +34,7 @@ autocmd CursorMoved <buffer> call s:wait_for_show_commit()
 autocmd CursorHold <buffer> call s:show_commit()
 autocmd BufLeave <buffer> call s:cleanup()
 autocmd ShellCmdPost <buffer> call agit#reload()
+autocmd QuitPre <buffer> call s:exit()
 
 if g:agit_enable_auto_refresh
   autocmd BufEnter <buffer> call agit#reload()
@@ -52,6 +54,13 @@ endfunction
 
 function! s:cleanup()
   let &updatetime = s:save_ut
+endfunction
+
+function! s:exit()
+  if !exists('t:git')
+    return
+  endif
+  silent! only!
 endfunction
 
 setl conceallevel=2

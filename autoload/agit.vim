@@ -23,6 +23,7 @@ nnoremap <Plug>(agit-git-bisect-bad)   :<C-u>AgitGit bisect bad<CR>
 nnoremap <Plug>(agit-git-bisect-reset) :<C-u>AgitGit bisect reset<CR>
 nnoremap <Plug>(agit-git-cherry-pick)  :<C-u>AgitGit cherry-pick <hash><CR>
 nnoremap <Plug>(agit-git-revert)       :<C-u>AgitGit revert <hash><CR>
+nnoremap <Plug>(agit-exit)             :<C-u>call <SID>agit_exit()<CR>
 
 let s:V = vital#of('agit')
 let s:P = s:V.import('Prelude')
@@ -104,6 +105,13 @@ function! s:yank_hash()
     let @+ = @"
   endif
   echo 'yanked ' . @"
+endfunction
+
+function! s:agit_exit()
+  if !exists('t:git')
+    return
+  endif
+  silent! tabclose!
 endfunction
 
 function! agit#reload() abort

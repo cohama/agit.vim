@@ -338,3 +338,31 @@ function! s:suite.__in_execute_repo__()
   endfunction
 
 endfunction
+
+function! s:suite.__agit_exitting__()
+  let exit = themis#suite('agit exitting')
+
+  function! exit.before()
+    tabonly!
+    new
+    only!
+  endfunction
+
+  function! exit.before_each()
+    edit `=s:repo_path . 'clean/a'`
+    Agit
+  endfunction
+
+  function! exit.with_q()
+    let pretabnr = tabpagenr('$')
+    normal q
+    call s:assert.equals(tabpagenr('$'), pretabnr - 1)
+  endfunction
+
+  function! exit.with_ex_q()
+    let pretabnr = tabpagenr('$')
+    q
+    call s:assert.equals(tabpagenr('$'), pretabnr - 1)
+  endfunction
+
+endfunction
