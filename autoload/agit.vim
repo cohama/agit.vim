@@ -98,14 +98,8 @@ function! s:remote_scroll(win_type, direction)
 endfunction
 
 function! s:yank_hash()
-  let @" = agit#extract_hash(getline('.'))
-  if &clipboard =~# 'unnamed'
-    let @* = @"
-  endif
-  if &clipboard =~# 'unnamedplus'
-    let @+ = @"
-  endif
-  echo 'yanked ' . @"
+  call setreg(v:register, agit#extract_hash(getline('.')))
+  echo 'yanked ' . getreg(v:register)
 endfunction
 
 function! s:agit_exit()
