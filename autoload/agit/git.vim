@@ -131,7 +131,5 @@ function! s:find_index(xs, expr)
       return i
     endif
   endfor
-  for x in a:list
-  endfor
   return -1
 endfunction
