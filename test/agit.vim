@@ -200,7 +200,7 @@ function! s:suite.__in_mixed_repo__()
 
 endfunction
 
-function! s:suite.__reload_test()
+function! s:suite.__reload_test__()
 
   let reload = themis#suite('reload test')
 
