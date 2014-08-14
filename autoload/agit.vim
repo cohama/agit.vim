@@ -127,8 +127,14 @@ function! s:get_git_dir()
   if exists('b:git_dir')
     return b:git_dir
   endif
+  let cdcmd = haslocaldir() ? 'lcd ' : 'cd '
   let current_path = expand('%:p:h')
-  let toplevel_path = s:String.chomp(system('git --no-pager -C ' . current_path . ' rev-parse --show-toplevel')) . '/.git'
+  let cwd = getcwd()
+  execute cdcmd . current_path
+  let cmd = 'git --no-pager rev-parse --prefix / --git-dir'
+  let toplevel_path = s:Process.has_vimproc() && s:P.is_windows() ? vimproc#system(cmd) : system(cmd)
+  let toplevel_path = s:String.chomp(toplevel_path)
+  execute cdcmd . cwd
   if v:shell_error != 0
     throw 'Not a git repository.'
   endif
