@@ -38,12 +38,15 @@ if g:agit_enable_auto_show_commit
   autocmd BufLeave <buffer> call s:cleanup()
 endif
 
+if exists('##QuitPre')
+  autocmd QuitPre <buffer> call s:exit()
+endif
+
 if g:agit_enable_auto_refresh
   autocmd BufEnter <buffer> call agit#reload()
 endif
 
 autocmd ShellCmdPost <buffer> call agit#reload()
-autocmd QuitPre <buffer> call s:exit()
 
 function! s:wait_for_show_commit()
   set updatetime=100

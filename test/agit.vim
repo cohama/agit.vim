@@ -360,6 +360,9 @@ function! s:suite.__agit_exitting__()
   endfunction
 
   function! exit.with_ex_q()
+    if !exists('##QuitPre')
+      call s:assert.skip('QuitPre event is not supported in this version.')
+    endif
     let pretabnr = tabpagenr('$')
     q
     call s:assert.equals(tabpagenr('$'), pretabnr - 1)
