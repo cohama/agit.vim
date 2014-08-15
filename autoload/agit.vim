@@ -131,14 +131,15 @@ function! s:get_git_dir()
   let current_path = expand('%:p:h')
   let cwd = getcwd()
   execute cdcmd . current_path
-  let cmd = 'git --no-pager rev-parse --prefix / --git-dir'
-  let toplevel_path = s:Process.has_vimproc() && s:P.is_windows() ? vimproc#system(cmd) : system(cmd)
-  let toplevel_path = s:String.chomp(toplevel_path)
+  let systemcmd = s:Process.has_vimproc() && s:P.is_windows() ? 'vimproc#system' : 'system'
+  let toplevel_path = s:String.chomp(call(systemcmd, ['git --no-pager rev-parse --show-toplevel']))
+  let dotgit = s:String.chomp(call(systemcmd, ['git --no-pager rev-parse --git-dir']))
+  let git_dir = toplevel_path . '/' . dotgit
   execute cdcmd . cwd
   if v:shell_error != 0
     throw 'Not a git repository.'
   endif
-  return toplevel_path
+  return git_dir
 endfunction
 
 function! agit#extract_hash(str)
