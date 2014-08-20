@@ -30,44 +30,53 @@ function! agit#bufwin#set_to_diff(str)
 endfunction
 
 function! agit#bufwin#move_to_log()
-  for w in range(1, winnr('$'))
-    let wintype = getwinvar(w, 'agit_win_type')
-    if wintype ==# 'log'
-      noautocmd execute w . 'wincmd w'
-      return
-    endif
-  endfor
-  throw 'Agit: Cannot recreate a log window.'
+  let log_winnr = agit#bufwin#log_winnr()
+  if log_winnr == 0
+    throw 'Agit: Cannnot find a log window.'
+  endif
+  noautocmd execute log_winnr . 'wincmd w'
 endfunction
 
 function! agit#bufwin#move_to_stat()
-  for w in range(1, winnr('$'))
-    let wintype = getwinvar(w, 'agit_win_type')
-    if wintype ==# 'stat'
-      noautocmd execute w . 'wincmd w'
-      return
-    endif
-  endfor
-  call s:reconstruct()
-  call agit#bufwin#move_to_stat()
+  let stat_winnr = agit#bufwin#stat_winnr()
+  if stat_winnr == 0
+    call s:reconstruct()
+    call agit#bufwin#move_to_stat()
+  else
+    noautocmd execute stat_winnr . 'wincmd w'
+  endif
 endfunction
 
 function! agit#bufwin#move_to_diff()
-  for w in range(1, winnr('$'))
-    let wintype = getwinvar(w, 'agit_win_type')
-    if wintype ==# 'diff'
-      noautocmd execute w . 'wincmd w'
-      return
-    endif
-  endfor
-  call s:reconstruct()
-  call agit#bufwin#move_to_diff()
+  let diff_winnr = agit#bufwin#diff_winnr()
+  if diff_winnr == 0
+    call s:reconstruct()
+    call agit#bufwin#move_to_diff()
+  else
+    noautocmd execute diff_winnr . 'wincmd w'
+  endif
 endfunction
 
-function! s:is_valid_window_allocation()
-  return winnr('$') == 3 && getwinvar(1, 'agit_win_type') ==# 'log'
-  \                      && getwinvar(2, 'agit_win_type') ==# 'stat'
-  \                      && getwinvar(3, 'agit_win_type') ==# 'diff'
+function! agit#bufwin#log_winnr()
+  return s:find_winnr_by_agit_win_type('log')
+endfunction
+
+function! agit#bufwin#stat_winnr()
+  return s:find_winnr_by_agit_win_type('stat')
+endfunction
+
+function! agit#bufwin#diff_winnr()
+  return s:find_winnr_by_agit_win_type('diff')
+endfunction
+
+function! s:find_winnr_by_agit_win_type(wintype)
+  for w in range(1, winnr('$'))
+    let wintype = getwinvar(w, 'agit_win_type')
+    if wintype ==# a:wintype
+      return w
+    endif
+  endfor
+  return 0
 endfunction
 
 let s:seq = ''
