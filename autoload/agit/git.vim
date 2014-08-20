@@ -126,7 +126,7 @@ function! agit#git#exec(command, git_dir, ...)
 endfunction
 
 function! s:find_index(xs, expr)
-  for i in range(0, len(a:xs))
+  for i in range(0, len(a:xs) - 1)
     if eval(substitute(a:expr, 'v:val', string(a:xs[i]), 'g'))
       return i
     endif
