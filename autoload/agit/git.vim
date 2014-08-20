@@ -18,10 +18,10 @@ let s:git = {
 \   'diff' : ''
 \ }}
 
-function! s:git.log() dict
+function! s:git.log(winwidth) dict
   let gitlog = agit#git#exec('log --all --graph --decorate=full --no-color --date=relative --format=format:"%d %s' . s:sep . '|>%ad<|' . s:sep . '{>%an<}' . s:sep . '[%h]"', self.git_dir)
   " 18 means concealed symbol (4*2 + 2) + margin (1) + hash (7)
-  let max_width = &columns / 2 + 18
+  let max_width = a:winwidth + 18
   let gitlog = substitute(gitlog, '\<refs/heads/', '', 'g')
   let gitlog = substitute(gitlog, '\<refs/remotes/', 'r:', 'g')
   let gitlog = substitute(gitlog, '\<refs/tags/', 't:', 'g')

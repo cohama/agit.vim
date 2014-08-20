@@ -52,7 +52,7 @@ function! agit#launch()
     let git_dir = s:get_git_dir()
     call agit#bufwin#agit_tabnew()
     let t:git = agit#git#new(git_dir)
-    call agit#bufwin#set_to_log(t:git.log())
+    call agit#bufwin#set_to_log(t:git.log(winwidth(agit#bufwin#log_winnr())))
     call agit#show_commit()
     if s:fugitive_enabled
       let b:git_dir = git_dir " for fugitive commands
@@ -116,7 +116,7 @@ function! agit#reload() abort
   call agit#bufwin#move_to_log()
   wincmd =
   let pos = getpos('.')
-  call agit#bufwin#set_to_log(t:git.log())
+  call agit#bufwin#set_to_log(t:git.log(winwidth(agit#bufwin#log_winnr())))
   noautocmd call setpos('.', pos)
   call agit#show_commit()
   let s:old_hash = ''
