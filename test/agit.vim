@@ -28,8 +28,8 @@ function! s:suite.__in_clean_repo__()
 
   function! clean.appear_only_commits_at_log_window()
     call agit#bufwin#move_to_log()
-    let head_msg = s:String.chomp(agit#git#exec('log --format=format:%s -1', s:clean_repo_path))
-    call s:assert.match(getline(1), '(HEAD, master) ' . head_msg)
+    let head_hash = s:String.chomp(agit#git#exec('rev-parse --short HEAD', s:clean_repo_path))
+    call s:assert.match(getline(1), head_hash)
   endfunction
 
   function! clean.show_diff_stat_result_at_stat_window()
@@ -63,8 +63,8 @@ function! s:suite.__in_unstaged_repo__()
 
   function! unstaged.appear_commit_mesesage_at_second_line_log_window()
     call agit#bufwin#move_to_log()
-    let head_msg = s:String.chomp(agit#git#exec('log --format=format:%s -1', s:unstaged_repo_path))
-    call s:assert.match(getline(2), '(HEAD, master) ' . head_msg)
+    let head_hash = s:String.chomp(agit#git#exec('rev-parse --short HEAD', s:unstaged_repo_path))
+    call s:assert.match(getline(2), head_hash)
   endfunction
 
   function! unstaged.show_diff_stat_result_at_stat_window()
@@ -98,8 +98,8 @@ function! s:suite.__in_untracked_repo__()
 
   function! untracked.appear_commit_mesesage_at_second_line_log_window()
     call agit#bufwin#move_to_log()
-    let head_msg = s:String.chomp(agit#git#exec('log --format=format:%s -1', s:untracked_repo_path))
-    call s:assert.match(getline(2), '(HEAD, master) ' . head_msg)
+    let head_hash = s:String.chomp(agit#git#exec('rev-parse --short HEAD', s:untracked_repo_path))
+    call s:assert.match(getline(2), head_hash)
   endfunction
 
   function! untracked.show_diff_stat_result_at_stat_window()
@@ -138,8 +138,8 @@ function! s:suite.__in_staged_repo__()
 
   function! staged.appear_commit_mesesage_at_second_line_log_window()
     call agit#bufwin#move_to_log()
-    let head_msg = s:String.chomp(agit#git#exec('log --format=format:%s -1', s:staged_repo_path))
-    call s:assert.match(getline(2), '(HEAD, master) ' . head_msg)
+    let head_hash = s:String.chomp(agit#git#exec('rev-parse --short HEAD', s:staged_repo_path))
+    call s:assert.match(getline(2), head_hash)
   endfunction
 
   function! staged.show_diff_stat_result_at_stat_window()
@@ -179,8 +179,8 @@ function! s:suite.__in_mixed_repo__()
 
   function! mixed.show_commit_mesesage_at_third_line_log_window()
     call agit#bufwin#move_to_log()
-    let head_msg = s:String.chomp(agit#git#exec('log --format=format:%s -1', s:mixed_repo_path))
-    call s:assert.match(getline(3), '(HEAD, master) ' . head_msg)
+    let head_hash = s:String.chomp(agit#git#exec('rev-parse --short HEAD', s:mixed_repo_path))
+    call s:assert.match(getline(3), head_hash)
   endfunction
 
   function! mixed.show_unstaged_diff_stat_result_at_stat_window()
