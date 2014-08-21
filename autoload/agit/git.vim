@@ -29,7 +29,8 @@ function! s:git.log(winwidth) dict
 
   let aligned_log = agit#aligner#align(log_lines, max_width)
 
-  let head_index = s:find_index(aligned_log, 'match(v:val, "HEAD") >= 0')
+  let head_hash = agit#git#exec('rev-parse --short HEAD', self.git_dir)
+  let head_index = s:find_index(aligned_log, 'match(v:val, "[' . head_hash . ']") >= 0')
 
   let self.staged = {'stat' : '', 'diff' : ''}
   let self.unstaged = {'stat' : '', 'diff' : ''}
