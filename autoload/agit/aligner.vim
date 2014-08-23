@@ -1,4 +1,4 @@
-let s:spacer = ' '
+let s:seps = [' ', ' ', '', '']
 let s:String = agit#vital().String
 let s:List = agit#vital().List
 
@@ -19,8 +19,8 @@ function! agit#aligner#align(table, max_col, ...)
   let ret = []
   let len_maxs = len(maxs)
   let width_without_commit_msg = s:sum(maxs) - maxs[0]
-  let sep_width = strwidth(s:spacer)
-  let commit_msg_column = a:max_col == 0 ? maxs[0] : a:max_col - width_without_commit_msg - (sep_width * (len_maxs - 1))
+  let seps_width = s:sum(map(copy(s:seps), 'strwidth(v:val)'))
+  let commit_msg_column = a:max_col == 0 ? maxs[0] : a:max_col - width_without_commit_msg - seps_width
 
   for i in range(min([len(a:table), g:agit_max_log_lines]))
     let log = a:table[i]
@@ -33,12 +33,13 @@ function! agit#aligner#align(table, max_col, ...)
       call add(col, log[c] . spacer)
     endfor
 
-    for extra_c in range(c, len_maxs - 1)
-      let spacer = repeat(' ', maxs[extra_c])
-      call add(col, spacer)
-    endfor
+    let line = ''
 
-    call add(ret, s:String.trim(join(col, s:spacer)))
+    for c in range(0, len(col) - 2)
+      let line .= col[c] . s:seps[c]
+    endfor
+    let line .= col[-1]
+    call add(ret, s:String.trim(line))
   endfor
   if len(a:table) > g:agit_max_log_lines
     call add(ret, '')
