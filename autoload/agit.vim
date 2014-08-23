@@ -133,8 +133,7 @@ function! s:get_git_dir()
   execute cdcmd . current_path
   let systemcmd = s:Process.has_vimproc() && s:P.is_windows() ? 'vimproc#system' : 'system'
   let toplevel_path = s:String.chomp(call(systemcmd, ['git --no-pager rev-parse --show-toplevel']))
-  let dotgit = s:String.chomp(call(systemcmd, ['git --no-pager rev-parse --git-dir']))
-  let git_dir = toplevel_path . '/' . dotgit
+  let git_dir = toplevel_path . '/.git'
   execute cdcmd . cwd
   if v:shell_error != 0
     throw 'Not a git repository.'
