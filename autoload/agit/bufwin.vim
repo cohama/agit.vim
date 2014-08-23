@@ -99,6 +99,7 @@ function! s:create_stat_bufwin(seq)
   call s:set_view_options()
   setlocal nocursorline nocursorcolumn
   setlocal winfixheight
+  nmap <buffer> q <Plug>(agit-exit)
   setfiletype agit_stat
   setlocal nomodifiable
 endfunction
@@ -111,6 +112,7 @@ function! s:create_diff_bufwin(seq)
   call s:set_view_options()
   setlocal nocursorline nocursorcolumn
   setlocal winfixheight
+  nmap <buffer> q <Plug>(agit-exit)
   setfiletype agit_diff
   setlocal nomodifiable
 endfunction
