@@ -222,13 +222,11 @@ function! s:suite.__reload_test__()
   endfunction
 
   function! reload.on_log_window()
-    call s:assert.match(getline(1), '(HEAD, master)')
     call agit#reload()
     call s:assert.match(getline(1), g:agit#git#unstaged_message)
   endfunction
 
   function! reload.on_stat_window()
-    call s:assert.match(getline(1), '(HEAD, master)')
     call agit#bufwin#move_to_stat()
     call agit#reload()
     call s:assert.equals(w:agit_win_type, 'log')
@@ -236,7 +234,6 @@ function! s:suite.__reload_test__()
   endfunction
 
   function! reload.on_diff_window()
-    call s:assert.match(getline(1), '(HEAD, master)')
     call agit#bufwin#move_to_diff()
     call agit#reload()
     call s:assert.equals(w:agit_win_type, 'log')
@@ -244,7 +241,6 @@ function! s:suite.__reload_test__()
   endfunction
 
   function! reload.when_extra_window_exists()
-    call s:assert.match(getline(1), '(HEAD, master)')
     vnew
     call agit#reload()
     call agit#bufwin#move_to_log()
@@ -253,7 +249,6 @@ function! s:suite.__reload_test__()
   endfunction
 
   function! reload.and_recreate_stat_window()
-    call s:assert.match(getline(1), '(HEAD, master)')
     call agit#bufwin#move_to_stat()
     q
     call agit#reload()
@@ -264,7 +259,6 @@ function! s:suite.__reload_test__()
 
   function! reload.and_recreate_diff_window()
     call s:assert.equals(winnr('$'), 3)
-    call s:assert.match(getline(1), '(HEAD, master)')
     call agit#bufwin#move_to_diff()
     q
     call agit#reload()
@@ -275,7 +269,6 @@ function! s:suite.__reload_test__()
 
   function! reload.and_recreate_stat_and_diff_window()
     call s:assert.equals(winnr('$'), 3)
-    call s:assert.match(getline(1), '(HEAD, master)')
     only
     call agit#reload()
     call s:assert.equals(winnr('$'), 3)
@@ -286,7 +279,6 @@ function! s:suite.__reload_test__()
   function! reload.when_bufenter()
     let g:agit_enable_auto_refresh = 1
     call s:assert.equals(winnr('$'), 3)
-    call s:assert.match(getline(1), '(HEAD, master)')
     new
     wincmd p
     call s:assert.equals(w:agit_win_type, 'log')
