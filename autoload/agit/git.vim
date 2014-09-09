@@ -111,6 +111,7 @@ function! agit#git#new(git_dir)
 endfunction
 
 " Utilities
+let s:last_status = 0
 let s:is_cp932 = &enc == 'cp932'
 function! agit#git#exec(command, git_dir, ...)
   let worktree_dir = matchstr(a:git_dir, '^.\+\ze\.git')
@@ -118,12 +119,22 @@ function! agit#git#exec(command, git_dir, ...)
   if a:0 > 0 && a:1 == 1
     execute '!' . cmd
   else
-    let ret = s:Process.has_vimproc() && s:P.is_windows() ? vimproc#system(cmd) : system(cmd)
+    if s:Process.has_vimproc() && s:P.is_windows()
+      let ret = vimproc#system(cmd)
+      let s:last_status = vimproc#get_last_status()
+    else
+      let ret = system(cmd)
+      let s:last_status = v:shell_error
+    endif
     if s:is_cp932
       let ret = iconv(ret, 'utf-8', 'cp932')
     endif
     return ret
   endif
+endfunction
+
+function! agit#git#get_last_status()
+  return s:last_status
 endfunction
 
 function! s:find_index(xs, expr)

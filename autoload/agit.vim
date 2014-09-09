@@ -157,7 +157,7 @@ function! agit#agitgit(arg, confirm, bang)
   if match(arg, '\c<branch>') >= 0
     let cword = expand('<cword>')
     silent let branch = agit#git#exec('rev-parse --symbolic ' . cword, t:git.git_dir)
-    if v:shell_error != 0
+    if agit#git#get_last_status() != 0
       echomsg 'Not a branch name: ' . cword
       return
     endif
