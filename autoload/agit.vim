@@ -79,8 +79,11 @@ function! agit#show_commit()
   elseif s:old_hash !=# hash
     call agit#bufwin#set_to_stat(t:git.stat(hash))
     call agit#bufwin#set_to_diff(t:git.diff(hash))
+  else
+    return 0
   endif
   let s:old_hash = hash
+  return 1
 endfunction
 
 function! s:remote_scroll(win_type, direction)

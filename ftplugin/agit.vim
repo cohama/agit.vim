@@ -53,9 +53,10 @@ function! s:wait_for_show_commit()
 endfunction
 
 function! s:show_commit()
-  call agit#show_commit()
   call s:cleanup()
-  redraw!
+  if agit#show_commit()
+    redraw!
+  endif
 endfunction
 
 function! s:cleanup()
