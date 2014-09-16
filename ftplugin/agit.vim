@@ -31,22 +31,26 @@ if !g:agit_no_default_mappings
   nmap <buffer> Br <Plug>(agit-git-bisect-reset)
 endif
 
-if g:agit_enable_auto_show_commit
-  let s:save_ut = &updatetime
-  autocmd CursorMoved <buffer> call s:wait_for_show_commit()
-  autocmd CursorHold <buffer> call s:show_commit()
-  autocmd BufLeave <buffer> call s:cleanup()
-endif
+augroup agit
 
-if exists('##QuitPre')
-  autocmd QuitPre <buffer> call s:exit()
-endif
+  if g:agit_enable_auto_show_commit
+    let s:save_ut = &updatetime
+    autocmd CursorMoved <buffer> call s:wait_for_show_commit()
+    autocmd CursorHold <buffer> call s:show_commit()
+    autocmd BufLeave <buffer> call s:cleanup()
+  endif
 
-if g:agit_enable_auto_refresh
-  autocmd BufEnter <buffer> call agit#reload()
-endif
+  if exists('##QuitPre')
+    autocmd QuitPre <buffer> call s:exit()
+  endif
 
-autocmd ShellCmdPost <buffer> call agit#reload()
+  if g:agit_enable_auto_refresh
+    autocmd BufEnter <buffer> call agit#reload()
+  endif
+
+  autocmd ShellCmdPost <buffer> call agit#reload()
+
+augroup END
 
 function! s:wait_for_show_commit()
   set updatetime=100
