@@ -2,13 +2,8 @@ let s:V = vital#of('agit')
 let s:String = s:V.import('Data.String')
 
 let s:suite = themis#suite('agit integration test')
-let s:assert = themis#helper('assert')
 
 let s:repo_path = expand("<sfile>:p:h") . '/repos/'
-
-set noswapfile nobackup
-filetype plugin indent on
-set columns=400
 
 function! s:suite.__in_clean_repo__()
 
@@ -23,19 +18,19 @@ function! s:suite.__in_clean_repo__()
   endfunction
 
   function! clean.create_3_windows()
-    call s:assert.equals(winnr('$'), 3)
+    call Expect(winnr('$')).to_equal(3)
   endfunction
 
   function! clean.appear_only_commits_at_log_window()
     call agit#bufwin#move_to_log()
     let head_hash = s:String.chomp(agit#git#exec('rev-parse --short HEAD', s:clean_repo_path))
-    call s:assert.match(getline(1), head_hash)
+    call Expect(getline(1)).to_match(head_hash)
   endfunction
 
   function! clean.show_diff_stat_result_at_stat_window()
     call agit#bufwin#move_to_stat()
     let stat_msg = s:String.trim(s:String.chomp(agit#git#exec('diff --shortstat HEAD~', s:clean_repo_path)))
-    call s:assert.equals(s:String.trim(getline('$')), stat_msg)
+    call Expect(s:String.trim(getline('$'))).to_equal(stat_msg)
   endfunction
 
 endfunction
@@ -52,25 +47,25 @@ function! s:suite.__in_unstaged_repo__()
   endfunction
 
   function! unstaged.create_3_windows()
-    call s:assert.equals(winnr('$'), 3)
+    call Expect(winnr('$')).to_equal(3)
   endfunction
 
   function! unstaged.appear_only_commits_at_first_line_log_window()
     call agit#bufwin#move_to_log()
     let head_msg = g:agit#git#unstaged_message
-    call s:assert.match(getline(1), head_msg)
+    call Expect(getline(1)).to_match(head_msg)
   endfunction
 
   function! unstaged.appear_commit_mesesage_at_second_line_log_window()
     call agit#bufwin#move_to_log()
     let head_hash = s:String.chomp(agit#git#exec('rev-parse --short HEAD', s:unstaged_repo_path))
-    call s:assert.match(getline(2), head_hash)
+    call Expect(getline(2)).to_match(head_hash)
   endfunction
 
   function! unstaged.show_diff_stat_result_at_stat_window()
     call agit#bufwin#move_to_stat()
     let stat_msg = s:String.trim(s:String.chomp(agit#git#exec('diff --shortstat', s:unstaged_repo_path)))
-    call s:assert.equals(s:String.trim(getline('$')), stat_msg)
+    call Expect(s:String.trim(getline('$'))).to_equal(stat_msg)
   endfunction
 
 endfunction
@@ -87,30 +82,30 @@ function! s:suite.__in_untracked_repo__()
   endfunction
 
   function! untracked.create_3_windows()
-    call s:assert.equals(winnr('$'), 3)
+    call Expect(winnr('$')).to_equal(3)
   endfunction
 
   function! untracked.appear_only_commits_at_first_line_log_window()
     call agit#bufwin#move_to_log()
     let head_msg = g:agit#git#unstaged_message
-    call s:assert.match(getline(1), head_msg)
+    call Expect(getline(1)).to_match(head_msg)
   endfunction
 
   function! untracked.appear_commit_mesesage_at_second_line_log_window()
     call agit#bufwin#move_to_log()
     let head_hash = s:String.chomp(agit#git#exec('rev-parse --short HEAD', s:untracked_repo_path))
-    call s:assert.match(getline(2), head_hash)
+    call Expect(getline(2)).to_match(head_hash)
   endfunction
 
   function! untracked.show_diff_stat_result_at_stat_window()
     call agit#bufwin#move_to_stat()
     let untracked_files = s:String.chomp(agit#git#exec('ls-files --others --exclude-standard', s:untracked_repo_path))
-    call s:assert.equals(s:String.trim(getline('$')), untracked_files)
+    call Expect(s:String.trim(getline('$'))).to_equal(untracked_files)
   endfunction
 
   function! untracked.show_empty_diff_result_at_diff_window()
     call agit#bufwin#move_to_diff()
-    call s:assert.equals(s:String.trim(getline(1, '$')), '')
+    call Expect(s:String.trim(getline(1, '$'))).to_equal('')
   endfunction
 
 endfunction
@@ -127,25 +122,25 @@ function! s:suite.__in_staged_repo__()
   endfunction
 
   function! staged.create_3_windows()
-    call s:assert.equals(winnr('$'), 3)
+    call Expect(winnr('$')).to_equal(3)
   endfunction
 
   function! staged.appear_only_commits_at_first_line_log_window()
     call agit#bufwin#move_to_log()
     let head_msg = g:agit#git#staged_message
-    call s:assert.match(getline(1), head_msg)
+    call Expect(getline(1)).to_match(head_msg)
   endfunction
 
   function! staged.appear_commit_mesesage_at_second_line_log_window()
     call agit#bufwin#move_to_log()
     let head_hash = s:String.chomp(agit#git#exec('rev-parse --short HEAD', s:staged_repo_path))
-    call s:assert.match(getline(2), head_hash)
+    call Expect(getline(2)).to_match(head_hash)
   endfunction
 
   function! staged.show_diff_stat_result_at_stat_window()
     call agit#bufwin#move_to_stat()
     let stat_msg = s:String.trim(s:String.chomp(agit#git#exec('diff --cached --shortstat', s:staged_repo_path)))
-    call s:assert.equals(s:String.trim(getline('$')), stat_msg)
+    call Expect(s:String.trim(getline('$'))).to_equal(stat_msg)
   endfunction
 
 endfunction
@@ -162,31 +157,31 @@ function! s:suite.__in_mixed_repo__()
   endfunction
 
   function! mixed.create_3_windows()
-    call s:assert.equals(winnr('$'), 3)
+    call Expect(winnr('$')).to_equal(3)
   endfunction
 
   function! mixed.show_unstaged_message_at_first_line_log_window()
     call agit#bufwin#move_to_log()
     let head_msg = g:agit#git#unstaged_message
-    call s:assert.match(getline(1), head_msg)
+    call Expect(getline(1)).to_match(head_msg)
   endfunction
 
   function! mixed.show_staged_message_at_second_line_log_window()
     call agit#bufwin#move_to_log()
     let head_msg = g:agit#git#staged_message
-    call s:assert.match(getline(2), head_msg)
+    call Expect(getline(2)).to_match(head_msg)
   endfunction
 
   function! mixed.show_commit_mesesage_at_third_line_log_window()
     call agit#bufwin#move_to_log()
     let head_hash = s:String.chomp(agit#git#exec('rev-parse --short HEAD', s:mixed_repo_path))
-    call s:assert.match(getline(3), head_hash)
+    call Expect(getline(3)).to_match(head_hash)
   endfunction
 
   function! mixed.show_unstaged_diff_stat_result_at_stat_window()
     call agit#bufwin#move_to_stat()
     let stat_msg = s:String.trim(s:String.chomp(agit#git#exec('diff --shortstat', s:mixed_repo_path)))
-    call s:assert.equals(s:String.trim(getline('$')), stat_msg)
+    call Expect(s:String.trim(getline('$'))).to_equal(stat_msg)
   endfunction
 
   function! mixed.show_staged_diff_stat_result_at_stat_window()
@@ -195,7 +190,7 @@ function! s:suite.__in_mixed_repo__()
     call agit#show_commit()
     call agit#bufwin#move_to_stat()
     let stat_msg = s:String.trim(s:String.chomp(agit#git#exec('diff --cached --shortstat', s:mixed_repo_path)))
-    call s:assert.equals(s:String.trim(getline('$')), stat_msg)
+    call Expect(s:String.trim(getline('$'))).to_equal(stat_msg)
   endfunction
 
 endfunction
@@ -207,7 +202,7 @@ function! s:suite.__reload_test__()
   function! reload.before_each()
     tabedit `=s:repo_path . 'clean/a'`
     Agit
-    call system('!echo "reload test" > ' . s:repo_path . 'clean/x')
+    call writefile(["reload test"], s:repo_path . 'clean/x')
     call agit#bufwin#move_to_log()
     let g:agit_enable_auto_refresh = 1
   endfunction
@@ -222,67 +217,75 @@ function! s:suite.__reload_test__()
   endfunction
 
   function! reload.on_log_window()
+    call Expect(getline(1)).not.to_match(g:agit#git#unstaged_message)
     call agit#reload()
-    call s:assert.match(getline(1), g:agit#git#unstaged_message)
+    call Expect(getline(1)).to_match(g:agit#git#unstaged_message)
   endfunction
 
   function! reload.on_stat_window()
+    call Expect(getline(1)).not.to_match(g:agit#git#unstaged_message)
     call agit#bufwin#move_to_stat()
     call agit#reload()
-    call s:assert.equals(w:agit_win_type, 'log')
-    call s:assert.match(getline(1), g:agit#git#unstaged_message)
+    call Expect(w:agit_win_type).to_equal('log')
+    call Expect(getline(1)).to_match(g:agit#git#unstaged_message)
   endfunction
 
   function! reload.on_diff_window()
+    call Expect(getline(1)).not.to_match(g:agit#git#unstaged_message)
     call agit#bufwin#move_to_diff()
     call agit#reload()
-    call s:assert.equals(w:agit_win_type, 'log')
-    call s:assert.match(getline(1), g:agit#git#unstaged_message)
+    call Expect(w:agit_win_type).to_equal('log')
+    call Expect(getline(1)).to_match(g:agit#git#unstaged_message)
   endfunction
 
   function! reload.when_extra_window_exists()
+    call Expect(getline(1)).not.to_match(g:agit#git#unstaged_message)
     vnew
     call agit#reload()
     call agit#bufwin#move_to_log()
-    call s:assert.equals(w:agit_win_type, 'log')
-    call s:assert.match(getline(1), g:agit#git#unstaged_message)
+    call Expect(w:agit_win_type).to_equal('log')
+    call Expect(getline(1)).to_match(g:agit#git#unstaged_message)
   endfunction
 
   function! reload.and_recreate_stat_window()
+    call Expect(getline(1)).not.to_match(g:agit#git#unstaged_message)
     call agit#bufwin#move_to_stat()
     q
     call agit#reload()
-    call s:assert.equals(winnr('$'), 3)
-    call s:assert.equals(w:agit_win_type, 'log')
-    call s:assert.match(getline(1), g:agit#git#unstaged_message)
+    call Expect(winnr('$')).to_equal(3)
+    call Expect(w:agit_win_type).to_equal('log')
+    call Expect(getline(1)).to_match(g:agit#git#unstaged_message)
   endfunction
 
   function! reload.and_recreate_diff_window()
-    call s:assert.equals(winnr('$'), 3)
+    call Expect(getline(1)).not.to_match(g:agit#git#unstaged_message)
+    call Expect(winnr('$')).to_equal(3)
     call agit#bufwin#move_to_diff()
     q
     call agit#reload()
-    call s:assert.equals(winnr('$'), 3)
-    call s:assert.equals(w:agit_win_type, 'log')
-    call s:assert.match(getline(1), g:agit#git#unstaged_message)
+    call Expect(winnr('$')).to_equal(3)
+    call Expect(w:agit_win_type).to_equal('log')
+    call Expect(getline(1)).to_match(g:agit#git#unstaged_message)
   endfunction
 
   function! reload.and_recreate_stat_and_diff_window()
-    call s:assert.equals(winnr('$'), 3)
+    call Expect(getline(1)).not.to_match(g:agit#git#unstaged_message)
+    call Expect(winnr('$')).to_equal(3)
     only
     call agit#reload()
-    call s:assert.equals(winnr('$'), 3)
-    call s:assert.equals(w:agit_win_type, 'log')
-    call s:assert.match(getline(1), g:agit#git#unstaged_message)
+    call Expect(winnr('$')).to_equal(3)
+    call Expect(w:agit_win_type).to_equal('log')
+    call Expect(getline(1)).to_match(g:agit#git#unstaged_message)
   endfunction
 
   function! reload.when_bufenter()
+    call Expect(getline(1)).not.to_match(g:agit#git#unstaged_message)
     let g:agit_enable_auto_refresh = 1
-    call s:assert.equals(winnr('$'), 3)
+    call Expect(winnr('$')).to_equal(3)
     new
     wincmd p
-    call s:assert.equals(w:agit_win_type, 'log')
-    call s:assert.match(getline(1), g:agit#git#unstaged_message)
+    call Expect(w:agit_win_type).to_equal('log')
+    call Expect(getline(1)).to_match(g:agit#git#unstaged_message)
     let g:agit_enable_auto_refresh = 0
   endfunction
 
@@ -305,19 +308,18 @@ function! s:suite.__in_execute_repo__()
     call search('develop', 'wc')
     execute 'AgitGit checkout ' . expand('<cword>')
     let current_branch = s:String.chomp(agit#git#exec('rev-parse --abbrev-ref HEAD', s:execute_repo_path))
-    call s:assert.equals(current_branch, 'develop')
+    call Expect(current_branch).to_equal('develop')
     call search('master', 'wc')
     execute 'AgitGit checkout ' . expand('<cword>')
     let current_branch = s:String.chomp(agit#git#exec('rev-parse --abbrev-ref HEAD', s:execute_repo_path))
-    call s:assert.equals(current_branch, 'master')
+    call Expect(current_branch).to_equal('master')
   endfunction
 
   function! execute.git_create_b()
-    " feedkeys() does not work.
     execute 'AgitGit checkout -b new ' . agit#extract_hash(getline(2))
     let current_branch = s:String.chomp(agit#git#exec('rev-parse --abbrev-ref HEAD', s:execute_repo_path))
-    call s:assert.equals(current_branch, 'new')
-    call s:assert.match(getline(2), '(HEAD, new')
+    call Expect(current_branch).to_equal('new')
+    call Expect(getline(2)).to_match('(HEAD, new')
   endfunction
 
   function! execute.git_branch_d()
@@ -326,7 +328,7 @@ function! s:suite.__in_execute_repo__()
     call search('new', 'wc')
     execute 'AgitGit branch -d ' . expand("<cword>")
     let current_branches = s:String.chomp(agit#git#exec('branch', s:execute_repo_path))
-    call s:assert.equals(current_branches, "  develop\n* master")
+    call Expect(current_branches).to_equal("  develop\n* master")
   endfunction
 
 endfunction
@@ -348,16 +350,16 @@ function! s:suite.__agit_exitting__()
   function! exit.with_q()
     let pretabnr = tabpagenr('$')
     normal q
-    call s:assert.equals(tabpagenr('$'), pretabnr - 1)
+    call Expect(tabpagenr('$')).to_equal(pretabnr - 1)
   endfunction
 
   function! exit.with_ex_q()
     if !exists('##QuitPre')
-      call s:assert.skip('QuitPre event is not supported in this version.')
+      Skip 'QuitPre event is not supported in this version.'
     endif
     let pretabnr = tabpagenr('$')
     q
-    call s:assert.equals(tabpagenr('$'), pretabnr - 1)
+    call Expect(tabpagenr('$')).to_equal(pretabnr - 1)
   endfunction
 
 endfunction

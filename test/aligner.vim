@@ -1,4 +1,3 @@
-let s:assert = themis#helper('assert')
 let s:suite = themis#suite('agit#git#align_log')
 
 function! s:suite.align_messages_date_commiter_hash()
@@ -17,7 +16,7 @@ function! s:suite.align_messages_date_commiter_hash()
   \ "| * (piyo) hoge fuga       10 days ago      cohamacohamacohama123",
   \ "|/",
   \ ]
-  call s:assert.equals(aligned, expect)
+  call Expect(aligned).to_equal(expect)
 endfunction
 
 function! s:suite.aligns_fields_within_limited_columns()
@@ -36,5 +35,5 @@ function! s:suite.aligns_fields_within_limited_columns()
   \ "| * (piyo) hoge fuga    2013-10-20 cohamacohamacohama123",
   \ "|/",
   \ ]
-  call s:assert.equals(aligned, expect)
+  call Expect(aligned).to_equal(expect)
 endfunction

@@ -1,0 +1,9 @@
+set noswapfile nobackup
+filetype plugin indent on
+
+let s:expect = themis#helper('expect')
+call themis#helper('command')
+
+function! Expect(a)
+  return s:expect(a:a)
+endfunction

@@ -1,4 +1,3 @@
-let s:assert = themis#helper('assert')
 let s:suite = themis#suite('agit#bufwin')
 
 function! s:suite.before_each()
@@ -6,7 +5,7 @@ function! s:suite.before_each()
 endfunction
 
 function! s:suite.create_3_windows()
-  call s:assert.equals(winnr('$'), 3)
+  call Expect(winnr('$')).to_equal(3)
 endfunction
 
 function! s:suite.__log_window__()
@@ -17,15 +16,15 @@ function! s:suite.__log_window__()
   endfunction
 
   function! log_win.has_agit_win_type_as_log()
-    call s:assert.equals(w:agit_win_type, 'log')
+    call Expect(w:agit_win_type).to_equal('log')
   endfunction
 
   function! log_win.has_view_specific_options()
-    call s:assert.false(&l:modifiable)
-    call s:assert.false(&l:wrap)
-    call s:assert.false(&l:number)
-    call s:assert.false(&l:relativenumber)
-    call s:assert.equals(&l:buftype, 'nofile')
+    call Expect(&l:modifiable).to_be_false()
+    call Expect(&l:wrap).to_be_false()
+    call Expect(&l:number).to_be_false()
+    call Expect(&l:relativenumber).to_be_false()
+    call Expect(&l:buftype).to_equal('nofile')
   endfunction
 endfunction
 
@@ -37,17 +36,17 @@ function! s:suite.__stat_window__()
   endfunction
 
   function! stat_win.has_agit_win_type_as_stat()
-    call s:assert.equals(w:agit_win_type, 'stat')
+    call Expect(w:agit_win_type).to_equal('stat')
   endfunction
 
   function! stat_win.has_view_specific_options()
-    call s:assert.false(&l:modifiable)
-    call s:assert.false(&l:wrap)
-    call s:assert.false(&l:number)
-    call s:assert.false(&l:relativenumber)
-    call s:assert.false(&l:cursorline)
-    call s:assert.false(&l:cursorcolumn)
-    call s:assert.equals(&l:buftype, 'nofile')
+    call Expect(&l:modifiable).to_be_false()
+    call Expect(&l:wrap).to_be_false()
+    call Expect(&l:number).to_be_false()
+    call Expect(&l:relativenumber).to_be_false()
+    call Expect(&l:cursorline).to_be_false()
+    call Expect(&l:cursorcolumn).to_be_false()
+    call Expect(&l:buftype).to_equal('nofile')
   endfunction
 endfunction
 
@@ -59,13 +58,13 @@ function! s:suite__diff_window__()
   endfunction
 
   function! diff_win.has_agit_win_type_as_diff()
-    call s:assert.false(&l:modifiable)
-    call s:assert.false(&l:wrap)
-    call s:assert.false(&l:number)
-    call s:assert.false(&l:relativenumber)
-    call s:assert.false(&l:cursorline)
-    call s:assert.false(&l:cursorcolumn)
-    call s:assert.equals(&l:buftype, 'nofile')
+    call Expect(&l:modifiable).to_be_false()
+    call Expect(&l:wrap).to_be_false()
+    call Expect(&l:number).to_be_false()
+    call Expect(&l:relativenumber).to_be_false()
+    call Expect(&l:cursorline).to_be_false()
+    call Expect(&l:cursorcolumn).to_be_false()
+    call Expect(&l:buftype).to_equal('nofile')
   endfunction
 endfunction
 
@@ -76,28 +75,22 @@ function! s:suite.__broken_window__()
     call agit#bufwin#move_to_stat()
     q
     call agit#bufwin#move_to_stat()
-    call s:assert.equals(winnr('$'), 3)
-    call s:assert.equals(w:agit_win_type, 'stat')
+    call Expect(winnr('$')).to_equal(3)
+    call Expect(w:agit_win_type).to_equal('stat')
   endfunction
 
   function! broken.recreate_windows_if_diff_window_is_lost()
     call agit#bufwin#move_to_diff()
     q
     call agit#bufwin#move_to_diff()
-    call s:assert.equals(winnr('$'), 3)
-    call s:assert.equals(w:agit_win_type, 'diff')
+    call Expect(winnr('$')).to_equal(3)
+    call Expect(w:agit_win_type).to_equal('diff')
   endfunction
 
   function! broken.do_not_recreate_windows_if_log_window_is_lost()
     call agit#bufwin#move_to_log()
     q
-    try
-      call agit#bufwin#move_to_log()
-    catch /Agit: /
-      call s:assert.true(1)
-      return
-    endtry
-    call s:assert.fail('Expect to be raised an error but not')
+    Throws /Agit: / agit#bufwin#move_to_log()
   endfunction
 
 endfunction
