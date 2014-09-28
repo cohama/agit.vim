@@ -89,16 +89,24 @@ INTERFACE					*agit-interface*
 COMMANDS					*agit-commands*
 
 						*:Agit*
-:Agit
+:Agit [{options}]
 	Open a new Agit tab. Repository path is automatically searched from a
 	current buffer path.
+	This command can receive some options.
 
+	--dir={basedir}				*agit-option-dir*
+	Set the repository path to {basedir}.
+
+						*:AgitGit*
 :AgitGit[!] {args}
 	Execute the specified git command. This is done in a current git
 	repository path.
 	Note: This command is available only in |agit-log| buffer.
 	Note: This command is similar to |fugitive|'s |:Git| command, but this
 	command uses |system()| internally so that the shell is not launched.
+
+	If you specify !, this command uses |:!| instead of |system()|.
+	(Same as |fugitive|'s |:Git|)
 
 ------------------------------------------------------------------------------
 KEY-MAPPINGS					*agit-key-mappings*
