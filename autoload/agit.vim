@@ -156,7 +156,7 @@ endfunction
 function! s:get_git_dir(basedir)
   if empty(a:basedir)
     " if fugitive exists
-    if exists('b:git_dir')
+    if s:fugitive_enabled && exists('b:git_dir')
       return b:git_dir
     else
       let current_path = expand('%:p:h')
