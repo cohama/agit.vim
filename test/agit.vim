@@ -363,3 +363,20 @@ function! s:suite.__agit_exitting__()
   endfunction
 
 endfunction
+
+function! s:suite.__option_dir__()
+  let option_dir = themis#suite('option dir')
+
+  function! option_dir.before_each()
+    edit `=s:repo_path . 'clean/a'`
+  endfunction
+
+  function! option_dir.open_agit_on_specified_directory()
+    Agit
+    let head_msg = g:agit#git#unstaged_message
+    call Expect(getline(1)).not.to_equal(head_msg)
+    q
+    execute 'Agit --dir=' . s:repo_path . 'unstaged'
+    call Expect(getline(1)).to_equal(head_msg)
+  endfunction
+endfunction

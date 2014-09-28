@@ -31,25 +31,40 @@ let s:P = s:V.import('Prelude')
 let s:String = s:V.import('Data.String')
 let s:List = s:V.import('Data.List')
 let s:Process = s:V.import('Process')
+let s:OptionParser = s:V.import('OptionParser')
 
 let s:agit_vital = {
 \ 'V' : s:V,
 \ 'P' : s:P,
 \ 'String' : s:String,
 \ 'List' : s:List,
-\ 'Process' : s:Process
+\ 'Process' : s:Process,
+\ 'OptionParser' : s:OptionParser,
 \ }
 
 let s:fugitive_enabled = get(g:, 'loaded_fugitive', 0)
+
+let s:parser = s:OptionParser.new()
+call s:parser.on('--dir=VALUE', 'Launch Agit on the specified directory instead of the buffer direcotry.',
+\ {'completion' : 'file'})
+
+function! agit#complete_command(arglead, cmdline, cursorpos)
+  return s:parser.complete_greedily(a:arglead, a:cmdline, a:cursorpos)
+endfunction
 
 function! agit#vital()
   return s:agit_vital
 endfunction
 
-function! agit#launch()
+function! agit#launch(args)
   let s:old_hash = ''
   try
-    let git_dir = s:get_git_dir()
+    let parsed_args = s:parse_args(a:args)
+    if has_key(parsed_args, 'help')
+      call s:parser.help()
+      return
+    endif
+    let git_dir = s:get_git_dir(get(parsed_args, 'dir', ''))
     call agit#bufwin#agit_tabnew()
     let t:git = agit#git#new(git_dir)
     call agit#bufwin#set_to_log(t:git.log(winwidth(agit#bufwin#log_winnr())))
@@ -60,6 +75,19 @@ function! agit#launch()
     endif
   catch
     echomsg v:exception
+  endtry
+endfunction
+
+function! s:parse_args(args)
+  try
+    let parse_result = s:parser.parse(a:args)
+    if !empty(parse_result.__unknown_args__)
+      throw 'vital: OptionParser: Unknown option was specified: ' . parse_result.__unknown_args__[0]
+    endif
+    return parse_result
+  catch /vital: OptionParser: /
+    let msg = matchstr(v:exception, 'vital: OptionParser: \zs.*')
+    throw msg
   endtry
 endfunction
 
@@ -125,13 +153,18 @@ function! agit#reload() abort
   let s:old_hash = ''
 endfunction
 
-function! s:get_git_dir()
-  " if fugitive exists
-  if exists('b:git_dir')
-    return b:git_dir
+function! s:get_git_dir(basedir)
+  if empty(a:basedir)
+    " if fugitive exists
+    if exists('b:git_dir')
+      return b:git_dir
+    else
+      let current_path = expand('%:p:h')
+    endif
+  else
+    let current_path = a:basedir
   endif
   let cdcmd = haslocaldir() ? 'lcd ' : 'cd '
-  let current_path = expand('%:p:h')
   let cwd = getcwd()
   execute cdcmd . current_path
   if s:Process.has_vimproc() && s:P.is_windows()
