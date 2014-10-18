@@ -50,6 +50,11 @@ augroup agit
 
   autocmd ShellCmdPost <buffer> call agit#reload()
 
+  if g:agit_skip_empty_line
+    let s:old_linenr = line('.')
+    autocmd CursorMoved <buffer> call s:skip_empty_line()
+  endif
+
 augroup END
 
 function! s:wait_for_show_commit()
@@ -72,6 +77,20 @@ function! s:exit()
     return
   endif
   silent! only!
+endfunction
+
+function! s:skip_empty_line()
+  let linenr = line('.')
+  while agit#extract_hash(getline('.')) ==# '' && line('.') !=# 1 && line('.') !=# line('$')
+    if linenr > s:old_linenr
+      normal! j
+    elseif linenr < s:old_linenr
+      normal! k
+    else
+      return
+    endif
+  endwhile
+  let s:old_linenr = line('.')
 endfunction
 
 setl conceallevel=2

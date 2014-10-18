@@ -18,21 +18,38 @@ git -c user.name=agit add -A
 git -c user.name=agit commit -m"${COMMIT_MSG[1]}"
 git branch develop HEAD~
 cd ..
+
 cp -a clean execute
 cp -a clean untracked
 cd $_
 echo "ccccc" > c
 echo "ccc" >> c
 cd ..
+
 cp -a clean unstaged
 cd $_
 echo "bbb" >> b
 cd ..
+
 cp -a unstaged staged
 cd $_
 git -c user.name=agit add b
 cd ..
+
 cp -a staged mixed
 cd $_
 echo "aa" >> a
 echo "bb" >> b
+cd ..
+
+cp -a clean branched
+cd $_
+echo "ccc" >> c
+git -c user.name=agit add -A
+git -c user.name=agit commit -m"${COMMIT_MSG[2]}"
+git -c user.name=agit checkout develop
+echo "ddd" >> d
+git -c user.name=agit add -A
+git -c user.name=agit commit -m"${COMMIT_MSG[3]}"
+git -c user.name=agit checkout master
+git -c user.name=agit merge develop --no-edit

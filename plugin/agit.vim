@@ -18,6 +18,9 @@ endif
 if !exists('g:agit_max_log_lines')
   let g:agit_max_log_lines = 500
 endif
+if !exists('g:agit_skip_empty_line')
+  let g:agit_skip_empty_line = 1
+endif
 
 nnoremap <silent> <Plug>(agit-reload)  :<C-u>call agit#reload()<CR>
 nnoremap <silent> <Plug>(agit-scrolldown-stat) :<C-u>call agit#remote_scroll('stat', 'down')<CR>

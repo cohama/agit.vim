@@ -333,6 +333,52 @@ function! s:suite.__in_execute_repo__()
 
 endfunction
 
+function! s:suite.__in_branched_repo__()
+
+  let branched = themis#suite('in branched repo')
+
+  function! branched.before()
+    tabnew
+    tabonly!
+    edit `=s:repo_path . 'branched/a'`
+    Agit
+  endfunction
+
+  function! branched.skip_empty_line()
+    normal! gg
+    normal! j
+    doautocmd CursorMoved
+    call Expect(line('.')).to_equal(3)
+    call Expect(agit#extract_hash(getline('.'))).not.to_equal('')
+  endfunction
+
+  function! branched.normal_move()
+    normal! gg
+    normal! 3j
+    doautocmd CursorMoved
+    call Expect(line('.')).to_equal(4)
+    call Expect(agit#extract_hash(getline('.'))).not.to_equal('')
+  endfunction
+
+  function! branched.skip_empty_line_upper()
+    normal! G
+    doautocmd CursorMoved
+    normal! k
+    doautocmd CursorMoved
+    call Expect(line('.')).to_equal(line('$')-2)
+    call Expect(agit#extract_hash(getline('.'))).not.to_equal('')
+  endfunction
+
+  function! branched.normal_move_upper()
+    normal! G
+    normal! 3k
+    doautocmd CursorMoved
+    call Expect(line('.')).to_equal(line('$')-3)
+    call Expect(agit#extract_hash(getline('.'))).not.to_equal('')
+  endfunction
+
+endfunction
+
 function! s:suite.__agit_exitting__()
   let exit = themis#suite('agit exitting')
 
