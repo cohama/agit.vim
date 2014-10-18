@@ -20,9 +20,6 @@ if !exists('g:agit_max_log_lines')
 endif
 
 nnoremap <silent> <Plug>(agit-reload)  :<C-u>call agit#reload()<CR>
-
-nnoremap <silent> <Plug>(agit-smart-j)         :<C-u>call agit#smart_j(v:count1)<CR>
-nnoremap <silent> <Plug>(agit-smart-k)         :<C-u>call agit#smart_k(v:count1)<CR>
 nnoremap <silent> <Plug>(agit-scrolldown-stat) :<C-u>call agit#remote_scroll('stat', 'down')<CR>
 nnoremap <silent> <Plug>(agit-scrollup-stat)   :<C-u>call agit#remote_scroll('stat', 'up')<CR>
 nnoremap <silent> <Plug>(agit-scrolldown-diff) :<C-u>call agit#remote_scroll('diff', 'down')<CR>

@@ -89,30 +89,6 @@ function! agit#show_commit()
   return 1
 endfunction
 
-function! agit#smart_j(count)
-  for i in range(a:count)
-    normal! j
-    while agit#extract_hash(getline('.')) ==# ''
-      normal! j
-      if line('.') ==# line('$')
-        return
-      endif
-    endwhile
-  endfor
-endfunction
-
-function! agit#smart_k(count)
-  for i in range(a:count)
-    normal! k
-    while agit#extract_hash(getline('.')) ==# ''
-      normal! k
-      if line('.') ==# 1
-        return
-      endif
-    endwhile
-  endfor
-endfunction
-
 function! agit#remote_scroll(win_type, direction)
   if a:win_type ==# 'stat'
     call agit#bufwin#move_to_stat()

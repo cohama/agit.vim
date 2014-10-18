@@ -333,47 +333,6 @@ function! s:suite.__in_execute_repo__()
 
 endfunction
 
-function! s:suite.__in_branched_repo__()
-
-  let branched = themis#suite('in branched repo')
-
-  function! branched.before()
-    tabnew
-    tabonly!
-    edit `=s:repo_path . 'branched/a'`
-    Agit
-  endfunction
-
-  function! branched.smart_j()
-    normal! gg
-    call agit#smart_j(1)
-    call Expect(line('.')).to_equal(3)
-    call Expect(agit#extract_hash(getline('.'))).not.to_equal('')
-  endfunction
-
-  function! branched.smart_j_with_count()
-    normal! gg
-    call agit#smart_j(3)
-    call Expect(line('.')).to_equal(5)
-    call Expect(agit#extract_hash(getline('.'))).not.to_equal('')
-  endfunction
-
-  function! branched.smart_k()
-    normal! G
-    call agit#smart_k(1)
-    call Expect(line('.')).to_equal(line('$')-2)
-    call Expect(agit#extract_hash(getline('.'))).not.to_equal('')
-  endfunction
-
-  function! branched.smart_k_with_count()
-    normal! G
-    call agit#smart_k(3)
-    call Expect(line('.')).to_equal(line('$')-4)
-    call Expect(agit#extract_hash(getline('.'))).not.to_equal('')
-  endfunction
-
-endfunction
-
 function! s:suite.__agit_exitting__()
   let exit = themis#suite('agit exitting')
 

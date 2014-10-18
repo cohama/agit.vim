@@ -8,9 +8,6 @@ command! -bang -nargs=+ -buffer -complete=custom,agit#agit_git_compl AgitGitConf
 
 if !g:agit_no_default_mappings
   nmap <buffer> u <PLug>(agit-reload)
-
-  nmap <silent><buffer> j <Plug>(agit-smart-j)
-  nmap <silent><buffer> k <Plug>(agit-smart-k)
   nmap <silent><buffer> J <Plug>(agit-scrolldown-stat)
   nmap <silent><buffer> K <Plug>(agit-scrollup-stat)
   nmap <silent><buffer> <C-j> <Plug>(agit-scrolldown-diff)
