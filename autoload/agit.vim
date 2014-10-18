@@ -1,31 +1,6 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-nnoremap <silent> <Plug>(agit-reload)  :<C-u>call agit#reload()<CR>
-nnoremap <silent> <Plug>(agit-scrolldown-stat) :<C-u>call <SID>remote_scroll('stat', 'down')<CR>
-nnoremap <silent> <Plug>(agit-scrollup-stat)   :<C-u>call <SID>remote_scroll('stat', 'up')<CR>
-nnoremap <silent> <Plug>(agit-scrolldown-diff) :<C-u>call <SID>remote_scroll('diff', 'down')<CR>
-nnoremap <silent> <Plug>(agit-scrollup-diff)   :<C-u>call <SID>remote_scroll('diff', 'up')<CR>
-
-nnoremap <PLug>(agit-yank-hash) :<C-u>call <SID>yank_hash()<CR>
-nnoremap <Plug>(agit-show-commit) :<C-u>call agit#show_commit()<CR>
-
-nnoremap <Plug>(agit-git-checkout)     :<C-u>AgitGit checkout <branch><CR>
-nnoremap <Plug>(agit-git-checkout-b)   :<C-u>AgitGit checkout -b \%# <hash><CR>
-nnoremap <Plug>(agit-git-branch-d)     :<C-u>AgitGitConfirm branch -d <branch><CR>
-nnoremap <Plug>(agit-git-reset-soft)   :<C-u>AgitGitConfirm reset --soft <hash><CR>
-nnoremap <Plug>(agit-git-reset)        :<C-u>AgitGitConfirm reset <hash><CR>
-nnoremap <Plug>(agit-git-reset-hard)   :<C-u>AgitGitConfirm reset --hard <hash><CR>
-nnoremap <Plug>(agit-git-rebase)       :<C-u>AgitGitConfirm rebase <hash><CR>
-nnoremap <Plug>(agit-git-rebase-i)     :<C-u>AgitGitConfirm! rebase --interactive <hash><CR>
-nnoremap <Plug>(agit-git-bisect-start) :<C-u>AgitGit bisect start HEAD <hash> \%#<CR>
-nnoremap <Plug>(agit-git-bisect-good)  :<C-u>AgitGit bisect good<CR>
-nnoremap <Plug>(agit-git-bisect-bad)   :<C-u>AgitGit bisect bad<CR>
-nnoremap <Plug>(agit-git-bisect-reset) :<C-u>AgitGit bisect reset<CR>
-nnoremap <Plug>(agit-git-cherry-pick)  :<C-u>AgitGit cherry-pick <hash><CR>
-nnoremap <Plug>(agit-git-revert)       :<C-u>AgitGit revert <hash><CR>
-nnoremap <Plug>(agit-exit)             :<C-u>call <SID>agit_exit()<CR>
-
 let s:V = vital#of('agit')
 let s:P = s:V.import('Prelude')
 let s:String = s:V.import('Data.String')
@@ -114,7 +89,7 @@ function! agit#show_commit()
   return 1
 endfunction
 
-function! s:remote_scroll(win_type, direction)
+function! agit#remote_scroll(win_type, direction)
   if a:win_type ==# 'stat'
     call agit#bufwin#move_to_stat()
   elseif a:win_type ==# 'diff'
@@ -128,12 +103,12 @@ function! s:remote_scroll(win_type, direction)
   call agit#bufwin#move_to_log()
 endfunction
 
-function! s:yank_hash()
+function! agit#yank_hash()
   call setreg(v:register, agit#extract_hash(getline('.')))
   echo 'yanked ' . getreg(v:register)
 endfunction
 
-function! s:agit_exit()
+function! agit#exit()
   if !exists('t:git')
     return
   endif
@@ -190,7 +165,7 @@ function! agit#agitgit(arg, confirm, bang)
   if match(arg, '\c<branch>') >= 0
     let cword = expand('<cword>')
     silent let branch = agit#git#exec('rev-parse --symbolic ' . cword, t:git.git_dir)
-    let branch = substitute(branch, '\n\+$', '', '') 
+    let branch = substitute(branch, '\n\+$', '', '')
     if agit#git#get_last_status() != 0
       echomsg 'Not a branch name: ' . cword
       return
