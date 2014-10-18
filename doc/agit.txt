@@ -213,10 +213,16 @@ g:agit_enable_auto_refresh			*g:agit_enable_auto_refresh*
 	default value: 0
 	
 g:agit_max_log_lines				*g:agit_max_log_lines*
-	default value: 500
 	Determine the number of lines to display in |agit-log| buffer.
 	Large value is useful to explore the very old history but it causes
 	less performance.
+	default value: 500
+
+g:agit_skip_empty_line				*g:agit_skip_empty_line*
+	If it is non-zero, empty lines are skipped when you move the cursor in
+	|agit-log| buffer.
+	default value: 1
+
 
 ==============================================================================
 TODO						*agit-todo*
