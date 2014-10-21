@@ -81,7 +81,9 @@ endfunction
 
 function! s:skip_empty_line()
   let linenr = line('.')
-  while agit#extract_hash(getline('.')) ==# '' && line('.') !=# 1 && line('.') !=# line('$')
+  let curline = getline('.')
+  while agit#extract_hash(curline) ==# '' && line('.') !=# 1 && line('.') !=# line('$')
+  \ && curline !=# g:agit#git#staged_message && curline !=# g:agit#git#unstaged_message
     if linenr > s:old_linenr
       normal! j
     elseif linenr < s:old_linenr
@@ -89,6 +91,7 @@ function! s:skip_empty_line()
     else
       return
     endif
+    let curline = getline('.')
   endwhile
   let s:old_linenr = line('.')
 endfunction
