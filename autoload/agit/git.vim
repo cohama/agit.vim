@@ -106,6 +106,10 @@ function! s:git.diff(hash) dict
   return diff
 endfunction
 
+function! s:git.commitmsg(hash) dict
+  return agit#git#exec('show -s --format=format:%s ' . a:hash, self.git_dir)
+endfunction
+
 function! agit#git#new(git_dir)
   return extend(deepcopy(s:git), {'git_dir' : a:git_dir})
 endfunction

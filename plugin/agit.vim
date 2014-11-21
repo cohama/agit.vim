@@ -30,6 +30,7 @@ nnoremap <silent> <Plug>(agit-scrollup-diff)   :<C-u>call agit#remote_scroll('di
 
 nnoremap <PLug>(agit-yank-hash) :<C-u>call agit#yank_hash()<CR>
 nnoremap <Plug>(agit-show-commit) :<C-u>call agit#show_commit()<CR>
+nnoremap <Plug>(agit-print-commitmsg) :<C-u>call agit#print_commitmsg()<CR>
 
 nnoremap <Plug>(agit-git-checkout)     :<C-u>AgitGit checkout <branch><CR>
 nnoremap <Plug>(agit-git-checkout-b)   :<C-u>AgitGit checkout -b \%# <hash><CR>

@@ -16,6 +16,7 @@ if !g:agit_no_default_mappings
   nmap <buffer> yh <Plug>(agit-yank-hash)
   nmap <buffer> q <Plug>(agit-exit)
   nmap <buffer> <CR> <Plug>(agit-show-commit)
+  nmap <buffer> <C-g> <Plug>(agit-print-commitmsg)
 
   nmap <buffer> C <Plug>(agit-git-checkout)
   nmap <buffer> cb <Plug>(agit-git-checkout-b)

@@ -89,6 +89,15 @@ function! agit#show_commit()
   return 1
 endfunction
 
+function! agit#print_commitmsg()
+  let hash = agit#extract_hash(getline('.'))
+  if hash != ''
+    echo t:git.commitmsg(hash)
+  else
+    echo
+  endif
+endfunction
+
 function! agit#remote_scroll(win_type, direction)
   if a:win_type ==# 'stat'
     call agit#bufwin#move_to_stat()

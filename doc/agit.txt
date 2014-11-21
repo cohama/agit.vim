@@ -137,6 +137,9 @@ In |agit-log| buffer, the following key mappings can be used.
 <PLug>(agit-yank-hash)				*<Plug>(agit-yank-hash)*
 	Yank the hash of the commit under the cursor
 
+<Plug>(agit-print-commitmsg)			*<Plug>(agit-print-commitmsg)*
+	Print the commit message.
+
 <PLug>(agit-exit)				*<Plug>(agit-exit)*
 	Exit from agit.
 
@@ -182,6 +185,7 @@ K			<Plug>(agit-scrollup-stat)
 <C-k>			<Plug>(agit-scrollup-diff)
 u			<PLug>(agit-reload)
 yh			<Plug>(agit-yank-hash)
+<C-g>			<Plug>(agit-print-commitmsg)
 q			<Plug>(agit-exit)
 C			<Plug>(agit-git-checkout)
 cb			<Plug>(agit-git-checkout-b)
