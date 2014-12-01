@@ -17,11 +17,26 @@ let s:agit_vital = {
 \ 'OptionParser' : s:OptionParser,
 \ }
 
+let s:agit_preset_views = {
+\ 'default': [
+\   {'name': 'log'},
+\   {'name': 'stat',
+\    'layout': 'botright vnew'},
+\   {'name': 'diff',
+\    'layout': 'belowright {winheight(".") * 3 / 4}new'}
+\ ],
+\ 'file': [
+\   {'name': 'filelog'},
+\   {'name': 'catfile',
+\    'layout': 'botright vnew'},
+\ ]}
 let s:fugitive_enabled = get(g:, 'loaded_fugitive', 0)
 
 let s:parser = s:OptionParser.new()
 call s:parser.on('--dir=VALUE', 'Launch Agit on the specified directory instead of the buffer direcotry.',
-\ {'completion' : 'file'})
+\ {'completion' : 'file', 'default': ''})
+call s:parser.on('--file=VALUE', 'Specify file name traced by Agit file. (Available on Agit file)',
+\ {'completion' : 'file', 'default': '%'})
 
 function! agit#complete_command(arglead, cmdline, cursorpos)
   return s:parser.complete_greedily(a:arglead, a:cmdline, a:cursorpos)
@@ -38,17 +53,10 @@ function! agit#launch(args)
       call s:parser.help()
       return
     endif
-    let git_dir = s:get_git_dir(get(parsed_args, 'dir', ''))
+    let git_dir = s:get_git_dir(parsed_args.dir)
     let git = agit#git#new(git_dir)
-    let git.views = [{
-    \ 'name': 'log',
-    \ }, {
-    \ 'name': 'stat',
-    \ 'layout': 'botright vnew'
-    \ }, {
-    \ 'name': 'diff',
-    \ 'layout': 'belowright {winheight(".") * 3 / 4}new'
-    \ }]
+    let git.path = expand(parsed_args.file)
+    let git.views = parsed_args.preset
     call agit#bufwin#agit_tabnew(git)
     let t:git = git
   catch
@@ -59,7 +67,11 @@ endfunction
 function! s:parse_args(args)
   try
     let parse_result = s:parser.parse(a:args)
-    if !empty(parse_result.__unknown_args__)
+    if empty(parse_result.__unknown_args__)
+      let parse_result.preset = s:agit_preset_views.default
+    elseif has_key(s:agit_preset_views, parse_result.__unknown_args__[0])
+      let parse_result.preset = s:agit_preset_views[parse_result.__unknown_args__[0]]
+    else
       throw 'vital: OptionParser: Unknown option was specified: ' . parse_result.__unknown_args__[0]
     endif
     return parse_result

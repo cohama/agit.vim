@@ -49,5 +49,6 @@ nnoremap <Plug>(agit-git-revert)       :<C-u>AgitGit revert <hash><CR>
 nnoremap <Plug>(agit-exit)             :<C-u>call agit#exit()<CR>
 
 command! -nargs=* -complete=customlist,agit#complete_command Agit call agit#launch(<q-args>)
+command! -nargs=* -complete=customlist,agit#complete_command AgitFile Agit file <args>
 
 let &cpo = s:save_cpo
