@@ -9,6 +9,9 @@ let g:agit#git#unstaged_message = '=  Local uncommitted changes, not checked in 
 
 let s:git = {
 \ 'git_dir' : '',
+\ 'hash': '',
+\ 'oninit': [],
+\ 'onhashchange': [],
 \ 'staged' : {
 \   'stat' : '',
 \   'diff' : '',
@@ -110,8 +113,11 @@ function! s:git.commitmsg(hash) dict
   return agit#git#exec('show -s --format=format:%s ' . a:hash, self.git_dir)
 endfunction
 
+let s:seq = ''
 function! agit#git#new(git_dir)
-  return extend(deepcopy(s:git), {'git_dir' : a:git_dir})
+  let git = extend(deepcopy(s:git), {'git_dir' : a:git_dir, 'seq': s:seq})
+  let s:seq += 1
+  return git
 endfunction
 
 " Utilities
@@ -148,4 +154,19 @@ function! s:find_index(xs, expr)
     endif
   endfor
   return -1
+endfunction
+
+function! s:git.fire_init()
+  for view in self.oninit
+    call view.render()
+  endfor
+endfunction
+
+function! s:git.sethash(hash)
+  if self.hash !=# a:hash
+    let self.hash = a:hash
+    for view in self.onhashchange
+      call view.render(a:hash)
+    endfor
+  endif
 endfunction

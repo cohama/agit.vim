@@ -32,7 +32,6 @@ function! agit#vital()
 endfunction
 
 function! agit#launch(args)
-  let s:old_hash = ''
   try
     let parsed_args = s:parse_args(a:args)
     if has_key(parsed_args, 'help')
@@ -40,14 +39,18 @@ function! agit#launch(args)
       return
     endif
     let git_dir = s:get_git_dir(get(parsed_args, 'dir', ''))
-    call agit#bufwin#agit_tabnew()
-    let t:git = agit#git#new(git_dir)
-    call agit#bufwin#set_to_log(t:git.log(winwidth(agit#bufwin#log_winnr())))
-    call agit#show_commit()
-    if s:fugitive_enabled
-      let b:git_dir = git_dir " for fugitive commands
-      silent doautocmd User Fugitive
-    endif
+    let git = agit#git#new(git_dir)
+    let git.views = [{
+    \ 'name': 'log',
+    \ }, {
+    \ 'name': 'stat',
+    \ 'layout': 'botright vnew'
+    \ }, {
+    \ 'name': 'diff',
+    \ 'layout': 'belowright {winheight(".") * 3 / 4}new'
+    \ }]
+    call agit#bufwin#agit_tabnew(git)
+    let t:git = git
   catch
     echomsg v:exception
   endtry
@@ -66,29 +69,6 @@ function! s:parse_args(args)
   endtry
 endfunction
 
-let s:old_hash = ''
-function! agit#show_commit()
-  let line = getline('.')
-  if line ==# g:agit#git#staged_message
-    let hash = 'staged'
-  elseif line ==# g:agit#git#unstaged_message
-    let hash = 'unstaged'
-  else
-    let hash = agit#extract_hash(line)
-  endif
-  if hash == ''
-    call agit#bufwin#set_to_stat('')
-    call agit#bufwin#set_to_diff('')
-  elseif s:old_hash !=# hash
-    call agit#bufwin#set_to_stat(t:git.stat(hash))
-    call agit#bufwin#set_to_diff(t:git.diff(hash))
-  else
-    return 0
-  endif
-  let s:old_hash = hash
-  return 1
-endfunction
-
 function! agit#print_commitmsg()
   let hash = agit#extract_hash(getline('.'))
   if hash != ''
@@ -100,16 +80,16 @@ endfunction
 
 function! agit#remote_scroll(win_type, direction)
   if a:win_type ==# 'stat'
-    call agit#bufwin#move_to_stat()
+    call agit#bufwin#move_to('stat')
   elseif a:win_type ==# 'diff'
-    call agit#bufwin#move_to_diff()
+    call agit#bufwin#move_to('diff')
   endif
   if a:direction ==# 'down'
     execute "normal! \<C-d>"
   elseif a:direction ==# 'up'
     execute "normal! \<C-u>"
   endif
-  call agit#bufwin#move_to_log()
+  call agit#bufwin#move_to('log')
 endfunction
 
 function! agit#yank_hash()
@@ -124,17 +104,22 @@ function! agit#exit()
   silent! tabclose!
 endfunction
 
+function! agit#show_commit()
+  if has_key(w:, 'view') && has_key(w:view, 'emmit')
+    call w:view.emmit()
+  endif
+endfunction
+
 function! agit#reload() abort
   if !exists('t:git')
     return
   endif
-  call agit#bufwin#move_to_log()
-  wincmd =
-  let pos = getpos('.')
-  call agit#bufwin#set_to_log(t:git.log(winwidth(agit#bufwin#log_winnr())))
-  noautocmd call setpos('.', pos)
-  call agit#show_commit()
-  let s:old_hash = ''
+  let pos_save = getpos('.')
+  try
+    call t:git.fire_init()
+  finally
+    call setpos('.', pos_save)
+  endtry
 endfunction
 
 function! s:get_git_dir(basedir)
