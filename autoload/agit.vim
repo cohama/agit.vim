@@ -56,6 +56,9 @@ function! agit#launch(args)
     let git_dir = s:get_git_dir(parsed_args.dir)
     let git = agit#git#new(git_dir)
     let git.path = expand(parsed_args.file)
+    if !filereadable(git.path)
+        throw "File not found: " . git.path
+    endif
     let git.views = parsed_args.preset
     call agit#bufwin#agit_tabnew(git)
     let t:git = git
