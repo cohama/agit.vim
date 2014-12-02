@@ -60,7 +60,7 @@ function! agit#launch(args)
     call agit#bufwin#agit_tabnew(git)
     let t:git = git
   catch
-    echomsg v:exception
+    echohl ErrorMsg | echomsg v:exception | echohl None
   endtry
 endfunction
 
