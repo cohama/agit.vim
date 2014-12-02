@@ -59,6 +59,8 @@ function! agit#launch(args)
     if !filereadable(git.path)
         throw "File not found: " . git.path
     endif
+    let git.abspath = fnamemodify(git.path, ':p')
+    let git.relpath = git.normalizepath(git.abspath)
     let git.views = parsed_args.preset
     call agit#bufwin#agit_tabnew(git)
     let t:git = git
