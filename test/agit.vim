@@ -426,3 +426,18 @@ function! s:suite.__option_dir__()
     call Expect(getline(1)).to_equal(head_msg)
   endfunction
 endfunction
+
+function! s:suite.__option_file__()
+  let option_file = themis#suite('option file')
+
+  function! option_file.before_each()
+    edit `=s:repo_path . 'clean/a'`
+  endfunction
+
+  function! option_file.open_not_found_path()
+    redir => message
+      Agit --file=this_file_does_not_exist
+    redir END
+    call Expect(stridx(message, "File not found: this_file_does_not_exist")).not.to_equal(-1)
+  endfunction
+endfunction
