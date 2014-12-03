@@ -21,7 +21,7 @@ endfunction
 
 function! s:catfile.render(hash)
   call agit#bufwin#move_to(self.name)
-  call s:fill_buffer(self.git.catfile(a:hash, self.git.path))
+  call s:fill_buffer(self.git.catfile(a:hash, self.git.normpath))
 endfunction
 
 function! s:catfile.setlocal()
