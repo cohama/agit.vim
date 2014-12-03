@@ -421,7 +421,7 @@ function! s:suite.__option_dir__()
     Agit
     let head_msg = g:agit#git#unstaged_message
     call Expect(getline(1)).not.to_equal(head_msg)
-    q
+    normal q
     execute 'Agit --dir=' . s:repo_path . 'unstaged'
     call Expect(getline(1)).to_equal(head_msg)
   endfunction
