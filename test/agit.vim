@@ -35,6 +35,41 @@ function! s:suite.__in_clean_repo__()
 
 endfunction
 
+function! s:suite.__in_clean_repo_with_empty_buffer__()
+
+  let clean = themis#suite('in clean repo with empty buffer')
+  let s:clean_repo_path = s:repo_path . 'clean/.git'
+
+  function! clean.before()
+    tabnew
+    tabonly!
+    let s:save_cwd = getcwd()
+    cd `=s:repo_path . 'clean'`
+    Agit
+  endfunction
+
+  function! clean.after()
+    cd `s:save_cwd`
+  endfunction
+
+  function! clean.create_3_windows()
+    call Expect(winnr('$')).to_equal(3)
+  endfunction
+
+  function! clean.appear_only_commits_at_log_window()
+    call agit#bufwin#move_to('log')
+    let head_hash = s:String.chomp(agit#git#exec('rev-parse --short HEAD', s:clean_repo_path))
+    call Expect(getline(1)).to_match(head_hash)
+  endfunction
+
+  function! clean.show_diff_stat_result_at_stat_window()
+    call agit#bufwin#move_to('stat')
+    let stat_msg = s:String.trim(s:String.chomp(agit#git#exec('diff --shortstat HEAD~', s:clean_repo_path)))
+    call Expect(s:String.trim(getline('$'))).to_equal(stat_msg)
+  endfunction
+
+endfunction
+
 function! s:suite.__in_unstaged_repo__()
 
   let unstaged = themis#suite('in unstaged repo')
@@ -436,8 +471,8 @@ function! s:suite.__option_file__()
 
   function! option_file.open_not_found_path()
     redir => message
-      Agit --file=this_file_does_not_exist
+      AgitFile --file=this_file_does_not_exist
     redir END
-    call Expect(stridx(message, "File not found: this_file_does_not_exist")).not.to_equal(-1)
+    call Expect(message).to_match("File not found: this_file_does_not_exist")
   endfunction
 endfunction
