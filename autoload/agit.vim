@@ -56,7 +56,7 @@ function! agit#launch(args)
     let git_dir = s:get_git_dir(parsed_args.dir)
     let git = agit#git#new(git_dir)
     let git.path = expand(parsed_args.file)
-    if !filereadable(git.path)
+    if parsed_args.presetname ==# 'file' && !filereadable(git.path)
         throw "Agit: File not found: " . git.path
     endif
     let git.abspath = fnamemodify(git.path, ':p')
@@ -74,8 +74,10 @@ function! s:parse_args(args)
     let parse_result = s:parser.parse(a:args)
     if empty(parse_result.__unknown_args__)
       let parse_result.preset = s:agit_preset_views.default
+      let parse_result.presetname = ''
     elseif has_key(s:agit_preset_views, parse_result.__unknown_args__[0])
-      let parse_result.preset = s:agit_preset_views[parse_result.__unknown_args__[0]]
+      let parse_result.presetname = parse_result.__unknown_args__[0]
+      let parse_result.preset = s:agit_preset_views[parse_result.presetname]
     else
       throw 'vital: OptionParser: Unknown option was specified: ' . parse_result.__unknown_args__[0]
     endif
