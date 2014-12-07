@@ -129,7 +129,7 @@ endfunction
 function! s:git.normalizepath(path)
   let path = agit#git#exec('ls-tree --full-name --name-only HEAD ' . a:path, self.git_dir)
   return s:String.chomp(path)
-endfunction                                                                                     
+endfunction
 
 function! s:git.catfile(hash, path)
   let catfile = agit#git#exec('cat-file -p ' . a:hash . ':' . a:path, self.git_dir)
