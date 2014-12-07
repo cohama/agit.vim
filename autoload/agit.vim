@@ -57,14 +57,14 @@ function! agit#launch(args)
     let git = agit#git#new(git_dir)
     let git.path = expand(parsed_args.file)
     if !filereadable(git.path)
-        throw "File not found: " . git.path
+        throw "Agit: File not found: " . git.path
     endif
     let git.abspath = fnamemodify(git.path, ':p')
     let git.relpath = git.normalizepath(git.abspath)
     let git.views = parsed_args.preset
     call agit#bufwin#agit_tabnew(git)
     let t:git = git
-  catch
+  catch /Agit: /
     echohl ErrorMsg | echomsg v:exception | echohl None
   endtry
 endfunction
@@ -82,7 +82,7 @@ function! s:parse_args(args)
     return parse_result
   catch /vital: OptionParser: /
     let msg = matchstr(v:exception, 'vital: OptionParser: \zs.*')
-    throw msg
+    throw 'Agit: ' . msg
   endtry
 endfunction
 
@@ -162,7 +162,7 @@ function! s:get_git_dir(basedir)
   endif
   execute cdcmd . cwd
   if has_error
-    throw 'Not a git repository.'
+    throw 'Agit: Not a git repository.'
   endif
   return s:String.chomp(toplevel_path) . '/.git'
 endfunction
