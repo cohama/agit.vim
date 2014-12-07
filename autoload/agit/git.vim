@@ -110,7 +110,7 @@ function! s:git.stat(hash) dict
     let stat = self.unstaged.stat
   else
     let stat = agit#git#exec('show --oneline --stat --date=iso --pretty=format: '. a:hash, self.git_dir)
-    let stat = matchstr(stat, '^\n\zs.*')
+    let stat = substitute(stat, '^[\n\r]\+', '', '')
   endif
   return stat
 endfunction
