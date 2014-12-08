@@ -33,5 +33,6 @@ function! s:stat.setlocal()
   setlocal nomodifiable
   setlocal nocursorline nocursorcolumn
   setlocal winfixheight
+  setlocal noswapfile
   nmap <buffer> q <Plug>(agit-exit)
 endfunction

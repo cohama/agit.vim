@@ -34,6 +34,7 @@ function! s:log.setlocal()
   setlocal iskeyword+=/,-,.
   setlocal nomodifiable
   setlocal conceallevel=2 concealcursor=nvc
+  setlocal noswapfile
 
   command! -bang -nargs=+ -buffer -complete=custom,agit#agit_git_compl AgitGit call agit#agitgit(<q-args>, 0, <bang>0)
   command! -bang -nargs=+ -buffer -complete=custom,agit#agit_git_compl AgitGitConfirm call agit#agitgit(<q-args>, 1, <bang>0)
