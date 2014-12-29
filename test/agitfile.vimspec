@@ -1,0 +1,40 @@
+let s:V = vital#of('agit')
+let s:String = s:V.import('Data.String')
+
+Describe :AgitFile command
+
+  Context in clean repository
+
+    Before all
+      tabnew | tabonly!
+    End
+
+    After each
+      normal q
+    End
+
+    Context :AgitFile on clean/a buffer
+
+      It creates 2 windows
+        e `=g:repo_path . 'clean/a'`
+        AgitFile
+        let head_hash = s:String.chomp(agit#git#exec('rev-parse --short HEAD~', g:clean_repo_path))
+        call Expect(getline(1)).to_match(head_hash)
+      End
+
+    End
+
+    Context :AgitFile on clean/b buffer
+
+      It creates 2 windows
+        e `=g:repo_path . 'clean/b'`
+        AgitFile
+        let head_hash = s:String.chomp(agit#git#exec('rev-parse --short HEAD', g:clean_repo_path))
+        call Expect(getline(1)).to_match(head_hash)
+      End
+
+    End
+
+  End
+
+End
