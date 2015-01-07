@@ -189,8 +189,8 @@ function! s:git.fire_init()
   endfor
 endfunction
 
-function! s:git.sethash(hash)
-  if self.hash !=# a:hash
+function! s:git.sethash(hash, force)
+  if self.hash !=# a:hash || a:force
     let self.hash = a:hash
     for view in self.onhashchange
       call view.render(a:hash)
