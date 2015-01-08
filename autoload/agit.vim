@@ -124,7 +124,12 @@ function! agit#exit()
   if !exists('t:git')
     return
   endif
-  silent! tabclose!
+  if tabpagenr('$') == 1
+    tabnew
+    silent! tabclose! 1
+  else
+    silent! tabclose!
+  endif
 endfunction
 
 function! agit#show_commit()
