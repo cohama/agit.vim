@@ -64,6 +64,10 @@ function! agit#launch(args)
     let git.views = parsed_args.preset
     call agit#bufwin#agit_tabnew(git)
     let t:git = git
+    if s:fugitive_enabled
+      let b:git_dir = git_dir " for fugitive commands
+      silent doautocmd User Fugitive
+    endif
   catch /Agit: /
     echohl ErrorMsg | echomsg v:exception | echohl None
   endtry
