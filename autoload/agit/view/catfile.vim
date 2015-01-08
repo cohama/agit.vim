@@ -30,7 +30,6 @@ function! s:catfile.setlocal()
   execute 'doautocmd BufNewFile ' . self.git.path
   setlocal buftype=nofile nobuflisted bufhidden=delete
   setlocal foldcolumn=0
-  setlocal nonumber norelativenumber nowrap
   setlocal nomodifiable
   setlocal nocursorline nocursorcolumn
   setlocal winfixheight
