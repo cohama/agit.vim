@@ -10,12 +10,12 @@ cd $_
 mkdir clean
 cd $_
 echo "aaa" > a
-git -c user.name=agit init
-git -c user.name=agit add -A
-git -c user.name=agit commit -m"${COMMIT_MSG[0]}"
+git -c user.name=agit -c user.email=agit@example.com init
+git -c user.name=agit -c user.email=agit@example.com add -A
+git -c user.name=agit -c user.email=agit@example.com commit -m"${COMMIT_MSG[0]}"
 echo "bbbb" > b
-git -c user.name=agit add -A
-git -c user.name=agit commit -m"${COMMIT_MSG[1]}"
+git -c user.name=agit -c user.email=agit@example.com add -A
+git -c user.name=agit -c user.email=agit@example.com commit -m"${COMMIT_MSG[1]}"
 git branch develop HEAD~
 cd ..
 
@@ -33,7 +33,7 @@ cd ..
 
 cp -a unstaged staged
 cd $_
-git -c user.name=agit add b
+git -c user.name=agit -c user.email=agit@example.com add b
 cd ..
 
 cp -a staged mixed
@@ -45,11 +45,11 @@ cd ..
 cp -a clean branched
 cd $_
 echo "ccc" >> c
-git -c user.name=agit add -A
-git -c user.name=agit commit -m"${COMMIT_MSG[2]}"
-git -c user.name=agit checkout develop
+git -c user.name=agit -c user.email=agit@example.com add -A
+git -c user.name=agit -c user.email=agit@example.com commit -m"${COMMIT_MSG[2]}"
+git -c user.name=agit -c user.email=agit@example.com checkout develop
 echo "ddd" >> d
-git -c user.name=agit add -A
-git -c user.name=agit commit -m"${COMMIT_MSG[3]}"
-git -c user.name=agit checkout master
-git -c user.name=agit merge develop --no-edit
+git -c user.name=agit -c user.email=agit@example.com add -A
+git -c user.name=agit -c user.email=agit@example.com commit -m"${COMMIT_MSG[3]}"
+git -c user.name=agit -c user.email=agit@example.com checkout master
+git -c user.name=agit -c user.email=agit@example.com merge develop --no-edit
