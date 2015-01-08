@@ -152,7 +152,7 @@ let s:last_status = 0
 let s:is_cp932 = &enc == 'cp932'
 function! agit#git#exec(command, git_dir, ...)
   let worktree_dir = matchstr(a:git_dir, '^.\+\ze\.git')
-  let cmd = 'git --no-pager --git-dir=' . a:git_dir . ' --work-tree=' . worktree_dir . ' ' . a:command
+  let cmd = 'git --no-pager --git-dir="' . a:git_dir . '" --work-tree="' . worktree_dir . '" ' . a:command
   if a:0 > 0 && a:1 == 1
     execute '!' . cmd
   else
