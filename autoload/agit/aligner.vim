@@ -43,7 +43,7 @@ function! agit#aligner#align(table, max_col, ...)
   endfor
   if len(a:table) > g:agit_max_log_lines
     call add(ret, '')
-    call add(ret, '(too many logs)')
+    call add(ret, g:agit#git#nextpage_message)
   endif
   return ret
 endfunction

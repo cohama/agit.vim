@@ -145,6 +145,8 @@ function! s:log.emmit(...)
       let hash = 'staged'
     elseif line ==# g:agit#git#unstaged_message
       let hash = 'unstaged'
+    elseif line ==# g:agit#git#nextpage_message
+      let hash = 'nextpage'
     endif
   endif
   call self.git.sethash(hash, force)
