@@ -21,7 +21,7 @@ endfunction
 function! s:log.render()
   call agit#bufwin#move_to(self.name)
   call s:fill_buffer(self.git.log(winwidth(0)))
-  call self.emmit()
+  call self.emmit(1)
 endfunction
 
 function! s:log.setlocal()
@@ -97,7 +97,7 @@ function! s:log.setlocal()
 
   function! s:show_commit()
     call s:cleanup()
-    if s:emmit()
+    if s:emmit(0)
       redraw!
     endif
   endfunction
@@ -131,11 +131,13 @@ function! s:log.setlocal()
   endfunction
 endfunction
 
-function! s:emmit()
-  call w:view.emmit()
+function! s:emmit(force)
+  call w:view.emmit(a:force)
 endfunction
 
-function! s:log.emmit()
+function! s:log.emmit(...)
+  " optional argument 1: force=0
+  let force = get(a:, 1, 0)
   let line = getline('.')
   let hash = matchstr(line, '\[\zs\x\{7\}\ze\]$')
   if hash ==# ''
@@ -145,6 +147,6 @@ function! s:log.emmit()
       let hash = 'unstaged'
     endif
   endif
-  call self.git.sethash(hash)
+  call self.git.sethash(hash, force)
   call agit#bufwin#move_to(self.name)
 endfunction
