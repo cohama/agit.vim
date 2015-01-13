@@ -88,7 +88,7 @@ function! s:git.log(winwidth) dict
 endfunction
 
 function! s:git.filelog(winwidth)
-  let gitlog = agit#git#exec('log --all --graph --decorate=full --no-color --date=relative --format=format:"%d %s' . s:sep . '|>%ad<|' . s:sep . '{>%an<}' . s:sep . '[%h]" -- ' . self.abspath, self.git_dir)
+  let gitlog = agit#git#exec('log --all --graph --decorate=full --no-color --date=relative --format=format:"%d %s' . s:sep . '|>%ad<|' . s:sep . '{>%an<}' . s:sep . '[%h]" -- "' . self.abspath . '"', self.git_dir)
   " 16 means concealed symbol (4*2 + 2) + hash (7) - right eade margin (1)
   let max_width = a:winwidth + 16
   let gitlog = substitute(gitlog, '\<refs/heads/', '', 'g')
@@ -132,7 +132,7 @@ function! s:git.diff(hash) dict
 endfunction
 
 function! s:git.normalizepath(path)
-  let path = agit#git#exec('ls-tree --full-name --name-only HEAD ' . a:path, self.git_dir)
+  let path = agit#git#exec('ls-tree --full-name --name-only HEAD "' . a:path . '"', self.git_dir)
   return s:String.chomp(path)
 endfunction
 
@@ -140,7 +140,7 @@ function! s:git.catfile(hash, path)
   if a:hash == 'nextpage'
     let catfile = ''
   else
-    let catfile = agit#git#exec('cat-file -p ' . a:hash . ':' . a:path, self.git_dir)
+    let catfile = agit#git#exec('cat-file -p "' . a:hash . ':' . a:path . '"', self.git_dir)
   endif
   return catfile
 endfunction
