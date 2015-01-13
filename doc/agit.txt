@@ -252,7 +252,7 @@ TODO						*agit-todo*
 
 
 ==============================================================================
-CHANGELOG					*lexima-changelog*
+CHANGELOG					*agit-changelog*
 
 v1.1	Add |:AgitFile|
 	Refactoring.
