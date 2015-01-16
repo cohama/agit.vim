@@ -28,25 +28,25 @@ nnoremap <silent> <Plug>(agit-scrollup-stat)   :<C-u>call agit#remote_scroll('st
 nnoremap <silent> <Plug>(agit-scrolldown-diff) :<C-u>call agit#remote_scroll('diff', 'down')<CR>
 nnoremap <silent> <Plug>(agit-scrollup-diff)   :<C-u>call agit#remote_scroll('diff', 'up')<CR>
 
-nnoremap <PLug>(agit-yank-hash) :<C-u>call agit#yank_hash()<CR>
-nnoremap <Plug>(agit-show-commit) :<C-u>call agit#show_commit()<CR>
-nnoremap <Plug>(agit-print-commitmsg) :<C-u>call agit#print_commitmsg()<CR>
+nnoremap <silent> <PLug>(agit-yank-hash) :<C-u>call agit#yank_hash()<CR>
+nnoremap <silent> <Plug>(agit-show-commit) :<C-u>call agit#show_commit()<CR>
+nnoremap <silent> <Plug>(agit-print-commitmsg) :<C-u>call agit#print_commitmsg()<CR>
 
-nnoremap <Plug>(agit-git-checkout)     :<C-u>AgitGit checkout <branch><CR>
-nnoremap <Plug>(agit-git-checkout-b)   :<C-u>AgitGit checkout -b \%# <hash><CR>
-nnoremap <Plug>(agit-git-branch-d)     :<C-u>AgitGitConfirm branch -d <branch><CR>
-nnoremap <Plug>(agit-git-reset-soft)   :<C-u>AgitGitConfirm reset --soft <hash><CR>
-nnoremap <Plug>(agit-git-reset)        :<C-u>AgitGitConfirm reset <hash><CR>
-nnoremap <Plug>(agit-git-reset-hard)   :<C-u>AgitGitConfirm reset --hard <hash><CR>
-nnoremap <Plug>(agit-git-rebase)       :<C-u>AgitGitConfirm rebase <hash><CR>
-nnoremap <Plug>(agit-git-rebase-i)     :<C-u>AgitGitConfirm! rebase --interactive <hash><CR>
-nnoremap <Plug>(agit-git-bisect-start) :<C-u>AgitGit bisect start HEAD <hash> \%#<CR>
-nnoremap <Plug>(agit-git-bisect-good)  :<C-u>AgitGit bisect good<CR>
-nnoremap <Plug>(agit-git-bisect-bad)   :<C-u>AgitGit bisect bad<CR>
-nnoremap <Plug>(agit-git-bisect-reset) :<C-u>AgitGit bisect reset<CR>
-nnoremap <Plug>(agit-git-cherry-pick)  :<C-u>AgitGit cherry-pick <hash><CR>
-nnoremap <Plug>(agit-git-revert)       :<C-u>AgitGit revert <hash><CR>
-nnoremap <Plug>(agit-exit)             :<C-u>call agit#exit()<CR>
+nnoremap <silent> <Plug>(agit-git-checkout)     :<C-u>AgitGit checkout <branch><CR>
+nnoremap <silent> <Plug>(agit-git-checkout-b)   :<C-u>AgitGit checkout -b \%# <hash><CR>
+nnoremap <silent> <Plug>(agit-git-branch-d)     :<C-u>AgitGitConfirm branch -d <branch><CR>
+nnoremap <silent> <Plug>(agit-git-reset-soft)   :<C-u>AgitGitConfirm reset --soft <hash><CR>
+nnoremap <silent> <Plug>(agit-git-reset)        :<C-u>AgitGitConfirm reset <hash><CR>
+nnoremap <silent> <Plug>(agit-git-reset-hard)   :<C-u>AgitGitConfirm reset --hard <hash><CR>
+nnoremap <silent> <Plug>(agit-git-rebase)       :<C-u>AgitGitConfirm rebase <hash><CR>
+nnoremap <silent> <Plug>(agit-git-rebase-i)     :<C-u>AgitGitConfirm! rebase --interactive <hash><CR>
+nnoremap <silent> <Plug>(agit-git-bisect-start) :<C-u>AgitGit bisect start HEAD <hash> \%#<CR>
+nnoremap <silent> <Plug>(agit-git-bisect-good)  :<C-u>AgitGit bisect good<CR>
+nnoremap <silent> <Plug>(agit-git-bisect-bad)   :<C-u>AgitGit bisect bad<CR>
+nnoremap <silent> <Plug>(agit-git-bisect-reset) :<C-u>AgitGit bisect reset<CR>
+nnoremap <silent> <Plug>(agit-git-cherry-pick)  :<C-u>AgitGit cherry-pick <hash><CR>
+nnoremap <silent> <Plug>(agit-git-revert)       :<C-u>AgitGit revert <hash><CR>
+nnoremap <silent> <Plug>(agit-exit)             :<C-u>call agit#exit()<CR>
 
 command! -nargs=* -complete=customlist,agit#complete_command Agit call agit#launch(<q-args>)
 command! -nargs=* -complete=customlist,agit#complete_command AgitFile Agit file <args>
