@@ -224,8 +224,14 @@ function! agit#agit_git_compl(arglead, cmdline, cursorpos)
 endfunction
 
 function! agit#revision_list()
-  return agit#git#exec('rev-parse --symbolic --branches --remotes --tags', t:git.git_dir)
+  let revs = agit#git#exec('rev-parse --symbolic --branches --remotes --tags', t:git.git_dir)
   \ . join(['HEAD', 'ORIG_HEAD', 'MERGE_HEAD', 'FETCH_HEAD'], "\n")
+  let hash = agit#extract_hash(getline('.'))
+  if hash != ''
+    return hash . "\n" . revs
+  else
+    return revs
+  endif
 endfunction
 
 function! s:git_checkout(branch_name)
