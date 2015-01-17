@@ -26,7 +26,6 @@ endfunction
 function! s:stat.setlocal()
   call agit#bufwin#move_to(self.name)
   silent file `='[Agit stat] ' . self.git.seq`
-  set filetype=agit_stat
   setlocal buftype=nofile nobuflisted bufhidden=delete
   setlocal foldcolumn=0
   setlocal nonumber norelativenumber nowrap
@@ -35,4 +34,5 @@ function! s:stat.setlocal()
   setlocal winfixheight
   setlocal noswapfile
   nmap <buffer> q <Plug>(agit-exit)
+  set filetype=agit_stat
 endfunction

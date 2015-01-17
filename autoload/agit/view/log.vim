@@ -26,7 +26,6 @@ endfunction
 
 function! s:log.setlocal()
   call agit#bufwin#move_to(self.name)
-  set filetype=agit
   silent file `='[Agit log] ' . self.git.seq`
   setlocal buftype=nofile nobuflisted bufhidden=delete
   setlocal foldcolumn=0
@@ -129,6 +128,8 @@ function! s:log.setlocal()
     endwhile
     let s:old_linenr = line('.')
   endfunction
+
+  set filetype=agit
 endfunction
 
 function! s:emmit(force)

@@ -31,7 +31,6 @@ endfunction
 function! s:diff.setlocal()
   call agit#bufwin#move_to(self.name)
   silent file `='[Agit diff] ' . self.git.seq`
-  set filetype=agit_diff
   setlocal buftype=nofile nobuflisted bufhidden=delete
   setlocal foldcolumn=0
   setlocal nonumber norelativenumber nowrap
@@ -40,4 +39,5 @@ function! s:diff.setlocal()
   setlocal winfixheight
   setlocal noswapfile
   nmap <buffer> q <Plug>(agit-exit)
+  set filetype=agit_diff
 endfunction
