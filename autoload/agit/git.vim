@@ -132,7 +132,7 @@ function! s:git.diff(hash) dict
 endfunction
 
 function! s:git.normalizepath(path)
-  let path = agit#git#exec('ls-tree --full-name --name-only HEAD "' . a:path . '"', self.git_dir)
+  let path = agit#git#exec('ls-tree --full-name --name-only HEAD ''' . a:path . '''', self.git_dir)
   return s:String.chomp(path)
 endfunction
 
