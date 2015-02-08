@@ -9,18 +9,17 @@ syn region agitHeader start=/\%^/ end=/^$/ contains=agitHeaderLabel
 syn match agitHeaderLabel /^\w\+:/ contained display
 syn match agitHeaderLabel /^commit/ contained display
 
-syn region agitDiff start=/^diff --git/ end=/^\%(diff --git\)\@=\|\%$/ contains=agitDiffHeader,agitDiffFileName,agitDiffIndex,agitDiffRemove,agitDiffAdd
-syn region agitDiffMerge start=/^diff --cc/ end=/^\%(diff --cc\)\@=\|\%$/ contains=agitDiffHeader,agitDiffFileName,agitDiffIndex,agitDiffRemoveMerge,agitDiffAddMerge
-syn match agitDiffHeader /^diff --git.*$/ display contained
-syn match agitDiffRemove /^-.*/ display contained
+syn region agitDiff start=/^diff --git/ end=/^\%(^diff --git\)\@=\|\%$/ contains=agitDiffHeader,agitDiffFileName,agitDiffIndex,agitDiffAdd,agitDiffRemove
+syn region agitDiffMerge start=/^diff --cc/ end=/^\%(^diff --cc\)\@=\|\%$/ contains=agitDiffHeader,agitDiffFileName,agitDiffIndex,agitDiffRemoveMerge,agitDiffAddMerge
+syn match agitDiffAdd /^+.*/ display
+syn match agitDiffRemove /^-.*/ display
+syn match agitDiffHeader /^diff --\%(git\|cc\).*$/ display contained
 syn match agitDiffRemoveMerge /^\%( -\|- \|--\).*/ display contained
-syn match agitDiffAdd   /^+.*/ display contained
-syn match agitDiffAddMerge   /^\%( +\|+ \|++\).*/ display contained
+syn match agitDiffAddMerge /^\%( +\|+ \|++\).*/ display contained
 syn match agitDiffFileName /^\%(+++\|---\) .*$/ display contained
 syn match agitDiffIndex /^index.*$/ display contained
 syn match agitDiffLine /^@@ -.\{-}@@.*$/ display contained contains=agitDiffSubname
 syn match agitDiffSubname /^\%(@@ -.\{-}@@\)\zs.*$/ display contained
-
 
 hi def link agitDiffAdd Identifier
 hi def link agitDiffAddMerge Identifier
