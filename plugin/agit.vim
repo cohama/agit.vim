@@ -21,6 +21,9 @@ endif
 if !exists('g:agit_skip_empty_line')
   let g:agit_skip_empty_line = 1
 endif
+if !exists('g:agit_localchanges_always_on_top')
+  let g:agit_localchanges_always_on_top = 1
+endif
 
 nnoremap <silent> <Plug>(agit-reload)  :<C-u>call agit#reload()<CR>
 nnoremap <silent> <Plug>(agit-scrolldown-stat) :<C-u>call agit#remote_scroll('stat', 'down')<CR>
