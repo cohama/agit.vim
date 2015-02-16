@@ -241,7 +241,7 @@ g:agit_skip_empty_line				*g:agit_skip_empty_line*
 	|agit-log| buffer.
 	default value: 1
 
-g:agit_localchanges_always_on_top		*g:agit_skip_empty_line*
+g:agit_localchanges_always_on_top		*g:agit_localchanges_always_on_top*
 	If it is non-zero, a message line of uncommitted changes is placed
 	always on the top of |agit-log|.
 	default value: 1
