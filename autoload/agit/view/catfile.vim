@@ -22,6 +22,18 @@ endfunction
 function! s:catfile.render(hash)
   call agit#bufwin#move_to(self.name)
   call s:fill_buffer(self.git.catfile(a:hash, self.git.relpath))
+  if exists('w:agit_scrolllock')
+    let line = w:agit_scrolllock[0]
+    let winline = w:agit_scrolllock[1]
+    call setpos('.', [0, line, 1, 0])
+    let save_scrolloff = &l:scrolloff
+    setlocal scrolloff=0
+    normal! zt
+    if winline > 1
+      execute 'normal! ' . (winline - 1) . "\<C-y>"
+    endif
+    let &l:scrolloff = save_scrolloff
+  endif
 endfunction
 
 function! s:catfile.setlocal()
@@ -35,4 +47,12 @@ function! s:catfile.setlocal()
   setlocal winfixheight
   setlocal noswapfile
   nmap <buffer> q <Plug>(agit-exit)
+  augroup agit-catfile
+    autocmd!
+    autocmd WinLeave <buffer> call s:saveline()
+  augroup END
+endfunction
+
+function! s:saveline()
+  let w:agit_scrolllock = [line('.'), winline()]
 endfunction
