@@ -10,7 +10,8 @@ function! agit#aligner#align(table, max_col, ...)
   let maxs = []
   for c in range(column_number)
     let max = 0
-    for log in a:table
+    for i in range(min([len(a:table), g:agit_max_log_lines]))
+      let log = a:table[i]
       let max = (c < len(log) && strwidth(log[c]) > max) ? strwidth(log[c]) : max
     endfor
     call add(maxs, max)
