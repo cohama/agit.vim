@@ -36,8 +36,8 @@ function! s:git.log(winwidth) dict
 
   " TODO: strange message will be shown when merge conflicted
   " add staged and unstaged lines
-  let self.staged = self._localchanges(1)
-  let self.unstaged = self._localchanges(0)
+  let self.staged = self._localchanges(1, '')
+  let self.unstaged = self._localchanges(0, '')
   let untracked = agit#git#exec('ls-files --others --exclude-standard', self.git_dir)
   if !empty(untracked)
     if self.unstaged.stat !=# ''
@@ -62,16 +62,20 @@ function! s:git.filelog(winwidth)
 
   let aligned_log = agit#aligner#align(log_lines, max_width)
 
-  let self.staged = {'stat' : '', 'diff' : ''}
-  let self.unstaged = {'stat' : '', 'diff' : ''}
+  let self.staged = self._localchanges(1, self.relpath)
+  let self.unstaged = self._localchanges(0, self.relpath)
+  call self._insert_localchanges_loglines(aligned_log)
 
   return join(aligned_log, "\n")
 endfunction
 
-function! s:git._localchanges(cached) dict
+function! s:git._localchanges(cached, relpath) dict
   let cmd = 'diff --stat -p'
   if a:cached
     let cmd .= ' --cached'
+  endif
+  if !empty(a:relpath)
+    let cmd .= ' -- "' . a:relpath . '"'
   endif
   let diff = agit#git#exec(cmd, self.git_dir)
   let split = s:String.nsplit(diff, 2, '\n\n')
@@ -135,9 +139,17 @@ function! s:git.normalizepath(path)
   return s:String.chomp(path)
 endfunction
 
+function! s:git.to_abspath(relpath)
+  return fnamemodify(self.git_dir, ':h') . '/' . a:relpath
+endfunction
+
 function! s:git.catfile(hash, path)
   if a:hash == 'nextpage'
     let catfile = ''
+  elseif a:hash == 'unstaged'
+    let catfile = join(readfile(self.to_abspath(a:path)), "\n")
+  elseif a:hash == 'staged'
+    let catfile = agit#git#exec('cat-file -p ":' . a:path . '"', self.git_dir)
   else
     let catfile = agit#git#exec('cat-file -p "' . a:hash . ':' . a:path . '"', self.git_dir)
   endif
