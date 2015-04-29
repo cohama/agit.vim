@@ -60,6 +60,9 @@ function! agit#launch(args)
         throw "Agit: File not found: " . git.path
     endif
     let git.abspath = fnamemodify(git.path, ':p')
+    if parsed_args.presetname ==# 'file' && agit#git#exec('ls-files "' . git.abspath . '"', git.git_dir) ==# ''
+        throw "Agit: File not tracked: " . git.path
+    endif
     let git.relpath = git.normalizepath(git.abspath)
     let git.views = parsed_args.preset
     call agit#bufwin#agit_tabnew(git)
