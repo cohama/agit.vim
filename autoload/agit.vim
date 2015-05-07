@@ -153,6 +153,36 @@ function! agit#reload() abort
   endtry
 endfunction
 
+function! agit#diff() abort
+  try
+    if !exists('t:git')
+      return
+    endif
+    let rhash = t:git.hash
+    if rhash ==# 'nextpage'
+      return
+    elseif rhash ==# 'unstaged'
+      let lhash = 'staged'
+    elseif rhash ==# 'staged'
+      let lhash = s:String.chomp(agit#git#exec('rev-parse --short HEAD', t:git.git_dir))
+    else
+      let lhash = s:String.chomp(agit#git#exec('rev-parse --short ' . rhash . '~1', t:git.git_dir))
+    endif
+    if &filetype ==# 'agit'
+      let relpath = t:git.relpath
+    else
+      let relpath = expand('<cfile>')
+    endif
+    if agit#git#exec('ls-files "' . t:git.to_abspath(relpath) . '"', t:git.git_dir) ==# ''
+      throw "Agit: File not tracked: " . relpath
+    endif
+
+    call agit#diff#sidebyside(t:git, relpath, lhash, rhash)
+  catch /Agit: /
+    echohl ErrorMsg | echomsg v:exception | echohl None
+  endtry
+endfunction!
+
 function! s:get_git_dir(basedir)
   if empty(a:basedir)
     " if fugitive exists
