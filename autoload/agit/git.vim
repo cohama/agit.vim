@@ -182,7 +182,17 @@ function! agit#git#exec(command, git_dir, worktree_dir, ...)
 endfunction
 
 function! s:get_worktree_dir(git_dir)
-  return matchstr(a:git_dir, '^.\+\ze\.git')
+  let worktree_relpath = s:String.chomp(s:system('git --no-pager --git-dir="' . a:git_dir . '" config --get core.worktree'))
+  if worktree_relpath == ''
+    let worktree_dir = matchstr(a:git_dir, '^.\+\ze\.git')
+  else
+    let cdcmd = haslocaldir() ? 'lcd ' : 'cd '
+    let cwd = getcwd()
+    execute cdcmd . a:git_dir
+    let worktree_dir = fnamemodify(worktree_relpath, ':p')
+    execute cdcmd . cwd
+  endif
+  return worktree_dir
 endfunction
 
 function! s:system(cmd)
