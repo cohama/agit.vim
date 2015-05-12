@@ -9,6 +9,7 @@ function! s:suite.__in_clean_repo__()
 
   let clean = themis#suite('in clean repo')
   let s:clean_repo_path = s:repo_path . 'clean/.git'
+  let s:clean_worktree_path = s:repo_path . 'clean'
 
   function! clean.before()
     tabnew
@@ -23,13 +24,13 @@ function! s:suite.__in_clean_repo__()
 
   function! clean.appear_only_commits_at_log_window()
     call agit#bufwin#move_to('log')
-    let head_hash = s:String.chomp(agit#git#exec('rev-parse --short HEAD', s:clean_repo_path))
+    let head_hash = s:String.chomp(agit#git#exec('rev-parse --short HEAD', s:clean_repo_path, s:clean_worktree_path))
     call Expect(getline(1)).to_match(head_hash)
   endfunction
 
   function! clean.show_diff_stat_result_at_stat_window()
     call agit#bufwin#move_to('stat')
-    let stat_msg = s:String.trim(s:String.chomp(agit#git#exec('diff --shortstat HEAD~', s:clean_repo_path)))
+    let stat_msg = s:String.trim(s:String.chomp(agit#git#exec('diff --shortstat HEAD~', s:clean_repo_path, s:clean_worktree_path)))
     call Expect(s:String.trim(getline('$'))).to_equal(stat_msg)
   endfunction
 
@@ -58,13 +59,13 @@ function! s:suite.__in_clean_repo_with_empty_buffer__()
 
   function! clean.appear_only_commits_at_log_window()
     call agit#bufwin#move_to('log')
-    let head_hash = s:String.chomp(agit#git#exec('rev-parse --short HEAD', s:clean_repo_path))
+    let head_hash = s:String.chomp(agit#git#exec('rev-parse --short HEAD', s:clean_repo_path, s:clean_worktree_path))
     call Expect(getline(1)).to_match(head_hash)
   endfunction
 
   function! clean.show_diff_stat_result_at_stat_window()
     call agit#bufwin#move_to('stat')
-    let stat_msg = s:String.trim(s:String.chomp(agit#git#exec('diff --shortstat HEAD~', s:clean_repo_path)))
+    let stat_msg = s:String.trim(s:String.chomp(agit#git#exec('diff --shortstat HEAD~', s:clean_repo_path, s:clean_worktree_path)))
     call Expect(s:String.trim(getline('$'))).to_equal(stat_msg)
   endfunction
 
@@ -74,6 +75,7 @@ function! s:suite.__in_unstaged_repo__()
 
   let unstaged = themis#suite('in unstaged repo')
   let s:unstaged_repo_path = s:repo_path . 'unstaged/.git'
+  let s:unstaged_worktree_path = s:repo_path . 'unstaged'
 
   function! unstaged.before()
     tabnew
@@ -93,13 +95,13 @@ function! s:suite.__in_unstaged_repo__()
 
   function! unstaged.appear_commit_mesesage_at_second_line_log_window()
     call agit#bufwin#move_to('log')
-    let head_hash = s:String.chomp(agit#git#exec('rev-parse --short HEAD', s:unstaged_repo_path))
+    let head_hash = s:String.chomp(agit#git#exec('rev-parse --short HEAD', s:unstaged_repo_path, s:unstaged_worktree_path))
     call Expect(getline(2)).to_match(head_hash)
   endfunction
 
   function! unstaged.show_diff_stat_result_at_stat_window()
     call agit#bufwin#move_to('stat')
-    let stat_msg = s:String.trim(s:String.chomp(agit#git#exec('diff --shortstat', s:unstaged_repo_path)))
+    let stat_msg = s:String.trim(s:String.chomp(agit#git#exec('diff --shortstat', s:unstaged_repo_path, s:unstaged_worktree_path)))
     call Expect(s:String.trim(getline('$'))).to_equal(stat_msg)
   endfunction
 
@@ -109,6 +111,7 @@ function! s:suite.__in_untracked_repo__()
 
   let untracked = themis#suite('in untracked repo')
   let s:untracked_repo_path = s:repo_path . 'untracked/.git'
+  let s:untracked_worktree_path = s:repo_path . 'untracked'
 
   function! untracked.before()
     tabnew
@@ -128,13 +131,13 @@ function! s:suite.__in_untracked_repo__()
 
   function! untracked.appear_commit_mesesage_at_second_line_log_window()
     call agit#bufwin#move_to('log')
-    let head_hash = s:String.chomp(agit#git#exec('rev-parse --short HEAD', s:untracked_repo_path))
+    let head_hash = s:String.chomp(agit#git#exec('rev-parse --short HEAD', s:untracked_repo_path, s:untracked_worktree_path))
     call Expect(getline(2)).to_match(head_hash)
   endfunction
 
   function! untracked.show_diff_stat_result_at_stat_window()
     call agit#bufwin#move_to('stat')
-    let untracked_files = s:String.chomp(agit#git#exec('ls-files --others --exclude-standard', s:untracked_repo_path))
+    let untracked_files = s:String.chomp(agit#git#exec('ls-files --others --exclude-standard', s:untracked_repo_path, s:untracked_worktree_path))
     call Expect(s:String.trim(getline('$'))).to_equal(untracked_files)
   endfunction
 
@@ -149,6 +152,7 @@ function! s:suite.__in_staged_repo__()
 
   let staged = themis#suite('in staged repo')
   let s:staged_repo_path = s:repo_path . 'staged/.git'
+  let s:staged_worktree_path = s:repo_path . 'staged'
 
   function! staged.before()
     tabnew
@@ -168,13 +172,13 @@ function! s:suite.__in_staged_repo__()
 
   function! staged.appear_commit_mesesage_at_second_line_log_window()
     call agit#bufwin#move_to('log')
-    let head_hash = s:String.chomp(agit#git#exec('rev-parse --short HEAD', s:staged_repo_path))
+    let head_hash = s:String.chomp(agit#git#exec('rev-parse --short HEAD', s:staged_repo_path, s:staged_worktree_path))
     call Expect(getline(2)).to_match(head_hash)
   endfunction
 
   function! staged.show_diff_stat_result_at_stat_window()
     call agit#bufwin#move_to('stat')
-    let stat_msg = s:String.trim(s:String.chomp(agit#git#exec('diff --cached --shortstat', s:staged_repo_path)))
+    let stat_msg = s:String.trim(s:String.chomp(agit#git#exec('diff --cached --shortstat', s:staged_repo_path, s:staged_worktree_path)))
     call Expect(s:String.trim(getline('$'))).to_equal(stat_msg)
   endfunction
 
@@ -184,6 +188,7 @@ function! s:suite.__in_mixed_repo__()
 
   let mixed = themis#suite('in mixed repo')
   let s:mixed_repo_path = s:repo_path . 'mixed/.git'
+  let s:mixed_worktree_path = s:repo_path . 'mixed'
 
   function! mixed.before()
     tabnew
@@ -209,13 +214,13 @@ function! s:suite.__in_mixed_repo__()
 
   function! mixed.show_commit_mesesage_at_third_line_log_window()
     call agit#bufwin#move_to('log')
-    let head_hash = s:String.chomp(agit#git#exec('rev-parse --short HEAD', s:mixed_repo_path))
+    let head_hash = s:String.chomp(agit#git#exec('rev-parse --short HEAD', s:mixed_repo_path, s:mixed_worktree_path))
     call Expect(getline(3)).to_match(head_hash)
   endfunction
 
   function! mixed.show_unstaged_diff_stat_result_at_stat_window()
     call agit#bufwin#move_to('stat')
-    let stat_msg = s:String.trim(s:String.chomp(agit#git#exec('diff --shortstat', s:mixed_repo_path)))
+    let stat_msg = s:String.trim(s:String.chomp(agit#git#exec('diff --shortstat', s:mixed_repo_path, s:mixed_worktree_path)))
     call Expect(s:String.trim(getline('$'))).to_equal(stat_msg)
   endfunction
 
@@ -224,7 +229,7 @@ function! s:suite.__in_mixed_repo__()
     2
     call agit#show_commit()
     call agit#bufwin#move_to('stat')
-    let stat_msg = s:String.trim(s:String.chomp(agit#git#exec('diff --cached --shortstat', s:mixed_repo_path)))
+    let stat_msg = s:String.trim(s:String.chomp(agit#git#exec('diff --cached --shortstat', s:mixed_repo_path, s:mixed_worktree_path)))
     call Expect(s:String.trim(getline('$'))).to_equal(stat_msg)
   endfunction
 
@@ -248,7 +253,7 @@ function! s:suite.__reload_test__()
 
   function! reload.after_each()
     call delete(s:repo_path . 'clean/x')
-    call agit#git#exec('reset', t:git.git_dir)
+    call agit#git#exec('reset', t:git.git_dir, t:git.worktree_dir)
   endfunction
 
   function! reload.on_log_window()
@@ -330,6 +335,7 @@ function! s:suite.__in_execute_repo__()
 
   let execute = themis#suite('in execute repo')
   let s:execute_repo_path = s:repo_path . 'execute/.git'
+  let s:execute_worktree_path = s:repo_path . 'execute'
 
   function! execute.before()
     tabnew
@@ -342,17 +348,17 @@ function! s:suite.__in_execute_repo__()
     call agit#bufwin#move_to('log')
     call search('develop', 'wc')
     execute 'AgitGit checkout ' . expand('<cword>')
-    let current_branch = s:String.chomp(agit#git#exec('rev-parse --abbrev-ref HEAD', s:execute_repo_path))
+    let current_branch = s:String.chomp(agit#git#exec('rev-parse --abbrev-ref HEAD', s:execute_repo_path, s:execute_worktree_path))
     call Expect(current_branch).to_equal('develop')
     call search('master', 'wc')
     execute 'AgitGit checkout ' . expand('<cword>')
-    let current_branch = s:String.chomp(agit#git#exec('rev-parse --abbrev-ref HEAD', s:execute_repo_path))
+    let current_branch = s:String.chomp(agit#git#exec('rev-parse --abbrev-ref HEAD', s:execute_repo_path, s:execute_worktree_path))
     call Expect(current_branch).to_equal('master')
   endfunction
 
   function! execute.git_create_b()
     execute 'AgitGit checkout -b new ' . agit#extract_hash(getline(2))
-    let current_branch = s:String.chomp(agit#git#exec('rev-parse --abbrev-ref HEAD', s:execute_repo_path))
+    let current_branch = s:String.chomp(agit#git#exec('rev-parse --abbrev-ref HEAD', s:execute_repo_path, s:execute_worktree_path))
     call Expect(current_branch).to_equal('new')
     call Expect(getline(2)).to_match('(HEAD, new')
   endfunction
@@ -362,7 +368,7 @@ function! s:suite.__in_execute_repo__()
     execute "normal \<Plug>(agit-git-checkout)"
     call search('new', 'wc')
     execute 'AgitGit branch -d ' . expand("<cword>")
-    let current_branches = s:String.chomp(agit#git#exec('branch', s:execute_repo_path))
+    let current_branches = s:String.chomp(agit#git#exec('branch', s:execute_repo_path, s:execute_worktree_path))
     call Expect(current_branches).to_equal("  develop\n* master")
   endfunction
 

@@ -60,7 +60,7 @@ function! agit#launch(args)
         throw "Agit: File not found: " . git.path
     endif
     let git.abspath = fnamemodify(git.path, ':p')
-    if parsed_args.presetname ==# 'file' && agit#git#exec('ls-files "' . git.abspath . '"', git.git_dir) ==# ''
+    if parsed_args.presetname ==# 'file' && agit#git#exec('ls-files "' . git.abspath . '"', git.git_dir, git.worktree_dir) ==# ''
         throw "Agit: File not tracked: " . git.path
     endif
     let git.relpath = git.normalizepath(git.abspath)
@@ -189,7 +189,7 @@ function! agit#agitgit(arg, confirm, bang)
   let arg = substitute(a:arg, '\c<hash>', agit#extract_hash(getline('.')), 'g')
   if match(arg, '\c<branch>') >= 0
     let cword = expand('<cword>')
-    silent let branch = agit#git#exec('rev-parse --symbolic ' . cword, t:git.git_dir)
+    silent let branch = agit#git#exec('rev-parse --symbolic ' . cword, t:git.git_dir, t:git.worktree_dir)
     let branch = substitute(branch, '\n\+$', '', '')
     if agit#git#get_last_status() != 0
       echomsg 'Not a branch name: ' . cword
@@ -210,7 +210,7 @@ function! agit#agitgit(arg, confirm, bang)
         return
       endif
     endif
-    echo agit#git#exec(arg, t:git.git_dir, a:bang)
+    echo agit#git#exec(arg, t:git.git_dir, t:git.worktree_dir, a:bang)
     call agit#reload()
   endif
 endfunction
@@ -227,7 +227,7 @@ function! agit#agit_git_compl(arglead, cmdline, cursorpos)
 endfunction
 
 function! agit#revision_list()
-  let revs = agit#git#exec('rev-parse --symbolic --branches --remotes --tags', t:git.git_dir)
+  let revs = agit#git#exec('rev-parse --symbolic --branches --remotes --tags', t:git.git_dir, t:git.worktree_dir)
   \ . join(['HEAD', 'ORIG_HEAD', 'MERGE_HEAD', 'FETCH_HEAD'], "\n")
   let hash = agit#extract_hash(getline('.'))
   if hash != ''
@@ -238,21 +238,21 @@ function! agit#revision_list()
 endfunction
 
 function! s:git_checkout(branch_name)
-  echo agit#git#exec('checkout ' . a:branch_name, t:git.git_dir)
+  echo agit#git#exec('checkout ' . a:branch_name, t:git.git_dir, t:git.worktree_dir)
   call agit#reload()
 endfunction
 
 function! s:git_checkout_b()
   let branch_name = input('git checkout -b ')
   echo ''
-  echo agit#git#exec('checkout -b ' . branch_name, t:git.git_dir)
+  echo agit#git#exec('checkout -b ' . branch_name, t:git.git_dir, t:git.worktree_dir)
   call agit#reload()
 endfunction
 
 function! s:git_branch_d(branch_name)
   echon "Are you sure you want to delete branch '" . a:branch_name . "' [y/N]"
   if nr2char(getchar()) ==# 'y'
-    echo agit#git#exec('branch -D ' . a:branch_name, t:git.git_dir)
+    echo agit#git#exec('branch -D ' . a:branch_name, t:git.git_dir, t:git.worktree_dir)
     call agit#reload()
   endif
 endfunction
