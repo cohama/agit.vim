@@ -177,22 +177,26 @@ function! agit#git#exec(command, git_dir, worktree_dir, ...)
   if a:0 > 0 && a:1 == 1
     execute '!' . cmd
   else
-    if s:Process.has_vimproc() && s:P.is_windows()
-      let ret = vimproc#system(cmd)
-      let s:last_status = vimproc#get_last_status()
-    else
-      let ret = system(cmd)
-      let s:last_status = v:shell_error
-    endif
-    if s:is_cp932
-      let ret = iconv(ret, 'utf-8', 'cp932')
-    endif
-    return ret
+    return s:system(cmd)
   endif
 endfunction
 
 function! s:get_worktree_dir(git_dir)
   return matchstr(a:git_dir, '^.\+\ze\.git')
+endfunction
+
+function! s:system(cmd)
+  if s:Process.has_vimproc() && s:P.is_windows()
+    let ret = vimproc#system(a:cmd)
+    let s:last_status = vimproc#get_last_status()
+  else
+    let ret = system(a:cmd)
+    let s:last_status = v:shell_error
+  endif
+  if s:is_cp932
+    let ret = iconv(ret, 'utf-8', 'cp932')
+  endif
+  return ret
 endfunction
 
 function! agit#git#get_last_status()
