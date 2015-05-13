@@ -12,6 +12,7 @@ Features
 --------
 * gitk-like repository viewer
 * providing various git commands (e.g. checkout, reset, etc...)
+* side by side diff by vimdiff
 * No fugitive dependency, but well cooperation if exists.
 * Supporting multibyte character
 

@@ -34,5 +34,9 @@ function! s:stat.setlocal()
   setlocal winfixheight
   setlocal noswapfile
   nmap <buffer> q <Plug>(agit-exit)
+  command! AgitDiff call agit#diff()
+  if !g:agit_no_default_mappings
+    nmap <silent><buffer> di <Plug>(agit-diff)
+  endif
   set filetype=agit_stat
 endfunction

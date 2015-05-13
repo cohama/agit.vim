@@ -122,6 +122,20 @@ COMMANDS					*agit-commands*
 	If you specify !, this command uses |:!| instead of |system()|.
 	(Same as |fugitive|'s |:Git|)
 
+						*:AgitDiff*
+:AgitDiff
+	Show |vimdiff| against the target file of the current revision.
+	Note: This command is available only in |agit-log| buffer from
+	|:AgitFile| and |agit-stat| buffer.
+
+	When launched from |agit-log| buffer, target of |:AgitFile| is treated
+	as target file.
+	When launched from |agit-stat| buffer, AgitDiff trys to pick target file
+	from cursor position. (see |<cfile>|)
+
+	If you installed |fugitive|, AgitDiff uses |fugitive| when showing staged
+	file. This means you can stage or unstage each hunks like |:Gdiff|.
+
 ------------------------------------------------------------------------------
 KEY-MAPPINGS					*agit-key-mappings*
 
@@ -190,6 +204,9 @@ In |agit-log| buffer, the following key mappings can be used.
 <Plug>(agit-git-revert)				*<Plug>(agit-git-revert)*
 	Execute 'git revert' to revert the cursor line commit.
 
+<Plug>(agit-diff)				*<Plug>(agit-diff)*
+	Show |vimdiff| against the target file of the current revision.
+
 ------------------------------------------------------------------------------
 DEFAULT KEY-MAPPINGS				*agit-default-key-mappings*
 
@@ -209,6 +226,7 @@ rm			<Plug>(agit-git-reset)
 rh			<Plug>(agit-git-reset-hard)
 rb			<Plug>(agit-git-rebase)
 ri			<Plug>(agit-git-rebase-i)
+di			<Plug>(agit-diff)
 
 ------------------------------------------------------------------------------
 VARIABLES					*agit-variables*
