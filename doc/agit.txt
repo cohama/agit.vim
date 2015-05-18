@@ -204,8 +204,12 @@ In |agit-log| buffer, the following key mappings can be used.
 <Plug>(agit-git-revert)				*<Plug>(agit-git-revert)*
 	Execute 'git revert' to revert the cursor line commit.
 
+
+In |agit-log| and |agit-stat| buffer, the following key mappings can be used.
+
 <Plug>(agit-diff)				*<Plug>(agit-diff)*
 	Show |vimdiff| against the target file of the current revision.
+
 
 ------------------------------------------------------------------------------
 DEFAULT KEY-MAPPINGS				*agit-default-key-mappings*
