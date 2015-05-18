@@ -4,7 +4,7 @@ let s:filelog = {
 
 function! agit#view#filelog#new(git)
   let filelog = extend(agit#view#log#new(a:git), s:filelog)
-  command! AgitDiff call agit#diff()
+  command! -buffer AgitDiff call agit#diff()
   if !g:agit_no_default_mappings
     nmap <silent><buffer> di <Plug>(agit-diff)
   endif
