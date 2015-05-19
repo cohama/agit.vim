@@ -181,7 +181,7 @@ function! agit#diff() abort
   catch /Agit: /
     echohl ErrorMsg | echomsg v:exception | echohl None
   endtry
-endfunction!
+endfunction
 
 function! s:get_git_dir(basedir)
   if empty(a:basedir)
