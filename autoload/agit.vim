@@ -173,7 +173,8 @@ function! agit#diff() abort
     else
       let relpath = expand('<cfile>')
     endif
-    if agit#git#exec('ls-files "' . t:git.to_abspath(relpath) . '"', t:git.git_dir) ==# ''
+    let hash = (rhash ==# 'unstaged' || rhash ==# 'staged' ? 'HEAD' : rhash)
+    if agit#git#exec('ls-tree --name-only "' . hash . '" -- "' . t:git.to_abspath(relpath) . '"', t:git.git_dir) == ''
       throw "Agit: File not tracked: " . relpath
     endif
 
@@ -181,7 +182,7 @@ function! agit#diff() abort
   catch /Agit: /
     echohl ErrorMsg | echomsg v:exception | echohl None
   endtry
-endfunction!
+endfunction
 
 function! s:get_git_dir(basedir)
   if empty(a:basedir)
