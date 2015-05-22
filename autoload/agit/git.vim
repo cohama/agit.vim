@@ -11,6 +11,7 @@ let g:agit#git#nextpage_message = '(too many logs)'
 
 let s:git = {
 \ 'git_dir' : '',
+\ 'worktree_dir' : '',
 \ 'hash': '',
 \ 'oninit': [],
 \ 'onhashchange': [],
@@ -24,7 +25,7 @@ let s:git = {
 \ }}
 
 function! s:git.log(winwidth) dict
-  let gitlog = agit#git#exec('log --all --graph --decorate=full --no-color --date=relative --format=format:"%d %s' . s:sep . '|>%ad<|' . s:sep . '{>%an<}' . s:sep . '[%h]"', self.git_dir)
+  let gitlog = agit#git#exec('log --all --graph --decorate=full --no-color --date=relative --format=format:"%d %s' . s:sep . '|>%ad<|' . s:sep . '{>%an<}' . s:sep . '[%h]"', self.git_dir, self.worktree_dir)
   " 16 means concealed symbol (4*2 + 2) + hash (7) - right eade margin (1)
   let max_width = a:winwidth + 16
   let gitlog = substitute(gitlog, '\<refs/heads/', '', 'g')
@@ -38,7 +39,7 @@ function! s:git.log(winwidth) dict
   " add staged and unstaged lines
   let self.staged = self._localchanges(1, '')
   let self.unstaged = self._localchanges(0, '')
-  let untracked = agit#git#exec('ls-files --others --exclude-standard', self.git_dir)
+  let untracked = agit#git#exec('ls-files --others --exclude-standard', self.git_dir, self.worktree_dir)
   if !empty(untracked)
     if self.unstaged.stat !=# ''
       let self.unstaged.stat .= "\n"
@@ -52,7 +53,7 @@ function! s:git.log(winwidth) dict
 endfunction
 
 function! s:git.filelog(winwidth)
-  let gitlog = agit#git#exec('log --all --graph --decorate=full --no-color --date=relative --format=format:"%d %s' . s:sep . '|>%ad<|' . s:sep . '{>%an<}' . s:sep . '[%h]" -- "' . self.abspath . '"', self.git_dir)
+  let gitlog = agit#git#exec('log --all --graph --decorate=full --no-color --date=relative --format=format:"%d %s' . s:sep . '|>%ad<|' . s:sep . '{>%an<}' . s:sep . '[%h]" -- "' . self.abspath . '"', self.git_dir, self.worktree_dir)
   " 16 means concealed symbol (4*2 + 2) + hash (7) - right eade margin (1)
   let max_width = a:winwidth + 16
   let gitlog = substitute(gitlog, '\<refs/heads/', '', 'g')
@@ -77,7 +78,7 @@ function! s:git._localchanges(cached, relpath) dict
   if !empty(a:relpath)
     let cmd .= ' -- "' . a:relpath . '"'
   endif
-  let diff = agit#git#exec(cmd, self.git_dir)
+  let diff = agit#git#exec(cmd, self.git_dir, self.worktree_dir)
   let split = s:String.nsplit(diff, 2, '\n\n')
   let ret = {'stat' : '', 'diff' : ''}
   if len(split) == 2
@@ -93,7 +94,7 @@ function! s:git._insert_localchanges_loglines(aligned_log) dict
   if g:agit_localchanges_always_on_top
     let head_index = 0
   else
-    let head_hash = agit#git#exec('rev-parse --short HEAD', self.git_dir)
+    let head_hash = agit#git#exec('rev-parse --short HEAD', self.git_dir, self.worktree_dir)
     let head_index = s:List.find_index(a:aligned_log, 'match(v:val, "\\[' . s:String.chomp(head_hash) . '\\]") >= 0')
   endif
 
@@ -114,7 +115,7 @@ function! s:git.stat(hash) dict
     let stat = ''
   else
     let ignoresp = g:agit_ignore_spaces ? '-w' : ''
-    let stat = agit#git#exec('show --oneline --stat --date=iso --pretty=format: ' . ignoresp . ' ' . a:hash, self.git_dir)
+    let stat = agit#git#exec('show --oneline --stat --date=iso --pretty=format: ' . ignoresp . ' ' . a:hash, self.git_dir, self.worktree_dir)
     let stat = substitute(stat, '^[\n\r]\+', '', '')
   endif
   return stat
@@ -129,13 +130,13 @@ function! s:git.diff(hash) dict
     let diff = ''
   else
     let ignoresp = g:agit_ignore_spaces ? '-w' : ''
-    let diff = agit#git#exec('show -p '. ignoresp .' ' . a:hash, self.git_dir)
+    let diff = agit#git#exec('show -p '. ignoresp .' ' . a:hash, self.git_dir, self.worktree_dir)
   endif
   return diff
 endfunction
 
 function! s:git.normalizepath(path)
-  let path = agit#git#exec('ls-tree --full-name --name-only HEAD ''' . a:path . '''', self.git_dir)
+  let path = agit#git#exec('ls-tree --full-name --name-only HEAD ''' . a:path . '''', self.git_dir, self.worktree_dir)
   return s:String.chomp(path)
 endfunction
 
@@ -149,20 +150,21 @@ function! s:git.catfile(hash, path)
   elseif a:hash == 'unstaged'
     let catfile = join(readfile(self.to_abspath(a:path)), "\n")
   elseif a:hash == 'staged'
-    let catfile = agit#git#exec('cat-file -p ":' . a:path . '"', self.git_dir)
+    let catfile = agit#git#exec('cat-file -p ":' . a:path . '"', self.git_dir, self.worktree_dir)
   else
-    let catfile = agit#git#exec('cat-file -p "' . a:hash . ':' . a:path . '"', self.git_dir)
+    let catfile = agit#git#exec('cat-file -p "' . a:hash . ':' . a:path . '"', self.git_dir, self.worktree_dir)
   endif
   return catfile
 endfunction
 
 function! s:git.commitmsg(hash) dict
-  return agit#git#exec('show -s --format=format:%s ' . a:hash, self.git_dir)
+  return agit#git#exec('show -s --format=format:%s ' . a:hash, self.git_dir, self.worktree_dir)
 endfunction
 
 let s:seq = ''
 function! agit#git#new(git_dir)
-  let git = extend(deepcopy(s:git), {'git_dir' : a:git_dir, 'seq': s:seq})
+  let worktree_dir = s:get_worktree_dir(a:git_dir)
+  let git = extend(deepcopy(s:git), {'git_dir' : a:git_dir, 'worktree_dir' : worktree_dir, 'seq': s:seq})
   let s:seq += 1
   return git
 endfunction
@@ -170,24 +172,41 @@ endfunction
 " Utilities
 let s:last_status = 0
 let s:is_cp932 = &enc == 'cp932'
-function! agit#git#exec(command, git_dir, ...)
-  let worktree_dir = matchstr(a:git_dir, '^.\+\ze\.git')
-  let cmd = 'git --no-pager --git-dir="' . a:git_dir . '" --work-tree="' . worktree_dir . '" ' . a:command
+function! agit#git#exec(command, git_dir, worktree_dir, ...)
+  let cmd = 'git --no-pager --git-dir="' . a:git_dir . '" --work-tree="' . a:worktree_dir . '" ' . a:command
   if a:0 > 0 && a:1 == 1
     execute '!' . cmd
   else
-    if s:Process.has_vimproc() && s:P.is_windows()
-      let ret = vimproc#system(cmd)
-      let s:last_status = vimproc#get_last_status()
-    else
-      let ret = system(cmd)
-      let s:last_status = v:shell_error
-    endif
-    if s:is_cp932
-      let ret = iconv(ret, 'utf-8', 'cp932')
-    endif
-    return ret
+    return s:system(cmd)
   endif
+endfunction
+
+function! s:get_worktree_dir(git_dir)
+  let worktree_relpath = s:String.chomp(s:system('git --no-pager --git-dir="' . a:git_dir . '" config --get core.worktree'))
+  if worktree_relpath == ''
+    let worktree_dir = matchstr(a:git_dir, '^.\+\ze\.git')
+  else
+    let cdcmd = haslocaldir() ? 'lcd ' : 'cd '
+    let cwd = getcwd()
+    execute cdcmd . a:git_dir
+    let worktree_dir = fnamemodify(worktree_relpath, ':p')
+    execute cdcmd . cwd
+  endif
+  return worktree_dir
+endfunction
+
+function! s:system(cmd)
+  if s:Process.has_vimproc() && s:P.is_windows()
+    let ret = vimproc#system(a:cmd)
+    let s:last_status = vimproc#get_last_status()
+  else
+    let ret = system(a:cmd)
+    let s:last_status = v:shell_error
+  endif
+  if s:is_cp932
+    let ret = iconv(ret, 'utf-8', 'cp932')
+  endif
+  return ret
 endfunction
 
 function! agit#git#get_last_status()
