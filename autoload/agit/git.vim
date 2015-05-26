@@ -196,6 +196,17 @@ function! agit#git#exec(command, git_dir, ...)
   endif
 endfunction
 
+function! agit#git#exec_or_die(command, git_dir)
+  let ret = agit#git#exec(a:command, a:git_dir)
+  if s:last_status == 0
+    return ret
+  else
+    let command_name = matchstr(a:command, '^\S\+')
+    let error = substitute(ret, '[\r\n].*', '', 'g')
+    throw 'Agit: git ' . command_name . ' failed(' . string(s:last_status) . '). ' . error
+  endif
+endfunction
+
 function! agit#git#get_last_status()
   return s:last_status
 endfunction
