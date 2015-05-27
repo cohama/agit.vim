@@ -166,6 +166,21 @@ function! s:git.commitmsg(hash) dict
   return agit#git#exec('show -s --format=format:%s ' . a:hash, self.git_dir)
 endfunction
 
+function! s:git.get_mergebase(rev1, rev2)
+  let rev1 = a:rev1 =~# '^\(un\)\?staged$' ? 'HEAD' : a:rev1
+  let rev2 = a:rev2 =~# '^\(un\)\?staged$' ? 'HEAD' : a:rev2
+  return s:String.chomp(agit#git#exec_or_die('merge-base "' . rev1 . '" "' . rev2 . '"', t:git.git_dir))
+endfunction
+
+function! s:git.get_shorthash(revspec)
+  if a:revspec =~# '^\(un\)\?staged$'
+    return a:revspec
+  elseif a:revspec =~# '^\x\{7,\}$'
+    return a:revspec[:6]
+  endif
+  return s:String.chomp(agit#git#exec_or_die('rev-parse --short "' . a:revspec . '"', t:git.git_dir))
+endfunction
+
 let s:seq = ''
 function! agit#git#new(git_dir)
   let git = extend(deepcopy(s:git), {'git_dir' : a:git_dir, 'seq': s:seq})
