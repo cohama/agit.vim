@@ -5,7 +5,7 @@ endif
 syn cluster agitLogFields contains=agitDate,agitAuthor,agitHash
 syn cluster agitRefs contains=agitHead,agitBranch,agitRemote,agitTag
 
-syn match agitTree /^[|/\\* _]\+/ nextgroup=agitRef,agitLog
+syn match agitTree /^[|/\\* _\-.]\+/ nextgroup=agitRef,agitLog
 syn match agitLog /.*/ contained contains=@agitLogFields
 
 syn region agitRef start="(" end=")" end="\.\.\." contained contains=@agitRefs nextgroup=agitLog keepend
