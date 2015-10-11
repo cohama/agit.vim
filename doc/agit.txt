@@ -273,6 +273,10 @@ g:agit_ignore_spaces				*g:agit_ignore_spaces*
 	|agit-diff| and |agit-stat| buffer.
 	default value: 1
 
+g:agit_stat_width				*g:agit_stat_width*
+	Max columns of |agit-stat| buffer.
+	default value: 80
+
 
 ==============================================================================
 TODO						*agit-todo*

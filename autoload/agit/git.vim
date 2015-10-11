@@ -114,7 +114,7 @@ function! s:git.stat(hash) dict
     let stat = ''
   else
     let ignoresp = g:agit_ignore_spaces ? '-w' : ''
-    let stat = agit#git#exec('show --oneline --stat --date=iso --pretty=format: ' . ignoresp . ' ' . a:hash, self.git_dir)
+    let stat = agit#git#exec('show --oneline --stat=' . g:agit_stat_width . ' --date=iso --pretty=format: ' . ignoresp . ' ' . a:hash, self.git_dir)
     let stat = substitute(stat, '^[\n\r]\+', '', '')
   endif
   return stat
