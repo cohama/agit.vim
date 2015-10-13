@@ -70,7 +70,7 @@ function! s:git.filelog(winwidth)
 endfunction
 
 function! s:git._localchanges(cached, relpath) dict
-  let cmd = 'diff --stat -p'
+  let cmd = 'diff --stat=' . g:agit_stat_width . ' -p'
   if a:cached
     let cmd .= ' --cached'
   endif
