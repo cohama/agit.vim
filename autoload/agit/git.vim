@@ -81,22 +81,13 @@ function! s:git._head() dict
 endfunction
 
 function! s:git._localchanges(cached, relpath) dict
-  let cmd = 'diff --stat=' . g:agit_stat_width . ' -p'
-  if a:cached
-    let cmd .= ' --cached'
-  endif
+  let opts = a:cached ? ' --cached' : ''
   if !empty(a:relpath)
-    let cmd .= ' -- "' . a:relpath . '"'
+    let opts .= ' -- "' . a:relpath . '"'
   endif
-  let diff = agit#git#exec(cmd, self.git_dir)
-  let split = s:String.nsplit(diff, 2, '\n\n')
-  let ret = {'stat' : '', 'diff' : '', 'line' : 0}
-  if len(split) == 2
-    let ret.stat = split[0]
-    let ret.diff = split[1]
-  elseif len(split) == 1
-    let ret.diff = split[0]
-  endif
+  let ret = {'line' : 0}
+  let ret.stat = agit#git#exec('diff --stat=' . g:agit_stat_width . opts, self.git_dir)
+  let ret.diff = agit#git#exec('diff -p' . opts, self.git_dir)
   return ret
 endfunction
 
