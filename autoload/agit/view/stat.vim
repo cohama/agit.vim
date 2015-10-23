@@ -33,9 +33,14 @@ function! s:stat.setlocal()
   setlocal nocursorline nocursorcolumn
   setlocal winfixheight
   setlocal noswapfile
-  nmap <buffer> q <Plug>(agit-exit)
   command! -buffer AgitDiff call agit#diff()
+
   if !g:agit_no_default_mappings
+    nmap <silent><buffer> u <PLug>(agit-reload)
+    nmap <silent><buffer> <C-j> <Plug>(agit-scrolldown-diff)
+    nmap <silent><buffer> <C-k> <Plug>(agit-scrollup-diff)
+    nmap <silent><buffer> q <Plug>(agit-exit)
+
     nmap <silent><buffer> di <Plug>(agit-diff)
   endif
   set filetype=agit_stat

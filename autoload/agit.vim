@@ -105,17 +105,19 @@ function! agit#print_commitmsg()
 endfunction
 
 function! agit#remote_scroll(win_type, direction)
-  if a:win_type ==# 'stat'
-    call agit#bufwin#move_to('stat')
-  elseif a:win_type ==# 'diff'
-    call agit#bufwin#move_to('diff')
+  if !exists('w:view')
+    return
+  endif
+  let win_save = w:view.name
+  if !agit#bufwin#move_to(a:win_type)
+    return
   endif
   if a:direction ==# 'down'
     execute "normal! \<C-d>"
   elseif a:direction ==# 'up'
     execute "normal! \<C-u>"
   endif
-  call agit#bufwin#move_to('log')
+  call agit#bufwin#move_to(win_save)
 endfunction
 
 function! agit#yank_hash()
@@ -142,10 +144,15 @@ function! agit#show_commit()
 endfunction
 
 function! agit#reload() abort
-  if !exists('t:git')
+  if !exists('t:git') || !exists('w:view')
     return
   endif
-  call t:git.fire_init()
+  try
+    let win_save = w:view.name
+    call t:git.fire_init()
+  finally
+    call agit#bufwin#move_to(win_save)
+  endtry
 endfunction
 
 function! agit#diff() abort
