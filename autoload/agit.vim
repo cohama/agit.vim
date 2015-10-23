@@ -145,12 +145,7 @@ function! agit#reload() abort
   if !exists('t:git')
     return
   endif
-  let pos_save = getpos('.')
-  try
-    call t:git.fire_init()
-  finally
-    call setpos('.', pos_save)
-  endtry
+  call t:git.fire_init()
 endfunction
 
 function! agit#diff() abort

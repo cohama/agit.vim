@@ -19,9 +19,36 @@ function! s:fill_buffer(str)
 endfunction
 
 function! s:log.render()
+  call self.renderwith('log')
+endfunction
+
+function! s:log.renderwith(funcname)
+  let save = {
+        \ 'hash': self.git.hash,
+        \ 'head': self.git.head,
+        \ 'staged' : self.git.staged.line > 0,
+        \ 'unstaged' : self.git.unstaged.line > 0
+        \ }
   call agit#bufwin#move_to(self.name)
-  call s:fill_buffer(self.git.log(winwidth(0)))
-  call self.emmit(1)
+  call s:fill_buffer(self.git[a:funcname](winwidth(0)))
+  if empty(save.hash)
+    call self.emmit(1)
+  else
+    if save.hash == 'unstaged'
+      let candidates = ['unstaged', 'staged', self.git.head]
+    elseif save.hash == 'staged'
+      let candidates = ['staged', self.git.head]
+    elseif save.hash == save.head
+      if !save.staged && !save.unstaged
+        let candidates = ['unstaged', 'staged', self.git.head]
+      else
+        let candidates = [self.git.head]
+      endif
+    else
+      let candidates = [save.hash]
+    endif
+    call self.goto(candidates, 1)
+  endif
 endfunction
 
 function! s:log.setlocal()
@@ -151,5 +178,29 @@ function! s:log.emmit(...)
     endif
   endif
   call self.git.sethash(hash, force)
+  call agit#bufwin#move_to(self.name)
+endfunction
+
+function! s:log.goto(candidates, force)
+  let line = 0
+  for hash in a:candidates
+    if hash ==# 'staged' || hash ==# 'unstaged'
+      let line = self.git[hash].line
+    elseif hash ==# 'nextpage'
+      let line = line('$')
+    elseif hash ==# ''
+      let line = 0
+    else
+      let line = search('\[' . hash . '\]$', 'nw')
+    endif
+    if line > 0
+      break
+    endif
+  endfor
+  if line == 0
+    let line = 1
+  endif
+  noautocmd call setpos('.', [0, line, 0, 0])
+  call self.git.sethash(hash, a:force)
   call agit#bufwin#move_to(self.name)
 endfunction

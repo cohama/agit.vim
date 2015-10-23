@@ -20,7 +20,5 @@ function! s:fill_buffer(str)
 endfunction
 
 function! s:filelog.render()
-  call agit#bufwin#move_to(self.name)
-  call s:fill_buffer(self.git.filelog(winwidth(0)))
-  call self.emmit(1)
+  call self.renderwith('filelog')
 endfunction
