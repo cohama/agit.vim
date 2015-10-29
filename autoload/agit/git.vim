@@ -17,11 +17,15 @@ let s:git = {
 \ 'staged' : {
 \   'stat' : '',
 \   'diff' : '',
+\   'line' : 0,
 \ },
 \ 'unstaged' : {
 \   'stat' : '',
-\   'diff' : ''
-\ }}
+\   'diff' : '',
+\   'line' : 0,
+\ },
+\ 'head' : '',
+\ }
 
 function! s:git.log(winwidth) dict
   let gitlog = agit#git#exec('log --all --graph --decorate=full --no-color --date=relative --format=format:"%d %s' . s:sep . '|>%ad<|' . s:sep . '{>%an<}' . s:sep . '[%h]"', self.git_dir)
@@ -33,6 +37,7 @@ function! s:git.log(winwidth) dict
   let log_lines = map(split(gitlog, "\n"), 'split(v:val, s:sep)')
 
   let aligned_log = agit#aligner#align(log_lines, max_width)
+  let self.head = self._head()
 
   " TODO: strange message will be shown when merge conflicted
   " add staged and unstaged lines
@@ -62,11 +67,17 @@ function! s:git.filelog(winwidth)
 
   let aligned_log = agit#aligner#align(log_lines, max_width)
 
+  let self.head = self._head()
   let self.staged = self._localchanges(1, self.relpath)
   let self.unstaged = self._localchanges(0, self.relpath)
   call self._insert_localchanges_loglines(aligned_log)
 
   return join(aligned_log, "\n")
+endfunction
+
+function! s:git._head() dict
+  let head = agit#git#exec('rev-parse --short HEAD', self.git_dir)
+  return s:String.chomp(head)
 endfunction
 
 function! s:git._localchanges(cached, relpath) dict
@@ -79,7 +90,7 @@ function! s:git._localchanges(cached, relpath) dict
   endif
   let diff = agit#git#exec(cmd, self.git_dir)
   let split = s:String.nsplit(diff, 2, '\n\n')
-  let ret = {'stat' : '', 'diff' : ''}
+  let ret = {'stat' : '', 'diff' : '', 'line' : 0}
   if len(split) == 2
     let ret.stat = split[0]
     let ret.diff = split[1]
@@ -93,15 +104,17 @@ function! s:git._insert_localchanges_loglines(aligned_log) dict
   if g:agit_localchanges_always_on_top
     let head_index = 0
   else
-    let head_hash = agit#git#exec('rev-parse --short HEAD', self.git_dir)
-    let head_index = s:List.find_index(a:aligned_log, 'match(v:val, "\\[' . s:String.chomp(head_hash) . '\\]") >= 0')
+    let head_index = s:List.find_index(a:aligned_log, 'match(v:val, "\\[' . self.head . '\\]") >= 0')
   endif
 
-  if !empty(self.staged.diff)
-    call insert(a:aligned_log, g:agit#git#staged_message, head_index)
-  endif
   if !empty(self.unstaged.diff) || !empty(self.unstaged.stat)
     call insert(a:aligned_log, g:agit#git#unstaged_message, head_index)
+    let self.unstaged.line = head_index + 1
+    let head_index += 1
+  endif
+  if !empty(self.staged.diff)
+    call insert(a:aligned_log, g:agit#git#staged_message, head_index)
+    let self.staged.line = head_index + 1
   endif
 endfunction
 

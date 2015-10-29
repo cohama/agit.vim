@@ -139,28 +139,35 @@ COMMANDS					*agit-commands*
 ------------------------------------------------------------------------------
 KEY-MAPPINGS					*agit-key-mappings*
 
-In |agit-log| buffer, the following key mappings can be used.
+The following key mappings can be used.
 (All of these mappings are buffer-local mappings)
+Available only in |agit-log| buffer unless explicitly mentioned.
 
 <Plug>(agit-scrolldown-stat)			*<Plug>(agit-scrolldown-stat)*
 	Scroll downwards the |agit-stat| window. The number of scroll lines is the
 	half a window.
+	Available in |agit-log|, |agit-diff|
+
 	TODO: Allow to customize the scroll size
 
 <Plug>(agit-scrollup-stat)			*<Plug>(agit-scrollup-stat)*
 	Scroll upwards the |agit-stat| window. The number of scroll lines is the
 	half a window.
+	Available in |agit-log|, |agit-diff|
 
 <Plug>(agit-scrolldown-diff)			*<Plug>(agit-scrolldown-diff)*
 	Scroll upwards the |agit-diff| window. The number of scroll lines is the
 	half a window.
+	Available in |agit-log|, |agit-stat|
 
 <Plug>(agit-scrollup-diff)			*<Plug>(agit-scrollup-diff)*
 	Scroll downwards the |agit-diff| window. The number of scroll lines is the
 	half a window.
+	Available in |agit-log|, |agit-stat|
 
 <Plug>(agit-reload)				*<Plug>(agit-reload)*
-	Manually update the |agit-log| buffer.
+	Manually update the agit buffers.
+	Available in |agit-log|, |agit-stat|, |agit-diff|
 
 <PLug>(agit-yank-hash)				*<Plug>(agit-yank-hash)*
 	Yank the hash of the commit under the cursor
@@ -170,6 +177,7 @@ In |agit-log| buffer, the following key mappings can be used.
 
 <PLug>(agit-exit)				*<Plug>(agit-exit)*
 	Exit from agit.
+	Available in |agit-log|, |agit-stat|, |agit-diff|
 
 <Plug>(agit-git-checkout)			*<Plug>(agit-git-checkout)*
 	Execute 'git checkout' to change the current branch which under the
@@ -204,11 +212,9 @@ In |agit-log| buffer, the following key mappings can be used.
 <Plug>(agit-git-revert)				*<Plug>(agit-git-revert)*
 	Execute 'git revert' to revert the cursor line commit.
 
-
-In |agit-log| and |agit-stat| buffer, the following key mappings can be used.
-
 <Plug>(agit-diff)				*<Plug>(agit-diff)*
 	Show |vimdiff| against the target file of the current revision.
+	Availabie in |agit-log|, |agit-stat|
 
 
 ------------------------------------------------------------------------------
@@ -241,7 +247,7 @@ g:agit_no_default_mappings			*g:agit_no_default_mappings*
 	default value: 0
 
 g:agit_enable_auto_show_commit			*g:agit_enable_auto_show_commit*
-	If it is non-zero, |agit-stat| and |agit-diff|| buffers are
+	If it is non-zero, |agit-stat| and |agit-diff| buffers are
 	automatically updated when the cursor moved in |agit-log| buffer.
 	default value: 1
 

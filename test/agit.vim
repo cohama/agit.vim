@@ -261,16 +261,14 @@ function! s:suite.__reload_test__()
     call Expect(getline(1)).not.to_match(g:agit#git#unstaged_message)
     call agit#bufwin#move_to('stat')
     call agit#reload()
-    call Expect(w:view.name).to_equal('log')
-    call Expect(getline(1)).to_match(g:agit#git#unstaged_message)
+    call Expect(w:view.name).to_equal('stat')
   endfunction
 
   function! reload.on_diff_window()
     call Expect(getline(1)).not.to_match(g:agit#git#unstaged_message)
     call agit#bufwin#move_to('diff')
     call agit#reload()
-    call Expect(w:view.name).to_equal('log')
-    call Expect(getline(1)).to_match(g:agit#git#unstaged_message)
+    call Expect(w:view.name).to_equal('diff')
   endfunction
 
   function! reload.when_extra_window_exists()
