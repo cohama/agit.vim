@@ -21,10 +21,10 @@ syn match agitDiffIndex /^index.*$/ display contained
 syn match agitDiffLine /^@@ -.\{-}@@.*$/ display contained contains=agitDiffSubname
 syn match agitDiffSubname /^\%(@@ -.\{-}@@\)\zs.*$/ display contained
 
-hi def link agitDiffAdd Identifier
-hi def link agitDiffAddMerge Identifier
-hi def link agitDiffRemove Special
-hi def link agitDiffRemoveMerge Special
+hi def link agitDiffAdd diffAdd
+hi def link agitDiffAddMerge diffAdd
+hi def link agitDiffRemove diffDelete
+hi def link agitDiffRemoveMerge diffDelete
 hi def link agitDiffHeader Type
 hi def link agitHeaderLabel Label
 hi def link agitDiffFileName Comment
