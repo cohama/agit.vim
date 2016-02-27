@@ -17,7 +17,7 @@ let s:agit_vital = {
 \ 'OptionParser' : s:OptionParser,
 \ }
 
-let s:agit_preset_views = {
+let s:agit_preset_views = get(g:, 'agit_preset_views', {
 \ 'default': [
 \   {'name': 'log'},
 \   {'name': 'stat',
@@ -29,7 +29,7 @@ let s:agit_preset_views = {
 \   {'name': 'filelog'},
 \   {'name': 'catfile',
 \    'layout': 'botright vnew'},
-\ ]}
+\ ]})
 let s:fugitive_enabled = get(g:, 'loaded_fugitive', 0)
 
 let s:parser = s:OptionParser.new()
