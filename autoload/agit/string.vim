@@ -1,4 +1,3 @@
-let s:P = agit#vital().P
 let s:String = agit#vital().String
 let s:List = agit#vital().List
 
@@ -8,7 +7,7 @@ function! agit#string#truncate(text, max_width, ellipsis)
   if a:max_width < ellipsis_width
     return a:ellipsis
   elseif text_width > a:max_width
-    let truncated = s:P.strwidthpart(a:text, a:max_width - ellipsis_width)
+    let truncated = s:String.strwidthpart(a:text, a:max_width - ellipsis_width)
     " for double width string
     if strdisplaywidth(truncated) != a:max_width - ellipsis_width
       let truncated .= ' '
