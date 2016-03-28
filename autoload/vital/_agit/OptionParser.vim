@@ -4,17 +4,18 @@ set cpo&vim
 let s:_STRING_TYPE = type('')
 let s:_LIST_TYPE = type([])
 let s:_DICT_TYPE = type({})
+let s:_NUM_TYPE = type(0)
 
-function! s:_vital_loaded(V)
+function! s:_vital_loaded(V) abort
   let s:L = a:V.import('Data.List')
 endfunction
 
-function! s:_vital_depends()
+function! s:_vital_depends() abort
   return ['Data.List']
 endfunction
 
 let s:_PRESET_COMPLETER = {}
-function! s:_PRESET_COMPLETER.file(optlead, cmdline, cursorpos)
+function! s:_PRESET_COMPLETER.file(optlead, cmdline, cursorpos) abort
   let candidates = glob(a:optlead . '*', 0, 1)
   if a:optlead =~# '^\~'
     let home_matcher = '^' . expand('~') . '/'
@@ -24,15 +25,25 @@ function! s:_PRESET_COMPLETER.file(optlead, cmdline, cursorpos)
   return candidates
 endfunction
 
-function! s:_make_option_description_for_help(opt)
-  let desc = a:opt.description
+function! s:_make_option_description_for_help(opt) abort
+  let extra = ''
   if has_key(a:opt, 'default_value')
-    let desc .= ' (DEFAULT: ' . string(a:opt.default_value) . ')'
+    let extra .= 'DEFAULT: ' . string(a:opt.default_value) . ', '
   endif
-  return desc
+  if get(a:opt, 'required_option', 0)
+    let extra .= 'REQUIRED, '
+  endif
+  if has_key(a:opt, 'pattern_option')
+    let extra .= 'PATTERN: ' . string(a:opt.pattern_option) . ', '
+  endif
+  let extra = substitute(extra, ', $', '', '')
+  if extra !=# ''
+    let extra = ' (' . extra . ')'
+  endif
+  return a:opt.description . extra
 endfunction
 
-function! s:_make_option_definition_for_help(opt)
+function! s:_make_option_definition_for_help(opt) abort
   let key = a:opt.definition
   if has_key(a:opt, 'short_option_definition')
     let key .= ', ' . a:opt.short_option_definition
@@ -40,7 +51,7 @@ function! s:_make_option_definition_for_help(opt)
   return key
 endfunction
 
-function! s:_extract_special_opts(argc, argv)
+function! s:_extract_special_opts(argc, argv) abort
   let ret = {'specials' : {}}
   if a:argc <= 0
     return ret
@@ -56,7 +67,7 @@ function! s:_extract_special_opts(argc, argv)
     elseif arg_type == s:_STRING_TYPE
       if arg ==# '!'
         let ret.specials.__bang__ = arg
-      elseif arg != ''
+      elseif arg !=# ''
         let ret.specials.__reg__ = arg
       endif
     endif
@@ -65,7 +76,7 @@ function! s:_extract_special_opts(argc, argv)
   return ret
 endfunction
 
-function! s:_make_args(cmd_args)
+function! s:_make_args(cmd_args) abort
   let type = type(a:cmd_args)
   if type == s:_STRING_TYPE
     return split(a:cmd_args)
@@ -76,7 +87,7 @@ function! s:_make_args(cmd_args)
   endif
 endfunction
 
-function! s:_expand_short_option(arg, options)
+function! s:_expand_short_option(arg, options) abort
   let short_opt = matchstr(a:arg, '^-[^- =]\>')
   for [name, value] in items(a:options)
     if get(value, 'short_option_definition', '') ==# short_opt
@@ -86,16 +97,21 @@ function! s:_expand_short_option(arg, options)
   return a:arg
 endfunction
 
-function! s:_set_default_values(parsed_args, options)
-  for [name, default_value] in map(items(filter(copy(a:options), 'has_key(v:val, "default_value")')), '[v:val[0], v:val[1].default_value]')
-    if ! has_key(a:parsed_args, name)
-      let a:parsed_args[name] = default_value
+function! s:_check_extra_option(parsed_args, options) abort
+  for [name, option] in items(a:options)
+    if has_key(option, 'default_value') && ! has_key(a:parsed_args, name)
+      let a:parsed_args[name] = option.default_value
     endif
-    unlet default_value
+    if get(option, 'required_option', 0) && ! has_key(a:parsed_args, name)
+      throw 'vital: OptionParser: parameter is required: ' . name
+    endif
+    if has_key(option, 'pattern_option') && has_key(a:parsed_args, name) && a:parsed_args[name] !~# option.pattern_option
+      throw 'vital: OptionParser: parameter doesn''t match pattern: ' . name . ' ' . option.pattern_option
+    endif
   endfor
 endfunction
 
-function! s:_parse_arg(arg, options)
+function! s:_parse_arg(arg, options) abort
   " if --no-hoge pattern
   if a:arg =~# '^--no-[^= ]\+'
     " get hoge from --no-hoge
@@ -128,7 +144,7 @@ function! s:_parse_arg(arg, options)
   return a:arg
 endfunction
 
-function! s:_parse_args(cmd_args, options)
+function! s:_parse_args(cmd_args, options) abort
   let parsed_args = {}
   let unknown_args = []
   let args = s:_make_args(a:cmd_args)
@@ -160,8 +176,8 @@ endfunction
 
 let s:_DEFAULT_PARSER = {'options' : {}}
 
-function! s:_DEFAULT_PARSER.help()
-  let definitions = map(values(self.options), "[s:_make_option_definition_for_help(v:val), s:_make_option_description_for_help(v:val)]")
+function! s:_DEFAULT_PARSER.help() abort
+  let definitions = map(values(self.options), '[s:_make_option_definition_for_help(v:val), s:_make_option_description_for_help(v:val)]')
   let key_width = len(s:L.max_by(definitions, 'len(v:val[0])')[0])
   return "Options:\n" .
         \ join(map(definitions, '
@@ -171,7 +187,7 @@ function! s:_DEFAULT_PARSER.help()
         \ '), "\n")
 endfunction
 
-function! s:_DEFAULT_PARSER.parse(...)
+function! s:_DEFAULT_PARSER.parse(...) abort
   let opts = s:_extract_special_opts(a:0, a:000)
   if ! has_key(opts, 'q_args')
     return opts.specials
@@ -187,27 +203,31 @@ function! s:_DEFAULT_PARSER.parse(...)
   let parsed_args = s:_parse_args(opts.q_args, self.options)
 
   let ret = parsed_args[0]
-  call s:_set_default_values(ret, self.options)
+  call s:_check_extra_option(ret, self.options)
   call extend(ret, opts.specials)
   let ret.__unknown_args__ = parsed_args[1]
   return ret
 endfunction
 
-function! s:_DEFAULT_PARSER.on(def, desc, ...)
+function! s:_DEFAULT_PARSER.on(def, desc, ...) abort
   if a:0 > 1
     throw 'vital: OptionParser: Wrong number of arguments: ' . a:0 + 2 . ' for 2 or 3'
   endif
 
   " get hoge and huga from --hoge=huga
-  let [name, value] = matchlist(a:def, '^--\([^= ]\+\)\(=\S\+\)\=$')[1:2]
-  let has_value = value != ''
+  let matched = matchlist(a:def, '^--\([^= ]\+\)\(=\S\+\)\=$')[1:2]
+  if len(matched) != 2
+    throw 'vital: OptionParser: Invalid option "' . a:def . '"'
+  endif
+  let [name, value] = matched
+  let has_value = value !=# ''
 
   let no = name =~# '^\[no-]'
   if no
     let name = matchstr(name, '^\[no-]\zs.\+')
   endif
 
-  if name == ''
+  if name ==# ''
     throw 'vital: OptionParser: Option of key is invalid: ' . a:def
   endif
 
@@ -223,6 +243,9 @@ function! s:_DEFAULT_PARSER.on(def, desc, ...)
   if a:0 == 1
     if type(a:1) == type({})
       if has_key(a:1, 'short')
+        if (a:1.short !~# '^-[[:alnum:]]\>')
+          throw 'vital: OptionParser: Invalid short option: ' . a:1.short
+        endif
         let self.options[name].short_option_definition = a:1.short
       endif
       if has_key(a:1, 'default')
@@ -235,6 +258,20 @@ function! s:_DEFAULT_PARSER.on(def, desc, ...)
           let self.options[name].completion = a:1.completion
         endif
       endif
+      if has_key(a:1, 'required')
+        if a:1.required isnot 0 && a:1.required isnot 1
+          throw 'vital: OptionParser: Invalid required option: ' . string(a:1.required)
+        endif
+        let self.options[name].required_option = a:1.required
+      endif
+      if has_key(a:1, 'pattern')
+        try
+          call match('', a:1.pattern)
+        catch
+          throw printf('vital: OptionParser: Invalid pattern option: exception="%s" pattern="%s"', v:exception, a:1.pattern)
+        endtry
+        let self.options[name].pattern_option = a:1.pattern
+      endif
     else
       let self.options[name].default_value = a:1
     endif
@@ -243,7 +280,7 @@ function! s:_DEFAULT_PARSER.on(def, desc, ...)
   return self
 endfunction
 
-function! s:_complete_long_option(arglead, options)
+function! s:_complete_long_option(arglead, options) abort
   let candidates = []
   for [name, option] in items(a:options)
     let has_value = get(option, 'has_value', 0)
@@ -256,7 +293,7 @@ function! s:_complete_long_option(arglead, options)
   return filter(candidates, 'v:val =~# lead_pattern')
 endfunction
 
-function! s:_complete_short_option(arglead, options)
+function! s:_complete_short_option(arglead, options) abort
   let candidates = []
   for option in values(a:options)
     let has_value = get(option, 'has_value', 0)
@@ -271,7 +308,7 @@ function! s:_complete_short_option(arglead, options)
   return filter(candidates, 'v:val =~# lead_pattern')
 endfunction
 
-function! s:_complete_user_specified_option(options, arglead, cmdline, cursorpos)
+function! s:_complete_user_specified_option(options, arglead, cmdline, cursorpos) abort
   let lead = matchstr(a:arglead, '=\zs.*$')
   let name = matchstr(a:arglead, '^--\zs[^=]\+')
   if ! has_key(a:options, name) || ! has_key(a:options[name], 'completion')
@@ -280,7 +317,7 @@ function! s:_complete_user_specified_option(options, arglead, cmdline, cursorpos
   return a:options[name].completion(lead, a:cmdline, a:cursorpos)
 endfunction
 
-function! s:_complete_user_specified_short_option(options, arglead, cmdline, cursorpos)
+function! s:_complete_user_specified_short_option(options, arglead, cmdline, cursorpos) abort
   let lead = matchstr(a:arglead, '=\zs.*$')
   let def = matchstr(a:arglead, '^-[^-=]')
   for option in values(a:options)
@@ -293,7 +330,7 @@ function! s:_complete_user_specified_short_option(options, arglead, cmdline, cur
   return []
 endfunction
 
-function! s:_complete_unknown_option(Completer, arglead, cmdline, cursorpos)
+function! s:_complete_unknown_option(Completer, arglead, cmdline, cursorpos) abort
   if type(a:Completer) == s:_STRING_TYPE
     return s:_PRESET_COMPLETER[a:Completer](a:arglead, a:cmdline, a:cursorpos)
   else
@@ -301,7 +338,7 @@ function! s:_complete_unknown_option(Completer, arglead, cmdline, cursorpos)
   endif
 endfunction
 
-function! s:_DEFAULT_PARSER.complete(arglead, cmdline, cursorpos)
+function! s:_DEFAULT_PARSER.complete(arglead, cmdline, cursorpos) abort
   if a:arglead =~# '^--[^=]*$'
     " when long option
     return s:_complete_long_option(a:arglead, self.options)
@@ -331,7 +368,7 @@ function! s:_DEFAULT_PARSER.complete(arglead, cmdline, cursorpos)
   return []
 endfunction
 
-function! s:_DEFAULT_PARSER.complete_greedily(arglead, cmdline, cursorpos)
+function! s:_DEFAULT_PARSER.complete_greedily(arglead, cmdline, cursorpos) abort
 
   if a:arglead =~# '^--.\+=.*$'
     let prefix = matchstr(a:arglead, '^.\+=')
@@ -363,7 +400,7 @@ endfunction
 
 lockvar! s:_DEFAULT_PARSER
 
-function! s:new()
+function! s:new() abort
   return deepcopy(s:_DEFAULT_PARSER)
 endfunction
 
