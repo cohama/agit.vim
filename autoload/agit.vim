@@ -200,7 +200,7 @@ function! s:get_git_dir(basedir)
   let cdcmd = haslocaldir() ? 'lcd ' : 'cd '
   let cwd = getcwd()
   execute cdcmd . current_path
-  if s:Process.has_vimproc() && s:P.is_windows()
+  if s:Process.has_vimproc()
     let toplevel_path = vimproc#system('git --no-pager rev-parse --show-toplevel')
     let has_error = vimproc#get_last_status() != 0
   else
