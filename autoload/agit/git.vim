@@ -182,7 +182,7 @@ function! agit#git#exec(command, git_dir, ...)
   if a:0 > 0 && a:1 == 1
     execute '!' . cmd
   else
-    if s:Process.has_vimproc() && s:P.is_windows()
+    if s:Process.has_vimproc()
       let ret = vimproc#system(cmd)
       let s:last_status = vimproc#get_last_status()
     else
