@@ -283,6 +283,11 @@ g:agit_stat_width				*g:agit_stat_width*
 	Max columns of |agit-stat| buffer.
 	default value: 80
 
+g:agit_reuse_tab				*g:agit_reuse_tab*
+	If it is non-zero and there already is an Agit tab with same git
+	directory and layout as launching one, Agit reuse the existing tab.
+	default value: 1
+
 
 ==============================================================================
 TODO						*agit-todo*

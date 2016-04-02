@@ -30,6 +30,9 @@ endif
 if !exists('g:agit_stat_width')
     let g:agit_stat_width = 80
 endif
+if !exists('g:agit_reuse_tab')
+    let g:agit_reuse_tab = 1
+endif
 
 nnoremap <silent> <Plug>(agit-reload)  :<C-u>call agit#reload()<CR>
 nnoremap <silent> <Plug>(agit-scrolldown-stat) :<C-u>call agit#remote_scroll('stat', 'down')<CR>

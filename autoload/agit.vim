@@ -65,6 +65,17 @@ function! agit#launch(args)
     endif
     let git.relpath = git.normalizepath(git.abspath)
     let git.views = parsed_args.preset
+    if g:agit_reuse_tab
+      for t in range(1, tabpagenr('$'))
+        let tabgit = gettabvar(t, 'git', {})
+        if tabgit != {} && git.git_dir ==# tabgit.git_dir
+        \ && git.views == tabgit.views && (git.views[0].name !=# 'filelog' || git.abspath == tabgit.abspath)
+          execute 'tabnext ' . t
+          call agit#reload()
+          return
+        endif
+      endfor
+    endif
     call agit#bufwin#agit_tabnew(git)
     let t:git = git
     if s:fugitive_enabled
