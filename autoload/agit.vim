@@ -79,8 +79,7 @@ function! agit#launch(args)
     call agit#bufwin#agit_tabnew(git)
     let t:git = git
     if s:fugitive_enabled
-      let b:git_dir = git_dir " for fugitive commands
-      silent doautocmd User Fugitive
+      call fugitive#detect(git_dir)
     endif
   catch /Agit: /
     echohl ErrorMsg | echomsg v:exception | echohl None
