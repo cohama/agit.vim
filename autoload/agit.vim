@@ -262,7 +262,7 @@ function! agit#agitgit_confirm(arg)
 endfunction
 
 function! agit#agit_git_compl(arglead, cmdline, cursorpos)
-  if a:cmdline =~# '^AgitGit\s\+\w*$'
+  if a:cmdline =~# '^AgitGit!\?\s\+\w*$'
     return join(split('add bisect branch checkout push pull rebase reset fetch commit cherry-pick remote merge reflog show stash', ' '), "\n")
   else
     return agit#revision_list()
