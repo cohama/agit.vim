@@ -154,14 +154,23 @@ function! agit#show_commit()
 endfunction
 
 function! agit#reload() abort
-  if !exists('t:git') || !exists('w:view')
+  if !exists('t:git')
     return
   endif
   try
-    let win_save = w:view.name
+    let w:tracer = getpos('.')
     call t:git.fire_init()
   finally
-    call agit#bufwin#move_to(win_save)
+    for w in range(1, winnr('$'))
+      let win = getwinvar(w, '')
+      if has_key(win, 'tracer')
+        let pos = win.tracer
+        unlet win.tracer
+        execute 'noautocmd ' . w . 'wincmd w'
+        call setpos('.', pos)
+        break
+      endif
+    endfor
   endtry
 endfunction
 
