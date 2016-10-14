@@ -93,27 +93,21 @@ function! s:log.setlocal()
 
   augroup agit
 
-    if g:agit_enable_auto_show_commit
-      let s:save_ut = &updatetime
-      autocmd CursorMoved <buffer> call s:wait_for_show_commit()
-      autocmd CursorHold <buffer> call s:show_commit()
-      autocmd BufLeave <buffer> call s:cleanup()
-    endif
+    let s:save_ut = &updatetime
+    autocmd CursorMoved <buffer> if g:agit_enable_auto_show_commit | call s:wait_for_show_commit() | endif
+    autocmd CursorHold <buffer> if g:agit_enable_auto_show_commit | call s:show_commit() | endif
+    autocmd BufLeave <buffer> if g:agit_enable_auto_show_commit | call s:cleanup() | endif
 
     if exists('##QuitPre')
       autocmd QuitPre <buffer> call s:exit()
     endif
 
-    if g:agit_enable_auto_refresh
-      autocmd BufEnter <buffer> call agit#reload()
-    endif
+    autocmd BufEnter <buffer> if g:agit_enable_auto_refresh | call agit#reload() | endif
 
     autocmd ShellCmdPost <buffer> call agit#reload()
 
-    if g:agit_skip_empty_line
-      let s:old_linenr = line('.')
-      autocmd CursorMoved <buffer> call s:skip_empty_line()
-    endif
+    let s:old_linenr = line('.')
+    autocmd CursorMoved <buffer> if g:agit_skip_empty_line | call s:skip_empty_line() | endif
 
   augroup END
 
