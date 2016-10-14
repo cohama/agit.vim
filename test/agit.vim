@@ -235,11 +235,12 @@ function! s:suite.__reload_test__()
   let reload = themis#suite('reload test')
 
   function! reload.before_each()
+    tabnew
+    tabonly!
     tabedit `=s:repo_path . 'clean/a'`
     Agit
     call writefile(["reload test"], s:repo_path . 'clean/x')
     call agit#bufwin#move_to('log')
-    let g:agit_enable_auto_refresh = 1
   endfunction
 
   function! reload.after()
@@ -352,7 +353,7 @@ function! s:suite.__in_execute_repo__()
     execute 'AgitGit checkout -b new ' . agit#extract_hash(getline(2))
     let current_branch = s:String.chomp(agit#git#exec('rev-parse --abbrev-ref HEAD', s:execute_repo_path))
     call Expect(current_branch).to_equal('new')
-    call Expect(getline(2)).to_match('(HEAD, new')
+    call Expect(getline(2)).to_match('(HEAD\(,\| ->\) new')
   endfunction
 
   function! execute.git_branch_d()
