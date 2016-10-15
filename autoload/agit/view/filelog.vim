@@ -7,6 +7,7 @@ function! agit#view#filelog#new(git)
   command! -buffer -nargs=? -complete=customlist,agit#diff#complete_revspec AgitDiff call agit#diff(<q-args>)
   if !g:agit_no_default_mappings
     nmap <silent><buffer> di <Plug>(agit-diff)
+    nmap <silent><buffer> dl <Plug>(agit-diff-with-local)
   endif
   return filelog
 endfunction

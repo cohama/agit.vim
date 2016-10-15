@@ -42,6 +42,7 @@ function! s:stat.setlocal()
     nmap <silent><buffer> q <Plug>(agit-exit)
 
     nmap <silent><buffer> di <Plug>(agit-diff)
+    nmap <silent><buffer> dl <Plug>(agit-diff-with-local)
   endif
   set filetype=agit_stat
 endfunction
