@@ -123,8 +123,9 @@ COMMANDS					*agit-commands*
 	(Same as |fugitive|'s |:Git|)
 
 						*:AgitDiff*
-:AgitDiff
-	Show |vimdiff| against the target file of the current revision.
+:AgitDiff [{revisions}]
+	Show |vimdiff| against the target file.
+	AgitDiff accepts target revision(s) as an argument.
 	Note: This command is available only in |agit-log| buffer from
 	|:AgitFile| and |agit-stat| buffer.
 
@@ -135,6 +136,26 @@ COMMANDS					*agit-commands*
 
 	If you installed |fugitive|, AgitDiff uses |fugitive| when showing staged
 	file. This means you can stage or unstage each hunks like |:Gdiff|.
+
+						*agit-diff-revspec*
+	revisions can be specified by almost same way as "git diff".
+	For example:
+
+	:AgitDiff (No revision specified)
+	show changes made by current revision
+
+	:AgitDiff REV1
+	show changes between REV1 and local
+
+	:AgitDiff REV1..REV2
+	show changes between REV1 and REV2
+
+	:AgitDiff REV1...REV2
+	show changes between marge_base(REV1, REV2) and REV2
+	marge_base(REV1, REV2) means "newest common ancestor of REV1 and REV2"
+
+	:AgitDiff REV1..
+	show changes between REV1 and HEAD ("HEAD" can be omitted)
 
 ------------------------------------------------------------------------------
 KEY-MAPPINGS					*agit-key-mappings*
@@ -216,6 +237,11 @@ Available only in |agit-log| buffer unless explicitly mentioned.
 	Show |vimdiff| against the target file of the current revision.
 	Availabie in |agit-log|, |agit-stat|
 
+<Plug>(agit-diff-with-local)			*<Plug>(agit-diff-with-local)*
+	Show |vimdiff| against the target file changes between current
+	revision and local.
+	Availabie in |agit-log|, |agit-stat|
+
 
 ------------------------------------------------------------------------------
 DEFAULT KEY-MAPPINGS				*agit-default-key-mappings*
@@ -237,6 +263,7 @@ rh			<Plug>(agit-git-reset-hard)
 rb			<Plug>(agit-git-rebase)
 ri			<Plug>(agit-git-rebase-i)
 di			<Plug>(agit-diff)
+dl			<Plug>(agit-diff-with-local)
 
 ------------------------------------------------------------------------------
 VARIABLES					*agit-variables*
