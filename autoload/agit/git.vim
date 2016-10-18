@@ -166,6 +166,21 @@ function! s:git.commitmsg(hash) dict
   return agit#git#exec('show -s --format=format:%s ' . a:hash, self.git_dir)
 endfunction
 
+function! s:git.get_mergebase(rev1, rev2)
+  let rev1 = a:rev1 =~# '^\(un\)\?staged$' ? 'HEAD' : a:rev1
+  let rev2 = a:rev2 =~# '^\(un\)\?staged$' ? 'HEAD' : a:rev2
+  return s:String.chomp(agit#git#exec_or_die('merge-base "' . rev1 . '" "' . rev2 . '"', t:git.git_dir))
+endfunction
+
+function! s:git.get_shorthash(revspec)
+  if a:revspec =~# '^\(un\)\?staged$'
+    return a:revspec
+  elseif a:revspec =~# '^\x\{7,\}$'
+    return a:revspec[:6]
+  endif
+  return s:String.chomp(agit#git#exec_or_die('rev-parse --short "' . a:revspec . '"', t:git.git_dir))
+endfunction
+
 let s:seq = ''
 function! agit#git#new(git_dir)
   let git = extend(deepcopy(s:git), {'git_dir' : a:git_dir, 'seq': s:seq})
@@ -193,6 +208,17 @@ function! agit#git#exec(command, git_dir, ...)
       let ret = iconv(ret, 'utf-8', 'cp932')
     endif
     return ret
+  endif
+endfunction
+
+function! agit#git#exec_or_die(command, git_dir)
+  let ret = agit#git#exec(a:command, a:git_dir)
+  if s:last_status == 0
+    return ret
+  else
+    let command_name = matchstr(a:command, '^\S\+')
+    let error = substitute(ret, '[\r\n].*', '', 'g')
+    throw 'Agit: git ' . command_name . ' failed(' . string(s:last_status) . '). ' . error
   endif
 endfunction
 
