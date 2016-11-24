@@ -32,11 +32,17 @@ let s:agit_preset_views = get(g:, 'agit_preset_views', {
 \ ]})
 let s:fugitive_enabled = get(g:, 'loaded_fugitive', 0)
 
+function s:complete_fenc_option(arglead, cmdline, cursorpos)
+  return split(&fencs, ',')
+endfunction
+
 let s:parser = s:OptionParser.new()
 call s:parser.on('--dir=VALUE', 'Launch Agit on the specified directory instead of the buffer direcotry.',
 \ {'completion' : 'file', 'default': ''})
 call s:parser.on('--file=VALUE', 'Specify file name traced by Agit file. (Available on Agit file)',
 \ {'completion' : 'file', 'default': '%'})
+call s:parser.on('--fenc=VALUE', 'Specify file encoding on Agit cat-file.',
+\ {'completion' : function('s:complete_fenc_option'), 'default': ''})
 
 function! agit#complete_command(arglead, cmdline, cursorpos)
   return s:parser.complete_greedily(a:arglead, a:cmdline, a:cursorpos)
@@ -64,6 +70,7 @@ function! agit#launch(args)
         throw "Agit: File not tracked: " . git.path
     endif
     let git.relpath = git.normalizepath(git.abspath)
+    let git.catfile_fenc = parsed_args.fenc
     let git.views = parsed_args.preset
     if g:agit_reuse_tab
       for t in range(1, tabpagenr('$'))

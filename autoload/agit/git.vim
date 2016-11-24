@@ -25,6 +25,7 @@ let s:git = {
 \   'line' : 0,
 \ },
 \ 'head' : '',
+\ 'catfile_fenc': '',
 \ }
 
 function! s:git.log(winwidth) dict
@@ -158,6 +159,9 @@ function! s:git.catfile(hash, path)
     let catfile = agit#git#exec('cat-file -p ":' . a:path . '"', self.git_dir)
   else
     let catfile = agit#git#exec('cat-file -p "' . a:hash . ':' . a:path . '"', self.git_dir)
+  endif
+  if self.catfile_fenc != '' || self.catfile_fenc !=# 'utf-8'
+    let catfile = iconv(catfile, self.catfile_fenc, &enc)
   endif
   return catfile
 endfunction
