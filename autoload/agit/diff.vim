@@ -1,6 +1,6 @@
 function! agit#diff#revision_list(git)
   " TODO: this function should be unified with agit#revision_list
-  let revs = split(agit#git#exec('rev-parse --symbolic --branches --remotes --tags', a:git.git_dir), "\n")
+  let revs = split(agit#git#exec('rev-parse --symbolic --branches --remotes --tags', a:git.git_root), "\n")
         \  + ['HEAD', 'ORIG_HEAD', 'MERGE_HEAD', 'FETCH_HEAD', 'staged', 'unstaged']
   if a:git.hash =~# '^\x\{7,\}$'
     let revs = insert(revs, a:git.hash)
@@ -86,7 +86,7 @@ function! agit#diff#sidebyside(git, relpath, revspec) abort
     throw "Agit: Specified revisions indicate same commit"
   endif
   let hash = (rhash ==# 'unstaged' || rhash ==# 'staged' ? 'HEAD' : rhash)
-  if agit#git#exec('ls-tree --name-only "' . hash . '" -- "' . a:git.to_abspath(a:relpath) . '"', a:git.git_dir) == ''
+  if agit#git#exec('ls-tree --name-only "' . hash . '" -- "' . a:git.filepath . '"', a:git.git_root) == ''
     throw "Agit: File not tracked: " . a:relpath
   endif
   tabnew
@@ -98,9 +98,9 @@ endfunction
 
 function! s:fill_buffer(git, relpath, hash) abort
   if a:hash ==# 'unstaged'
-    edit! `=a:git.to_abspath(a:relpath)`
+    edit! `=a:git.filepath`
   elseif a:hash ==# 'staged' && get(g:, 'loaded_fugitive', 0)
-    edit! `='fugitive://' . a:git.git_dir . '//0/' . a:relpath`
+    edit! `='fugitive://' . a:git.git_root . '//0/' . a:relpath`
   else
     let content = a:git.catfile(a:hash, a:relpath)
     silent! file `=a:relpath . '(' . a:hash . ')'`
@@ -110,7 +110,7 @@ function! s:fill_buffer(git, relpath, hash) abort
     noautocmd silent! %delete _
     noautocmd silent! 1put= content
     noautocmd silent! 1delete _
-    setlocal nomodifiable 
+    setlocal nomodifiable
   endif
 endfunction
 

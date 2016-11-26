@@ -21,7 +21,7 @@ endfunction
 
 function! s:catfile.render(hash)
   call agit#bufwin#move_to(self.name)
-  call s:fill_buffer(self.git.catfile(a:hash, self.git.relpath))
+  call s:fill_buffer(self.git.catfile(a:hash, self.git.filepath))
   if exists('w:agit_scrolllock')
     let line = w:agit_scrolllock[0]
     let winline = w:agit_scrolllock[1]
@@ -39,7 +39,7 @@ endfunction
 function! s:catfile.setlocal()
   call agit#bufwin#move_to(self.name)
   silent file `='[Agit catfile] ' . self.git.seq`
-  execute 'doautocmd BufNewFile ' . self.git.path
+  execute 'doautocmd BufNewFile ' . self.git.filepath
   setlocal buftype=nofile nobuflisted bufhidden=delete
   setlocal foldcolumn=0
   setlocal nomodifiable

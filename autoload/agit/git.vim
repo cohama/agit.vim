@@ -10,7 +10,8 @@ let g:agit#git#unstaged_message = '=  Local uncommitted changes, not checked in 
 let g:agit#git#nextpage_message = '(too many logs)'
 
 let s:git = {
-\ 'git_dir' : '',
+\ 'git_root' : '',
+\ 'filepath': '',
 \ 'hash': '',
 \ 'oninit': [],
 \ 'onhashchange': [],
@@ -29,7 +30,7 @@ let s:git = {
 
 function! s:git.log(winwidth) dict
   let max_count = g:agit_max_log_lines + 1
-  let gitlog = agit#git#exec('log --all --graph --decorate=full --no-color --date=relative --max-count=' . max_count . ' --format=format:"%d %s' . s:sep . '|>%ad<|' . s:sep . '{>%an<}' . s:sep . '[%h]"', self.git_dir)
+  let gitlog = agit#git#exec('log --all --graph --decorate=full --no-color --date=relative --max-count=' . max_count . ' --format=format:"%d %s' . s:sep . '|>%ad<|' . s:sep . '{>%an<}' . s:sep . '[%h]"', self.git_root)
   " 16 means concealed symbol (4*2 + 2) + hash (7) - right eade margin (1)
   let max_width = a:winwidth + 16
   let gitlog = substitute(gitlog, '\<refs/heads/', '', 'g')
@@ -44,7 +45,7 @@ function! s:git.log(winwidth) dict
   " add staged and unstaged lines
   let self.staged = self._localchanges(1, '')
   let self.unstaged = self._localchanges(0, '')
-  let untracked = agit#git#exec('ls-files --others --exclude-standard', self.git_dir)
+  let untracked = agit#git#exec('ls-files --others --exclude-standard', self.git_root)
   if !empty(untracked)
     if self.unstaged.stat !=# ''
       let self.unstaged.stat .= "\n"
@@ -59,7 +60,7 @@ endfunction
 
 function! s:git.filelog(winwidth)
   let max_count = g:agit_max_log_lines + 1
-  let gitlog = agit#git#exec('log --all --graph --decorate=full --no-color --date=relative --max-count=' . max_count . ' --format=format:"%d %s' . s:sep . '|>%ad<|' . s:sep . '{>%an<}' . s:sep . '[%h]" -- "' . self.abspath . '"', self.git_dir)
+  let gitlog = agit#git#exec('log --all --graph --decorate=full --no-color --date=relative --max-count=' . max_count . ' --format=format:"%d %s' . s:sep . '|>%ad<|' . s:sep . '{>%an<}' . s:sep . '[%h]" -- "' . self.filepath . '"', self.git_root)
   " 16 means concealed symbol (4*2 + 2) + hash (7) - right eade margin (1)
   let max_width = a:winwidth + 16
   let gitlog = substitute(gitlog, '\<refs/heads/', '', 'g')
@@ -70,26 +71,26 @@ function! s:git.filelog(winwidth)
   let aligned_log = agit#aligner#align(log_lines, max_width)
 
   let self.head = self._head()
-  let self.staged = self._localchanges(1, self.relpath)
-  let self.unstaged = self._localchanges(0, self.relpath)
+  let self.staged = self._localchanges(1, self.filepath)
+  let self.unstaged = self._localchanges(0, self.filepath)
   call self._insert_localchanges_loglines(aligned_log)
 
   return join(aligned_log, "\n")
 endfunction
 
 function! s:git._head() dict
-  let head = agit#git#exec('rev-parse --short HEAD', self.git_dir)
+  let head = agit#git#exec('rev-parse --short HEAD', self.git_root)
   return s:String.chomp(head)
 endfunction
 
-function! s:git._localchanges(cached, relpath) dict
+function! s:git._localchanges(cached, filepath) dict
   let opts = a:cached ? ' --cached' : ''
-  if !empty(a:relpath)
-    let opts .= ' -- "' . a:relpath . '"'
+  if !empty(a:filepath)
+    let opts .= ' -- "' . a:filepath . '"'
   endif
   let ret = {'line' : 0}
-  let ret.stat = agit#git#exec('diff --stat=' . g:agit_stat_width . opts, self.git_dir)
-  let ret.diff = agit#git#exec('diff -p' . opts, self.git_dir)
+  let ret.stat = agit#git#exec('diff --stat=' . g:agit_stat_width . opts, self.git_root)
+  let ret.diff = agit#git#exec('diff -p' . opts, self.git_root)
   return ret
 endfunction
 
@@ -120,7 +121,7 @@ function! s:git.stat(hash) dict
     let stat = ''
   else
     let ignoresp = g:agit_ignore_spaces ? '-w' : ''
-    let stat = agit#git#exec('show --oneline --stat=' . g:agit_stat_width . ' --date=iso --pretty=format: ' . ignoresp . ' ' . a:hash, self.git_dir)
+    let stat = agit#git#exec('show --oneline --stat=' . g:agit_stat_width . ' --date=iso --pretty=format: ' . ignoresp . ' ' . a:hash, self.git_root)
     let stat = substitute(stat, '^[\n\r]\+', '', '')
   endif
   return stat
@@ -135,41 +136,38 @@ function! s:git.diff(hash) dict
     let diff = ''
   else
     let ignoresp = g:agit_ignore_spaces ? '-w' : ''
-    let diff = agit#git#exec('show -p '. ignoresp .' ' . a:hash, self.git_dir)
+    let diff = agit#git#exec('show -p '. ignoresp .' ' . a:hash, self.git_root)
   endif
   return diff
 endfunction
 
 function! s:git.normalizepath(path)
-  let path = agit#git#exec('ls-tree --full-name --name-only HEAD ''' . a:path . '''', self.git_dir)
+  let path = agit#git#exec('ls-tree --full-name --name-only HEAD ''' . a:path . '''', self.git_root)
   return s:String.chomp(path)
 endfunction
 
-function! s:git.to_abspath(relpath)
-  return fnamemodify(self.git_dir, ':h') . '/' . a:relpath
-endfunction
-
 function! s:git.catfile(hash, path)
+  let relpath = s:String.chomp(agit#git#exec('ls-tree --full-name --name-only HEAD ''' . a:path . '''', self.git_root))
   if a:hash == 'nextpage'
     let catfile = ''
   elseif a:hash == 'unstaged'
-    let catfile = join(readfile(self.to_abspath(a:path)), "\n")
+    let catfile = join(readfile(a:path), "\n")
   elseif a:hash == 'staged'
-    let catfile = agit#git#exec('cat-file -p ":' . a:path . '"', self.git_dir)
+    let catfile = agit#git#exec('cat-file -p ":' . relpath . '"', self.git_root)
   else
-    let catfile = agit#git#exec('cat-file -p "' . a:hash . ':' . a:path . '"', self.git_dir)
+    let catfile = agit#git#exec('cat-file -p "' . a:hash . ':' . relpath . '"', self.git_root)
   endif
   return catfile
 endfunction
 
 function! s:git.commitmsg(hash) dict
-  return agit#git#exec('show -s --format=format:%s ' . a:hash, self.git_dir)
+  return agit#git#exec('show -s --format=format:%s ' . a:hash, self.git_root)
 endfunction
 
 function! s:git.get_mergebase(rev1, rev2)
   let rev1 = a:rev1 =~# '^\(un\)\?staged$' ? 'HEAD' : a:rev1
   let rev2 = a:rev2 =~# '^\(un\)\?staged$' ? 'HEAD' : a:rev2
-  return s:String.chomp(agit#git#exec_or_die('merge-base "' . rev1 . '" "' . rev2 . '"', t:git.git_dir))
+  return s:String.chomp(agit#git#exec_or_die('merge-base "' . rev1 . '" "' . rev2 . '"', t:git.git_root))
 endfunction
 
 function! s:git.get_shorthash(revspec)
@@ -178,12 +176,12 @@ function! s:git.get_shorthash(revspec)
   elseif a:revspec =~# '^\x\{7,\}$'
     return a:revspec[:6]
   endif
-  return s:String.chomp(agit#git#exec_or_die('rev-parse --short "' . a:revspec . '"', t:git.git_dir))
+  return s:String.chomp(agit#git#exec_or_die('rev-parse --short "' . a:revspec . '"', t:git.git_root))
 endfunction
 
 let s:seq = ''
-function! agit#git#new(git_dir)
-  let git = extend(deepcopy(s:git), {'git_dir' : a:git_dir, 'seq': s:seq})
+function! agit#git#new(git_root)
+  let git = extend(deepcopy(s:git), {'git_root' : a:git_root, 'seq': s:seq})
   let s:seq += 1
   return git
 endfunction
@@ -191,9 +189,8 @@ endfunction
 " Utilities
 let s:last_status = 0
 let s:is_cp932 = &enc == 'cp932'
-function! agit#git#exec(command, git_dir, ...)
-  let worktree_dir = matchstr(a:git_dir, '^.\+\ze\.git')
-  let cmd = 'git --no-pager --git-dir="' . a:git_dir . '" --work-tree="' . worktree_dir . '" ' . a:command
+function! agit#git#exec(command, git_root, ...)
+  let cmd = 'git --no-pager -C "' . a:git_root . '" ' . a:command
   if a:0 > 0 && a:1 == 1
     execute '!' . cmd
   else
@@ -211,8 +208,8 @@ function! agit#git#exec(command, git_dir, ...)
   endif
 endfunction
 
-function! agit#git#exec_or_die(command, git_dir)
-  let ret = agit#git#exec(a:command, a:git_dir)
+function! agit#git#exec_or_die(command, git_root)
+  let ret = agit#git#exec(a:command, a:git_root)
   if s:last_status == 0
     return ret
   else

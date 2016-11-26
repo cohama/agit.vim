@@ -53,23 +53,22 @@ function! agit#launch(args)
       call s:parser.help()
       return
     endif
-    let git_dir = s:get_git_dir(parsed_args.dir)
-    let git = agit#git#new(git_dir)
-    let git.path = expand(parsed_args.file)
-    if parsed_args.presetname ==# 'file' && !filereadable(git.path)
-        throw "Agit: File not found: " . git.path
+    let git_root = s:get_git_root(parsed_args.dir)
+    let git = agit#git#new(git_root)
+    let filepath = fnamemodify(expand(parsed_args.file), ':p')
+    if parsed_args.presetname ==# 'file' && !filereadable(filepath)
+      throw "Agit: File not found: " . parsed_args.file
     endif
-    let git.abspath = fnamemodify(git.path, ':p')
-    if parsed_args.presetname ==# 'file' && agit#git#exec('ls-files "' . git.abspath . '"', git.git_dir) ==# ''
-        throw "Agit: File not tracked: " . git.path
+    if parsed_args.presetname ==# 'file' && agit#git#exec('ls-files "' . filepath . '"', git.git_root) ==# ''
+      throw "Agit: File not tracked: " . parsed_args.file
     endif
-    let git.relpath = git.normalizepath(git.abspath)
+    let git.filepath = filepath
     let git.views = parsed_args.preset
     if g:agit_reuse_tab
       for t in range(1, tabpagenr('$'))
         let tabgit = gettabvar(t, 'git', {})
-        if tabgit != {} && git.git_dir ==# tabgit.git_dir
-        \ && git.views == tabgit.views && (git.views[0].name !=# 'filelog' || git.abspath == tabgit.abspath)
+        if tabgit != {} && git.git_root ==# tabgit.git_root
+        \ && git.views == tabgit.views && (git.views[0].name !=# 'filelog' || git.filepath == tabgit.filepath)
           execute 'tabnext ' . t
           call agit#reload()
           return
@@ -79,7 +78,7 @@ function! agit#launch(args)
     call agit#bufwin#agit_tabnew(git)
     let t:git = git
     if s:fugitive_enabled
-      call fugitive#detect(git_dir)
+      call fugitive#detect(git_root . '/.git')
     endif
   catch /Agit: /
     echohl ErrorMsg | echomsg v:exception | echohl None
@@ -180,14 +179,42 @@ function! agit#diff(args) abort
       return
     endif
     if &filetype ==# 'agit'
-      let relpath = t:git.relpath
+      let filepath = t:git.filepath
     else
-      let relpath = expand('<cfile>')
+      let filepath = fnamemodify(expand('<cfile>'), ':p')
     endif
-    call agit#diff#sidebyside(t:git, relpath, a:args)
+    call agit#diff#sidebyside(t:git, filepath, a:args)
   catch /Agit: /
     echohl ErrorMsg | echomsg v:exception | echohl None
   endtry
+endfunction
+
+function s:get_git_root(basedir)
+  if empty(a:basedir)
+    " if fugitive exists
+    if s:fugitive_enabled && exists('b:git_dir')
+      return matchstr(b:git_dir, '^.\+\ze\.git')
+    else
+      let current_path = expand('%:p:h')
+    endif
+  else
+    let current_path = a:basedir
+  endif
+  let cdcmd = haslocaldir() ? 'lcd ' : 'cd '
+  let cwd = getcwd()
+  execute cdcmd . current_path
+  if s:Process.has_vimproc()
+    let toplevel_path = vimproc#system('git --no-pager rev-parse --show-toplevel')
+    let has_error = vimproc#get_last_status() != 0
+  else
+    let toplevel_path = system('git --no-pager rev-parse --show-toplevel')
+    let has_error = v:shell_error != 0
+  endif
+  execute cdcmd . cwd
+  if has_error
+    throw 'Agit: Not a git repository.'
+  endif
+  return s:String.chomp(toplevel_path)
 endfunction
 
 function! s:get_git_dir(basedir)
@@ -226,7 +253,7 @@ function! agit#agitgit(arg, confirm, bang)
   let arg = substitute(a:arg, '\c<hash>', agit#extract_hash(getline('.')), 'g')
   if match(arg, '\c<branch>') >= 0
     let cword = expand('<cword>')
-    silent let branch = agit#git#exec('rev-parse --symbolic ' . cword, t:git.git_dir)
+    silent let branch = agit#git#exec('rev-parse --symbolic ' . cword, t:git.git_root)
     let branch = substitute(branch, '\n\+$', '', '')
     if agit#git#get_last_status() != 0
       echomsg 'Not a branch name: ' . cword
@@ -247,7 +274,7 @@ function! agit#agitgit(arg, confirm, bang)
         return
       endif
     endif
-    echo agit#git#exec(arg, t:git.git_dir, a:bang)
+    echo agit#git#exec(arg, t:git.git_root, a:bang)
     call agit#reload()
   endif
 endfunction
@@ -264,7 +291,7 @@ function! agit#agit_git_compl(arglead, cmdline, cursorpos)
 endfunction
 
 function! agit#revision_list()
-  let revs = agit#git#exec('rev-parse --symbolic --branches --remotes --tags', t:git.git_dir)
+  let revs = agit#git#exec('rev-parse --symbolic --branches --remotes --tags', t:git.git_root)
   \ . join(['HEAD', 'ORIG_HEAD', 'MERGE_HEAD', 'FETCH_HEAD'], "\n")
   let hash = agit#extract_hash(getline('.'))
   if hash != ''
@@ -275,21 +302,21 @@ function! agit#revision_list()
 endfunction
 
 function! s:git_checkout(branch_name)
-  echo agit#git#exec('checkout ' . a:branch_name, t:git.git_dir)
+  echo agit#git#exec('checkout ' . a:branch_name, t:git.git_root)
   call agit#reload()
 endfunction
 
 function! s:git_checkout_b()
   let branch_name = input('git checkout -b ')
   echo ''
-  echo agit#git#exec('checkout -b ' . branch_name, t:git.git_dir)
+  echo agit#git#exec('checkout -b ' . branch_name, t:git.git_root)
   call agit#reload()
 endfunction
 
 function! s:git_branch_d(branch_name)
   echon "Are you sure you want to delete branch '" . a:branch_name . "' [y/N]"
   if nr2char(getchar()) ==# 'y'
-    echo agit#git#exec('branch -D ' . a:branch_name, t:git.git_dir)
+    echo agit#git#exec('branch -D ' . a:branch_name, t:git.git_root)
     call agit#reload()
   endif
 endfunction

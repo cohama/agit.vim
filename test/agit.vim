@@ -10,7 +10,7 @@ cd `=expand("<sfile>:p:h")`
 function! s:suite.__in_clean_repo__()
 
   let clean = themis#suite('in clean repo')
-  let s:clean_repo_path = s:repo_path . 'clean/.git'
+  let s:clean_repo_path = s:repo_path . 'clean/'
 
   function! clean.before()
     tabnew
@@ -40,7 +40,7 @@ endfunction
 function! s:suite.__in_clean_repo_with_empty_buffer__()
 
   let clean = themis#suite('in clean repo with empty buffer')
-  let s:clean_repo_path = s:repo_path . 'clean/.git'
+  let s:clean_repo_path = s:repo_path . 'clean/'
 
   function! clean.before()
     tabnew
@@ -75,7 +75,7 @@ endfunction
 function! s:suite.__in_unstaged_repo__()
 
   let unstaged = themis#suite('in unstaged repo')
-  let s:unstaged_repo_path = s:repo_path . 'unstaged/.git'
+  let s:unstaged_repo_path = s:repo_path . 'unstaged/'
 
   function! unstaged.before()
     tabnew
@@ -110,7 +110,7 @@ endfunction
 function! s:suite.__in_untracked_repo__()
 
   let untracked = themis#suite('in untracked repo')
-  let s:untracked_repo_path = s:repo_path . 'untracked/.git'
+  let s:untracked_repo_path = s:repo_path . 'untracked/'
 
   function! untracked.before()
     tabnew
@@ -150,7 +150,7 @@ endfunction
 function! s:suite.__in_staged_repo__()
 
   let staged = themis#suite('in staged repo')
-  let s:staged_repo_path = s:repo_path . 'staged/.git'
+  let s:staged_repo_path = s:repo_path . 'staged/'
 
   function! staged.before()
     tabnew
@@ -185,7 +185,7 @@ endfunction
 function! s:suite.__in_mixed_repo__()
 
   let mixed = themis#suite('in mixed repo')
-  let s:mixed_repo_path = s:repo_path . 'mixed/.git'
+  let s:mixed_repo_path = s:repo_path . 'mixed/'
 
   function! mixed.before()
     tabnew
@@ -251,7 +251,7 @@ function! s:suite.__reload_test__()
 
   function! reload.after_each()
     call delete(s:repo_path . 'clean/x')
-    call agit#git#exec('reset', t:git.git_dir)
+    call agit#git#exec('reset', t:git.git_root)
   endfunction
 
   function! reload.on_log_window()
@@ -303,7 +303,7 @@ endfunction
 function! s:suite.__in_execute_repo__()
 
   let execute = themis#suite('in execute repo')
-  let s:execute_repo_path = s:repo_path . 'execute/.git'
+  let s:execute_repo_path = s:repo_path . 'execute/'
 
   function! execute.before()
     tabnew
