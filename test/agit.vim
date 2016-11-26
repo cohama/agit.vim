@@ -5,6 +5,8 @@ let s:suite = themis#suite('agit integration test')
 
 let s:repo_path = expand("<sfile>:p:h") . '/repos/'
 
+cd `=expand("<sfile>:p:h")`
+
 function! s:suite.__in_clean_repo__()
 
   let clean = themis#suite('in clean repo')
@@ -263,6 +265,8 @@ function! s:suite.__reload_test__()
     call agit#bufwin#move_to('stat')
     call agit#reload()
     call Expect(w:view.name).to_equal('stat')
+    call agit#bufwin#move_to('log')
+    call Expect(getline(1)).to_match(g:agit#git#unstaged_message)
   endfunction
 
   function! reload.on_diff_window()
@@ -270,6 +274,8 @@ function! s:suite.__reload_test__()
     call agit#bufwin#move_to('diff')
     call agit#reload()
     call Expect(w:view.name).to_equal('diff')
+    call agit#bufwin#move_to('log')
+    call Expect(getline(1)).to_match(g:agit#git#unstaged_message)
   endfunction
 
   function! reload.when_extra_window_exists()
@@ -280,37 +286,6 @@ function! s:suite.__reload_test__()
     call Expect(w:view.name).to_equal('log')
     call Expect(getline(1)).to_match(g:agit#git#unstaged_message)
   endfunction
-
-  " function! reload.and_recreate_stat_window()
-  "   call Expect(getline(1)).not.to_match(g:agit#git#unstaged_message)
-  "   call agit#bufwin#move_to('stat')
-  "   q
-  "   call agit#reload()
-  "   call Expect(winnr('$')).to_equal(3)
-  "   call Expect(w:view.name).to_equal('log')
-  "   call Expect(getline(1)).to_match(g:agit#git#unstaged_message)
-  " endfunction
-
-  " function! reload.and_recreate_diff_window()
-  "   call Expect(getline(1)).not.to_match(g:agit#git#unstaged_message)
-  "   call Expect(winnr('$')).to_equal(3)
-  "   call agit#bufwin#move_to('diff')
-  "   q
-  "   call agit#reload()
-  "   call Expect(winnr('$')).to_equal(3)
-  "   call Expect(w:view.name).to_equal('log')
-  "   call Expect(getline(1)).to_match(g:agit#git#unstaged_message)
-  " endfunction
-
-  " function! reload.and_recreate_stat_and_diff_window()
-  "   call Expect(getline(1)).not.to_match(g:agit#git#unstaged_message)
-  "   call Expect(winnr('$')).to_equal(3)
-  "   only
-  "   call agit#reload()
-  "   call Expect(winnr('$')).to_equal(3)
-  "   call Expect(w:view.name).to_equal('log')
-  "   call Expect(getline(1)).to_match(g:agit#git#unstaged_message)
-  " endfunction
 
   function! reload.when_bufenter()
     call Expect(getline(1)).not.to_match(g:agit#git#unstaged_message)
