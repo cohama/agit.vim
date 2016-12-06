@@ -2,7 +2,7 @@ function! agit#diff#revision_list(git)
   " TODO: this function should be unified with agit#revision_list
   let revs = split(agit#git#exec('rev-parse --symbolic --branches --remotes --tags', a:git.git_dir), "\n")
         \  + ['HEAD', 'ORIG_HEAD', 'MERGE_HEAD', 'FETCH_HEAD', 'staged', 'unstaged']
-  if a:git.hash =~# '^\x\{7\}$'
+  if a:git.hash =~# '^\x\{7,\}$'
     let revs = insert(revs, a:git.hash)
   endif
   return revs
