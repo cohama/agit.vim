@@ -161,7 +161,7 @@ function! s:log.emmit(...)
   " optional argument 1: force=0
   let force = get(a:, 1, 0)
   let line = getline('.')
-  let hash = matchstr(line, '\[\zs\x\{7\}\ze\]$')
+  let hash = matchstr(line, '\[\zs\x\{7,\}\ze\]$')
   if hash ==# ''
     if line ==# g:agit#git#staged_message
       let hash = 'staged'

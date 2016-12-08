@@ -219,7 +219,7 @@ function! s:get_git_dir(basedir)
 endfunction
 
 function! agit#extract_hash(str)
-  return matchstr(a:str, '\[\zs\x\{7\}\ze\]$')
+  return matchstr(a:str, '\[\zs\x\{7,\}\ze\]$')
 endfunction
 
 function! agit#agitgit(arg, confirm, bang)
