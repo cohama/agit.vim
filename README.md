@@ -30,6 +30,11 @@ When you edit a file in git repository, type the below
 :Agit
 ```
 
+Requirements
+------------
+Vim 7.4.52 or later
+Git 1.8.5 or later
+
 License
 -------
 MIT license
