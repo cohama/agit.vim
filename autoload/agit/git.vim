@@ -28,6 +28,13 @@ let s:git = {
 \ 'head' : '',
 \ }
 
+function! s:git.relpath() abort
+  if !has_key(self, '_relpath')
+    let self._relpath = s:String.chomp(agit#git#exec('ls-tree --full-name --name-only HEAD ''' . self.filepath . '''', self.git_root))
+  endif
+  return self._relpath
+endfunction
+
 function! s:git.log(winwidth) dict
   let max_count = g:agit_max_log_lines + 1
   let gitlog = agit#git#exec('log --all --graph --decorate=full --no-color --date=relative --max-count=' . max_count . ' --format=format:"%d %s' . s:sep . '|>%ad<|' . s:sep . '{>%an<}' . s:sep . '[%h]"', self.git_root)
@@ -142,7 +149,7 @@ function! s:git.diff(hash) dict
 endfunction
 
 function! s:git.catfile(hash, path)
-  let relpath = s:String.chomp(agit#git#exec('ls-tree --full-name --name-only HEAD ''' . a:path . '''', self.git_root))
+  let relpath = self.relpath()
   if a:hash == 'nextpage'
     let catfile = ''
   elseif a:hash == 'unstaged'

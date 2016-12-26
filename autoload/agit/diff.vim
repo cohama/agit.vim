@@ -100,7 +100,7 @@ function! s:fill_buffer(git, relpath, hash) abort
   if a:hash ==# 'unstaged'
     edit! `=a:git.filepath`
   elseif a:hash ==# 'staged' && get(g:, 'loaded_fugitive', 0)
-    edit! `='fugitive://' . a:git.git_root . '//0/' . a:relpath`
+    edit! `='fugitive://' . a:git.git_root . '.git//0/' . a:relpath`
   else
     let content = a:git.catfile(a:hash, a:relpath)
     silent! file `=a:relpath . '(' . a:hash . ')'`

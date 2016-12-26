@@ -179,9 +179,9 @@ function! agit#diff(args) abort
       return
     endif
     if &filetype ==# 'agit'
-      let filepath = t:git.filepath
+      let filepath = t:git.relpath()
     else
-      let filepath = fnamemodify(expand('<cfile>'), ':p')
+      let filepath = expand('<cfile>')
     endif
     call agit#diff#sidebyside(t:git, filepath, a:args)
   catch /Agit: /
