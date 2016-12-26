@@ -141,11 +141,6 @@ function! s:git.diff(hash) dict
   return diff
 endfunction
 
-function! s:git.normalizepath(path)
-  let path = agit#git#exec('ls-tree --full-name --name-only HEAD ''' . a:path . '''', self.git_root)
-  return s:String.chomp(path)
-endfunction
-
 function! s:git.catfile(hash, path)
   let relpath = s:String.chomp(agit#git#exec('ls-tree --full-name --name-only HEAD ''' . a:path . '''', self.git_root))
   if a:hash == 'nextpage'
