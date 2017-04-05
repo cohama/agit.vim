@@ -98,7 +98,7 @@ endfunction
 
 function! s:fill_buffer(git, relpath, hash) abort
   if a:hash ==# 'unstaged'
-    edit! `=a:git.filepath`
+    edit! `=a:git.to_abspath(a:relpath)`
   elseif a:hash ==# 'staged' && get(g:, 'loaded_fugitive', 0)
     edit! `='fugitive://' . a:git.git_root . '.git//0/' . a:relpath`
   else
