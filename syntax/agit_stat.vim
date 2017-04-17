@@ -9,8 +9,8 @@ syn match agitStatMessage /^\ \d\+\ files\?\ changed.*$/
 syn match agitUntrackedTitle /^ -- untracked files --$/
 syn match agitUntrackedFile /^ \f\+$/
 
-hi def link agitStatAdded Identifier
-hi def link agitStatRemoved Special
+hi def link agitStatAdded diffAdd
+hi def link agitStatRemoved diffDelete
 hi def link agitStatFile Constant
 hi def link agitStatMessage Title
 hi def link agitUntrackedTitle Structure
