@@ -134,7 +134,7 @@ function! s:git.stat(hash) dict
   return stat
 endfunction
 
-function! s:git.diff(hash) dict
+function! s:git.diff(hash, ...) dict
   if a:hash ==# 'staged'
     let diff = self.staged.diff
   elseif a:hash ==# 'unstaged'
@@ -143,7 +143,8 @@ function! s:git.diff(hash) dict
     let diff = ''
   else
     let ignoresp = g:agit_ignore_spaces ? '-w' : ''
-    let diff = agit#git#exec('show -p '. ignoresp .' ' . a:hash, self.git_root)
+    let relpath = get(a:, 1, '')
+    let diff = agit#git#exec('show -p '. ignoresp .' ' . a:hash . ' ' . relpath, self.git_root)
   endif
   return diff
 endfunction
