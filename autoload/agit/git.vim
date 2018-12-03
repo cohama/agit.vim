@@ -196,7 +196,7 @@ endfunction
 let s:last_status = 0
 let s:is_cp932 = &enc == 'cp932'
 function! agit#git#exec(command, git_root, ...)
-  let cmd = 'git --no-pager -C "' . a:git_root . '" ' . a:command
+  let cmd = 'cd ' . a:git_root . ' && git --no-pager ' . a:command
   if a:0 > 0 && a:1 == 1
     execute '!' . cmd
   else
