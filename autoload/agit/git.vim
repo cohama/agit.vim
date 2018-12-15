@@ -201,7 +201,7 @@ function! agit#git#exec(command, git_root, ...)
     execute '!' . cmd
   else
     if s:Process.has_vimproc()
-      let ret = vimproc#system(cmd)
+      let ret = vimproc#cmd#system(cmd)
       let s:last_status = vimproc#get_last_status()
     else
       let ret = system(cmd)
