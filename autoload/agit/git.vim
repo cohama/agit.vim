@@ -30,7 +30,7 @@ let s:git = {
 
 function! s:git.relpath() abort
   if !has_key(self, '_relpath')
-    let self._relpath = s:String.chomp(agit#git#exec('ls-tree --full-name --name-only HEAD ''' . self.filepath . '''', self.git_root))
+    let self._relpath = s:String.chomp(agit#git#exec('ls-tree --full-name --name-only HEAD "' . self.filepath . '"', self.git_root))
   endif
   return self._relpath
 endfunction
@@ -153,7 +153,7 @@ function! s:git.to_abspath(relpath)
 endfunction
 
 function! s:git.catfile(hash, path)
-  let relpath = s:String.chomp(agit#git#exec('ls-tree --full-name --name-only HEAD ''' . a:path . '''', self.git_root))
+  let relpath = s:String.chomp(agit#git#exec('ls-tree --full-name --name-only HEAD "' . a:path . '"', self.git_root))
   if a:hash == 'nextpage'
     let catfile = ''
   elseif a:hash == 'unstaged'
