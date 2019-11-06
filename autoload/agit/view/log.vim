@@ -30,7 +30,7 @@ function! s:log.renderwith(funcname)
         \ 'unstaged' : self.git.unstaged.line > 0
         \ }
   call agit#bufwin#move_to(self.name)
-  call s:fill_buffer(self.git[a:funcname](winwidth(0)))
+  call s:fill_buffer(self.git[a:funcname](g:agit_log_width <= 0 ? winwidth(0) : g:agit_log_width))
   if empty(save.hash)
     call self.emmit(1)
   else
