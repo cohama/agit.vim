@@ -27,6 +27,9 @@ endif
 if !exists('g:agit_ignore_spaces')
     let g:agit_ignore_spaces = 1
 endif
+if !exists('g:agit_log_width')
+    let g:agit_log_width = 0
+endif
 if !exists('g:agit_stat_width')
     let g:agit_stat_width = 80
 endif
