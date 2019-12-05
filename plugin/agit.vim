@@ -18,6 +18,9 @@ endif
 if !exists('g:agit_max_log_lines')
   let g:agit_max_log_lines = 500
 endif
+if !exists('g:agit_max_author_name_width')
+  let g:agit_max_author_name_width = 0
+endif
 if !exists('g:agit_skip_empty_line')
   let g:agit_skip_empty_line = 1
 endif

@@ -35,9 +35,13 @@ function! s:git.relpath() abort
   return self._relpath
 endfunction
 
+function! s:get_author_name_format()
+  return '{>' . (g:agit_max_author_name_width > 0 ? '%<(' . g:agit_max_author_name_width . ',trunc)' : '') . '%an<}'
+endfunction
+
 function! s:git.log(winwidth) dict
   let max_count = g:agit_max_log_lines + 1
-  let gitlog = agit#git#exec('log --all --graph --decorate=full --no-color --date=relative --max-count=' . max_count . ' --format=format:"%d %s' . s:sep . '|>%ad<|' . s:sep . '{>%an<}' . s:sep . '[%h]"', self.git_root)
+  let gitlog = agit#git#exec('log --all --graph --decorate=full --no-color --date=relative --max-count=' . max_count . ' --format=format:"%d %s' . s:sep . '|>%ad<|' . s:sep . s:get_author_name_format() . s:sep . '[%h]"', self.git_root)
   " 16 means concealed symbol (4*2 + 2) + hash (7) - right eade margin (1)
   let max_width = a:winwidth + 16
   let gitlog = substitute(gitlog, '\<refs/heads/', '', 'g')
@@ -67,7 +71,7 @@ endfunction
 
 function! s:git.filelog(winwidth)
   let max_count = g:agit_max_log_lines + 1
-  let gitlog = agit#git#exec('log --all --graph --decorate=full --no-color --date=relative --max-count=' . max_count . ' --format=format:"%d %s' . s:sep . '|>%ad<|' . s:sep . '{>%an<}' . s:sep . '[%h]" -- "' . self.filepath . '"', self.git_root)
+  let gitlog = agit#git#exec('log --all --graph --decorate=full --no-color --date=relative --max-count=' . max_count . ' --format=format:"%d %s' . s:sep . '|>%ad<|' . s:sep . s:get_author_name_format() . s:sep . '[%h]" -- "' . self.filepath . '"', self.git_root)
   " 16 means concealed symbol (4*2 + 2) + hash (7) - right eade margin (1)
   let max_width = a:winwidth + 16
   let gitlog = substitute(gitlog, '\<refs/heads/', '', 'g')
