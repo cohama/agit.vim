@@ -5,6 +5,10 @@ let s:List = agit#vital().List
 " table: [[String]] 2-dimensional string list
 " max_col: Integer if a one log exceeds max_col, be trimmed.
 function! agit#aligner#align(table, max_col, ...)
+  if empty(a:table)
+    return []
+  endif
+
   let column_number = len(a:table[0]) " sampling head's column number
 
   let maxs = []
