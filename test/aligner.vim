@@ -37,3 +37,10 @@ function! s:suite.aligns_fields_within_limited_columns()
   \ ]
   call Expect(aligned).to_equal(expect)
 endfunction
+
+function! s:suite.aligns_empty_log()
+  let logs = []
+  let aligned = agit#aligner#align(logs, 56)
+  let expect = []
+  call Expect(aligned).to_equal(expect)
+endfunction
