@@ -193,7 +193,7 @@ function s:get_git_root(basedir)
   if empty(a:basedir)
     " if fugitive exists
     if s:fugitive_enabled && exists('b:git_dir')
-      return matchstr(b:git_dir, '^.\+\ze\.git')
+      return FugitiveWorkTree()
     else
       let current_path = expand('%:p:h')
     endif
