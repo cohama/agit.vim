@@ -23,6 +23,8 @@ syn match agitAuthorMark /<}/ contained conceal
 
 let s:tree_chars = '|/\\*_\-.'
 let s:tree_pat = '/['. s:tree_chars .']\{-}\zs[ '. s:tree_chars .']/'
+" Keep to define syntax in the reverse order to apply from 0 to 9; otherwise,
+" applied from 9 to 0. Syntax are applied from later defined ones to former.
 exe 'syn match agitTree9' s:tree_pat 'nextgroup=agitTree0,agitRef,agitLog skipwhite'
 exe 'syn match agitTree8' s:tree_pat 'nextgroup=agitTree9,agitRef,agitLog skipwhite'
 exe 'syn match agitTree7' s:tree_pat 'nextgroup=agitTree8,agitRef,agitLog skipwhite'
