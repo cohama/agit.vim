@@ -1,4 +1,4 @@
-if exists("b:current_syntax")
+if exists('b:current_syntax')
   finish
 endif
 
@@ -47,7 +47,7 @@ hi def link agitDateMark Ignore
 hi def link agitAuthorMark Ignore
 hi def link agitTree0 Constant
 
-if &background == "dark"
+if &background ==# 'dark'
   hi default agitTree1 ctermfg=magenta     guifg=green1
   hi default agitTree2 ctermfg=green       guifg=yellow1
   hi default agitTree3 ctermfg=yellow      guifg=orange1
@@ -69,4 +69,4 @@ else
   hi default agitTree9 ctermfg=darkmagenta guifg=darkviolet
 endif
 
-let b:current_syntax = "agit"
+let b:current_syntax = 'agit'
