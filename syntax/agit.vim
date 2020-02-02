@@ -21,19 +21,21 @@ syn match agitAuthorMark /{>/ contained conceal
 syn match agitAuthorMark /<}/ contained conceal
 
 let s:tree_chars = '|/\\*_\-.'
-let s:tree_pat = '/[ '. s:tree_chars .']\{-}\zs['. s:tree_chars .']\s\=/'
+let s:tree_pat_preceding = '['. s:tree_chars .' ]\{-}\zs'
+let s:tree_pat_target = '['. s:tree_chars .']\s\='
+let s:tree_pattern = '/'. s:tree_pat_preceding . s:tree_pat_target .'/'
 " Keep to define syntax in the reverse order to apply from 0 to 9; otherwise,
 " applied from 9 to 0. Syntax are applied from later defined ones to former.
-exe 'syn match agitTree9' s:tree_pat 'nextgroup=agitTree0,agitRef,agitLog skipwhite'
-exe 'syn match agitTree8' s:tree_pat 'nextgroup=agitTree9,agitRef,agitLog skipwhite'
-exe 'syn match agitTree7' s:tree_pat 'nextgroup=agitTree8,agitRef,agitLog skipwhite'
-exe 'syn match agitTree6' s:tree_pat 'nextgroup=agitTree7,agitRef,agitLog skipwhite'
-exe 'syn match agitTree5' s:tree_pat 'nextgroup=agitTree6,agitRef,agitLog skipwhite'
-exe 'syn match agitTree4' s:tree_pat 'nextgroup=agitTree5,agitRef,agitLog skipwhite'
-exe 'syn match agitTree3' s:tree_pat 'nextgroup=agitTree4,agitRef,agitLog skipwhite'
-exe 'syn match agitTree2' s:tree_pat 'nextgroup=agitTree3,agitRef,agitLog skipwhite'
-exe 'syn match agitTree1' s:tree_pat 'nextgroup=agitTree2,agitRef,agitLog skipwhite'
-exe 'syn match agitTree0' s:tree_pat 'nextgroup=agitTree1,agitRef,agitLog skipwhite'
+exe 'syn match agitTree9' s:tree_pattern 'nextgroup=agitTree0,agitRef,agitLog skipwhite'
+exe 'syn match agitTree8' s:tree_pattern 'nextgroup=agitTree9,agitRef,agitLog skipwhite'
+exe 'syn match agitTree7' s:tree_pattern 'nextgroup=agitTree8,agitRef,agitLog skipwhite'
+exe 'syn match agitTree6' s:tree_pattern 'nextgroup=agitTree7,agitRef,agitLog skipwhite'
+exe 'syn match agitTree5' s:tree_pattern 'nextgroup=agitTree6,agitRef,agitLog skipwhite'
+exe 'syn match agitTree4' s:tree_pattern 'nextgroup=agitTree5,agitRef,agitLog skipwhite'
+exe 'syn match agitTree3' s:tree_pattern 'nextgroup=agitTree4,agitRef,agitLog skipwhite'
+exe 'syn match agitTree2' s:tree_pattern 'nextgroup=agitTree3,agitRef,agitLog skipwhite'
+exe 'syn match agitTree1' s:tree_pattern 'nextgroup=agitTree2,agitRef,agitLog skipwhite'
+exe 'syn match agitTree0' s:tree_pattern 'nextgroup=agitTree1,agitRef,agitLog skipwhite'
 
 hi def link agitLog Normal
 hi def link agitHead Special
