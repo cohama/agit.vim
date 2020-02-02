@@ -5,7 +5,6 @@ endif
 syn cluster agitLogFields contains=agitDate,agitAuthor,agitHash
 syn cluster agitRefs contains=agitHead,agitBranch,agitRemote,agitTag
 
-hi def link agitTree0 Constant
 syn match agitLog /.*/ contained contains=@agitLogFields
 
 syn region agitRef start="(" end=")" end="\.\.\." contained contains=@agitRefs nextgroup=agitLog keepend
@@ -46,6 +45,7 @@ hi def link agitAuthor Type
 hi def link agitHash Ignore
 hi def link agitDateMark Ignore
 hi def link agitAuthorMark Ignore
+hi def link agitTree0 Constant
 
 if &background == "dark"
   hi default agitTree1 ctermfg=magenta     guifg=green1
