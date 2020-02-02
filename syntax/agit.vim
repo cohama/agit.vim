@@ -48,25 +48,25 @@ hi def link agitDateMark Ignore
 hi def link agitAuthorMark Ignore
 
 if &background == "dark"
-  highlight default agitTree1 ctermfg=magenta     guifg=green1
-  highlight default agitTree2 ctermfg=green       guifg=yellow1
-  highlight default agitTree3 ctermfg=yellow      guifg=orange1
-  highlight default agitTree4 ctermfg=cyan        guifg=greenyellow
-  highlight default agitTree5 ctermfg=red         guifg=springgreen1
-  highlight default agitTree6 ctermfg=yellow      guifg=cyan1
-  highlight default agitTree7 ctermfg=green       guifg=slateblue1
-  highlight default agitTree8 ctermfg=cyan        guifg=magenta1
-  highlight default agitTree9 ctermfg=magenta     guifg=purple1
+  hi default agitTree1 ctermfg=magenta     guifg=green1
+  hi default agitTree2 ctermfg=green       guifg=yellow1
+  hi default agitTree3 ctermfg=yellow      guifg=orange1
+  hi default agitTree4 ctermfg=cyan        guifg=greenyellow
+  hi default agitTree5 ctermfg=red         guifg=springgreen1
+  hi default agitTree6 ctermfg=yellow      guifg=cyan1
+  hi default agitTree7 ctermfg=green       guifg=slateblue1
+  hi default agitTree8 ctermfg=cyan        guifg=magenta1
+  hi default agitTree9 ctermfg=magenta     guifg=purple1
 else
-  highlight default agitTree1 ctermfg=darkyellow  guifg=orangered3
-  highlight default agitTree2 ctermfg=darkgreen   guifg=orange2
-  highlight default agitTree3 ctermfg=blue        guifg=yellow3
-  highlight default agitTree4 ctermfg=darkmagenta guifg=olivedrab4
-  highlight default agitTree5 ctermfg=red         guifg=green4
-  highlight default agitTree6 ctermfg=darkyellow  guifg=paleturquoise3
-  highlight default agitTree7 ctermfg=darkgreen   guifg=deepskyblue4
-  highlight default agitTree8 ctermfg=blue        guifg=darkslateblue
-  highlight default agitTree9 ctermfg=darkmagenta guifg=darkviolet
+  hi default agitTree1 ctermfg=darkyellow  guifg=orangered3
+  hi default agitTree2 ctermfg=darkgreen   guifg=orange2
+  hi default agitTree3 ctermfg=blue        guifg=yellow3
+  hi default agitTree4 ctermfg=darkmagenta guifg=olivedrab4
+  hi default agitTree5 ctermfg=red         guifg=green4
+  hi default agitTree6 ctermfg=darkyellow  guifg=paleturquoise3
+  hi default agitTree7 ctermfg=darkgreen   guifg=deepskyblue4
+  hi default agitTree8 ctermfg=blue        guifg=darkslateblue
+  hi default agitTree9 ctermfg=darkmagenta guifg=darkviolet
 endif
 
 let b:current_syntax = "agit"
