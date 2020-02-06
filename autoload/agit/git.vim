@@ -161,7 +161,7 @@ function! s:git.catfile(hash, path)
   if a:hash == 'nextpage'
     let catfile = ''
   elseif a:hash == 'unstaged'
-    let catfile = join(readfile(a:path), "\n")
+    let catfile = join(readfile(self.to_abspath(relpath)), "\n")
   elseif a:hash == 'staged'
     let catfile = agit#git#exec('cat-file -p ":' . relpath . '"', self.git_root)
   else
