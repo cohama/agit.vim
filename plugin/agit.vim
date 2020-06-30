@@ -68,7 +68,7 @@ nnoremap <silent> <Plug>(agit-git-cherry-pick)  :<C-u>AgitGit cherry-pick <hash>
 nnoremap <silent> <Plug>(agit-git-revert)       :<C-u>AgitGit revert <hash><CR>
 nnoremap <silent> <Plug>(agit-exit)             :<C-u>call agit#exit()<CR>
 
-command! -nargs=* -complete=customlist,agit#complete_command Agit call agit#launch(<q-args>)
+command! -bang -nargs=* -complete=customlist,agit#complete_command Agit call agit#launch(<bang>0, <q-args>)
 command! -nargs=* -complete=customlist,agit#complete_command AgitFile Agit file <args>
 
 let &cpo = s:save_cpo
