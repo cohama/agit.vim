@@ -46,35 +46,49 @@ function! agit#vital()
   return s:agit_vital
 endfunction
 
-function! agit#launch(args)
+function! agit#launch(bang, args)
   try
-    let parsed_args = s:parse_args(a:args)
-    if has_key(parsed_args, 'help')
-      call s:parser.help()
-      return
+    if a:bang
+      let git_root = getcwd()
+      let git = agit#git#new(git_root)
+      let git.bangargs = a:args
+      let git.bang = a:bang
+      let git.views = s:agit_preset_views.default
+    else
+      let parsed_args = s:parse_args(a:args)
+      if has_key(parsed_args, 'help')
+        call s:parser.help()
+        return
+      endif
+
+      let git_root = s:get_git_root(parsed_args.dir)
+      let git = agit#git#new(git_root)
+      let filepath = fnamemodify(expand(parsed_args.file), ':p')
+
+      if parsed_args.presetname ==# 'file' && !filereadable(filepath)
+        throw "Agit: File not found: " . parsed_args.file
+      endif
+      if parsed_args.presetname ==# 'file' && agit#git#exec('ls-files "' . filepath . '"', git.git_root) ==# ''
+        throw "Agit: File not tracked: " . parsed_args.file
+      endif
+      let git.filepath = filepath
+      let git.views = parsed_args.preset
     endif
-    let git_root = s:get_git_root(parsed_args.dir)
-    let git = agit#git#new(git_root)
-    let filepath = fnamemodify(expand(parsed_args.file), ':p')
-    if parsed_args.presetname ==# 'file' && !filereadable(filepath)
-      throw "Agit: File not found: " . parsed_args.file
-    endif
-    if parsed_args.presetname ==# 'file' && agit#git#exec('ls-files "' . filepath . '"', git.git_root) ==# ''
-      throw "Agit: File not tracked: " . parsed_args.file
-    endif
-    let git.filepath = filepath
-    let git.views = parsed_args.preset
+
     if g:agit_reuse_tab
       for t in range(1, tabpagenr('$'))
         let tabgit = gettabvar(t, 'git', {})
         if tabgit != {} && git.git_root ==# tabgit.git_root
         \ && git.views == tabgit.views && (git.views[0].name !=# 'filelog' || git.filepath == tabgit.filepath)
           execute 'tabnext ' . t
+          let tabgit.bang = git.bang
+          let tabgit.bangargs = git.bangargs
           call agit#reload()
           return
         endif
       endfor
     endif
+
     call agit#bufwin#agit_tabnew(git)
     let t:git = git
     if s:fugitive_enabled

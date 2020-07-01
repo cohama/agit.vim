@@ -102,6 +102,19 @@ COMMANDS					*agit-commands*
 	--dir={basedir}				*agit-option-dir*
 	Set the repository path to {basedir}.
 
+						*:Agit!*
+:Agit! [{options}]
+	Open a new Agit tab. Repository path is based on the current
+	directory. This command takes all the options that the `git log`
+	command can take.
+
+	It is different from the regular |:Agit| command in
+	that it does not use the option `--all` to the `git log` command. So
+	it will only show the history based on arguments passed, and not of
+	the entire repo. So for example, if no options are paseed, it will
+	show the history of the current branch, just like running `git log` in
+	your shell would do.
+
 						*:AgitFile*
 :AgitFile [{options}]
 	Similar to |:Agit| but trace only current file log.
@@ -328,7 +341,6 @@ g:agit_reuse_tab				*g:agit_reuse_tab*
 ==============================================================================
 TODO						*agit-todo*
 
-* Arbitrary log format
 * More performance by using |if_lua|
 * Pagination
 * Commit filtering
