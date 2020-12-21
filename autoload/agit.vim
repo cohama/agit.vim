@@ -157,14 +157,14 @@ function! agit#reload() abort
     return
   endif
   try
-    let w:tracer = getpos('.')
+    let w:agit_tracer = getpos('.')
     call t:git.fire_init()
   finally
     for w in range(1, winnr('$'))
       let win = getwinvar(w, '')
-      if has_key(win, 'tracer')
-        let pos = win.tracer
-        unlet win.tracer
+      if has_key(win, 'agit_tracer')
+        let pos = win.agit_tracer
+        unlet win.agit_tracer
         execute 'noautocmd ' . w . 'wincmd w'
         call setpos('.', pos)
         break
