@@ -114,10 +114,10 @@ function! agit#print_commitmsg()
 endfunction
 
 function! agit#remote_scroll(win_type, direction)
-  if !exists('w:view')
+  if !exists('w:agit_view')
     return
   endif
-  let win_save = w:view.name
+  let win_save = w:agit_view.name
   if !agit#bufwin#move_to(a:win_type)
     return
   endif
@@ -147,8 +147,8 @@ function! agit#exit()
 endfunction
 
 function! agit#show_commit()
-  if has_key(w:, 'view') && has_key(w:view, 'emmit')
-    call w:view.emmit()
+  if has_key(w:, 'agit_view') && has_key(w:agit_view, 'emmit')
+    call w:agit_view.emmit()
   endif
 endfunction
 
