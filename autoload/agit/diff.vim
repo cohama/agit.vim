@@ -13,12 +13,12 @@ let s:revspec_pattern = '\v^(.{-})%((\.{2,3})(.*))?$'
 function! agit#diff#complete_revspec(arglead, ...)
   " return revision specification candidates (provide completion for AgitDiff)
   " revision specification patterns are 'R1', 'R1..R2', and 'R1...R2'
-  if !exists('t:git')
+  if !exists('t:agit_git')
     return []
   endif
   let matches = matchlist(a:arglead, s:revspec_pattern)
   let [rev1, dots, rev2] = matches[1:3]
-  let revs = agit#diff#revision_list(t:git)
+  let revs = agit#diff#revision_list(t:agit_git)
   if empty(dots)
     return filter(revs, 'stridx(v:val, rev1) == 0')
   else

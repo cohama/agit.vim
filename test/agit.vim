@@ -251,7 +251,7 @@ function! s:suite.__reload_test__()
 
   function! reload.after_each()
     call delete(s:repo_path . 'clean/x')
-    call agit#git#exec('reset', t:git.git_root)
+    call agit#git#exec('reset', t:agit_git.git_root)
   endfunction
 
   function! reload.on_log_window()

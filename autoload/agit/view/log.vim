@@ -127,7 +127,7 @@ function! s:log.setlocal()
   endfunction
 
   function! s:exit()
-    if !exists('t:git')
+    if !exists('t:agit_git')
       return
     endif
     silent! only!

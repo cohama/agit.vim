@@ -177,7 +177,7 @@ endfunction
 function! s:git.get_mergebase(rev1, rev2)
   let rev1 = a:rev1 =~# '^\(un\)\?staged$' ? 'HEAD' : a:rev1
   let rev2 = a:rev2 =~# '^\(un\)\?staged$' ? 'HEAD' : a:rev2
-  return s:String.chomp(agit#git#exec_or_die('merge-base "' . rev1 . '" "' . rev2 . '"', t:git.git_root))
+  return s:String.chomp(agit#git#exec_or_die('merge-base "' . rev1 . '" "' . rev2 . '"', t:agit_git.git_root))
 endfunction
 
 function! s:git.get_shorthash(revspec)
@@ -186,7 +186,7 @@ function! s:git.get_shorthash(revspec)
   elseif a:revspec =~# '^\x\{7,\}$'
     return a:revspec[:6]
   endif
-  return s:String.chomp(agit#git#exec_or_die('rev-parse --short "' . a:revspec . '"', t:git.git_root))
+  return s:String.chomp(agit#git#exec_or_die('rev-parse --short "' . a:revspec . '"', t:agit_git.git_root))
 endfunction
 
 let s:seq = ''
