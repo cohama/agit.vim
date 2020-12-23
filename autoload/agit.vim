@@ -76,7 +76,7 @@ function! agit#launch(args)
       endfor
     endif
     call agit#bufwin#agit_tabnew(git)
-    let t:git = git
+    let t:agit_git = git
     if s:fugitive_enabled
       call FugitiveDetect(git_root . '/.git')
     endif
@@ -107,17 +107,17 @@ endfunction
 function! agit#print_commitmsg()
   let hash = agit#extract_hash(getline('.'))
   if hash != ''
-    echo t:git.commitmsg(hash)
+    echo t:agit_git.commitmsg(hash)
   else
     echo
   endif
 endfunction
 
 function! agit#remote_scroll(win_type, direction)
-  if !exists('w:view')
+  if !exists('w:agit_view')
     return
   endif
-  let win_save = w:view.name
+  let win_save = w:agit_view.name
   if !agit#bufwin#move_to(a:win_type)
     return
   endif
@@ -135,7 +135,7 @@ function! agit#yank_hash()
 endfunction
 
 function! agit#exit()
-  if !exists('t:git')
+  if !exists('t:agit_git')
     return
   endif
   if tabpagenr('$') == 1
@@ -147,24 +147,24 @@ function! agit#exit()
 endfunction
 
 function! agit#show_commit()
-  if has_key(w:, 'view') && has_key(w:view, 'emmit')
-    call w:view.emmit()
+  if has_key(w:, 'agit_view') && has_key(w:agit_view, 'emmit')
+    call w:agit_view.emmit()
   endif
 endfunction
 
 function! agit#reload() abort
-  if !exists('t:git')
+  if !exists('t:agit_git')
     return
   endif
   try
-    let w:tracer = getpos('.')
-    call t:git.fire_init()
+    let w:agit_tracer = getpos('.')
+    call t:agit_git.fire_init()
   finally
     for w in range(1, winnr('$'))
       let win = getwinvar(w, '')
-      if has_key(win, 'tracer')
-        let pos = win.tracer
-        unlet win.tracer
+      if has_key(win, 'agit_tracer')
+        let pos = win.agit_tracer
+        unlet win.agit_tracer
         execute 'noautocmd ' . w . 'wincmd w'
         call setpos('.', pos)
         break
@@ -175,15 +175,15 @@ endfunction
 
 function! agit#diff(args) abort
   try
-    if !exists('t:git')
+    if !exists('t:agit_git')
       return
     endif
     if &filetype ==# 'agit'
-      let filepath = t:git.relpath()
+      let filepath = t:agit_git.relpath()
     else
       let filepath = expand('<cfile>')
     endif
-    call agit#diff#sidebyside(t:git, filepath, a:args)
+    call agit#diff#sidebyside(t:agit_git, filepath, a:args)
   catch /Agit: /
     echohl ErrorMsg | echomsg v:exception | echohl None
   endtry
@@ -253,7 +253,7 @@ function! agit#agitgit(arg, confirm, bang)
   let arg = substitute(a:arg, '\c<hash>', agit#extract_hash(getline('.')), 'g')
   if match(arg, '\c<branch>') >= 0
     let cword = expand('<cword>')
-    silent let branch = agit#git#exec('rev-parse --symbolic ' . cword, t:git.git_root)
+    silent let branch = agit#git#exec('rev-parse --symbolic ' . cword, t:agit_git.git_root)
     let branch = substitute(branch, '\n\+$', '', '')
     if agit#git#get_last_status() != 0
       echomsg 'Not a branch name: ' . cword
@@ -274,7 +274,7 @@ function! agit#agitgit(arg, confirm, bang)
         return
       endif
     endif
-    echo agit#git#exec(arg, t:git.git_root, a:bang)
+    echo agit#git#exec(arg, t:agit_git.git_root, a:bang)
     call agit#reload()
   endif
 endfunction
@@ -291,7 +291,7 @@ function! agit#agit_git_compl(arglead, cmdline, cursorpos)
 endfunction
 
 function! agit#revision_list()
-  let revs = agit#git#exec('rev-parse --symbolic --branches --remotes --tags', t:git.git_root)
+  let revs = agit#git#exec('rev-parse --symbolic --branches --remotes --tags', t:agit_git.git_root)
   \ . join(['HEAD', 'ORIG_HEAD', 'MERGE_HEAD', 'FETCH_HEAD'], "\n")
   let hash = agit#extract_hash(getline('.'))
   if hash != ''
@@ -302,21 +302,21 @@ function! agit#revision_list()
 endfunction
 
 function! s:git_checkout(branch_name)
-  echo agit#git#exec('checkout ' . a:branch_name, t:git.git_root)
+  echo agit#git#exec('checkout ' . a:branch_name, t:agit_git.git_root)
   call agit#reload()
 endfunction
 
 function! s:git_checkout_b()
   let branch_name = input('git checkout -b ')
   echo ''
-  echo agit#git#exec('checkout -b ' . branch_name, t:git.git_root)
+  echo agit#git#exec('checkout -b ' . branch_name, t:agit_git.git_root)
   call agit#reload()
 endfunction
 
 function! s:git_branch_d(branch_name)
   echon "Are you sure you want to delete branch '" . a:branch_name . "' [y/N]"
   if nr2char(getchar()) ==# 'y'
-    echo agit#git#exec('branch -D ' . a:branch_name, t:git.git_root)
+    echo agit#git#exec('branch -D ' . a:branch_name, t:agit_git.git_root)
     call agit#reload()
   endif
 endfunction

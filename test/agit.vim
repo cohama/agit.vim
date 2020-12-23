@@ -251,7 +251,7 @@ function! s:suite.__reload_test__()
 
   function! reload.after_each()
     call delete(s:repo_path . 'clean/x')
-    call agit#git#exec('reset', t:git.git_root)
+    call agit#git#exec('reset', t:agit_git.git_root)
   endfunction
 
   function! reload.on_log_window()
@@ -264,7 +264,7 @@ function! s:suite.__reload_test__()
     call Expect(getline(1)).not.to_match(g:agit#git#unstaged_message)
     call agit#bufwin#move_to('stat')
     call agit#reload()
-    call Expect(w:view.name).to_equal('stat')
+    call Expect(w:agit_view.name).to_equal('stat')
     call agit#bufwin#move_to('log')
     call Expect(getline(1)).to_match(g:agit#git#unstaged_message)
   endfunction
@@ -273,7 +273,7 @@ function! s:suite.__reload_test__()
     call Expect(getline(1)).not.to_match(g:agit#git#unstaged_message)
     call agit#bufwin#move_to('diff')
     call agit#reload()
-    call Expect(w:view.name).to_equal('diff')
+    call Expect(w:agit_view.name).to_equal('diff')
     call agit#bufwin#move_to('log')
     call Expect(getline(1)).to_match(g:agit#git#unstaged_message)
   endfunction
@@ -283,7 +283,7 @@ function! s:suite.__reload_test__()
     vnew
     call agit#reload()
     call agit#bufwin#move_to('log')
-    call Expect(w:view.name).to_equal('log')
+    call Expect(w:agit_view.name).to_equal('log')
     call Expect(getline(1)).to_match(g:agit#git#unstaged_message)
   endfunction
 
@@ -293,7 +293,7 @@ function! s:suite.__reload_test__()
     call Expect(winnr('$')).to_equal(3)
     new
     wincmd p
-    call Expect(w:view.name).to_equal('log')
+    call Expect(w:agit_view.name).to_equal('log')
     call Expect(getline(1)).to_match(g:agit#git#unstaged_message)
     let g:agit_enable_auto_refresh = 0
   endfunction

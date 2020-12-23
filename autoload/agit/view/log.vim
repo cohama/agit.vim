@@ -98,10 +98,6 @@ function! s:log.setlocal()
     autocmd CursorHold <buffer> if g:agit_enable_auto_show_commit | call s:show_commit() | endif
     autocmd BufLeave <buffer> if g:agit_enable_auto_show_commit | call s:cleanup() | endif
 
-    if exists('##QuitPre')
-      autocmd QuitPre <buffer> call s:exit()
-    endif
-
     autocmd BufEnter <buffer> if g:agit_enable_auto_refresh | call agit#reload() | endif
 
     autocmd ShellCmdPost <buffer> call agit#reload()
@@ -126,13 +122,6 @@ function! s:log.setlocal()
     let &updatetime = s:save_ut
   endfunction
 
-  function! s:exit()
-    if !exists('t:git')
-      return
-    endif
-    silent! only!
-  endfunction
-
   function! s:skip_empty_line()
     let linenr = line('.')
     let curline = getline('.')
@@ -154,7 +143,7 @@ function! s:log.setlocal()
 endfunction
 
 function! s:emmit(force)
-  call w:view.emmit(a:force)
+  call w:agit_view.emmit(a:force)
 endfunction
 
 function! s:log.emmit(...)
